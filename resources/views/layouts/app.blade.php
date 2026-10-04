@@ -84,6 +84,9 @@
 
 	<!-- Daterangepikcer JS -->
 
+	<!-- Page vendor JS (must load before script.js, e.g. datatable.js) -->
+	@stack('vendor-js')
+
 	<!-- Select2 JS -->
 	<script src="{{ asset('assets/plugins/tom-select/js/tom-select.complete.min.js') }}"></script>
 

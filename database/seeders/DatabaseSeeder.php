@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Domain\Catalog\Models\Unit;
+use App\Domain\Inventory\Models\Warehouse;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Support\Tenancy\TenantContext;
@@ -21,6 +23,9 @@ class DatabaseSeeder extends Seeder
         $permissions = [
             'dashboard.view', 'pos.access', 'inventory.view', 'sales.view',
             'purchases.view', 'people.view', 'reports.view', 'settings.manage',
+            'products.view', 'products.manage', 'categories.view', 'categories.manage',
+            'brands.view', 'brands.manage', 'units.view', 'units.manage',
+            'warehouses.view', 'warehouses.manage', 'inventory.manage',
         ];
 
         foreach ($permissions as $permission) {
@@ -28,13 +33,13 @@ class DatabaseSeeder extends Seeder
         }
 
         $superAdmin = User::query()->withoutGlobalScope('tenant')->firstOrCreate(
-            ['email' => env('SUPER_ADMIN_EMAIL', 'admin@example.test')],
+            ['email' => config('pos.seed.super_admin_email')],
             [
                 'name' => 'Odessa Super Admin',
-                'password' => env('SUPER_ADMIN_PASSWORD') ?: Str::random(48),
+                'password' => config('pos.seed.super_admin_password') ?: Str::random(48),
             ],
         );
-        if ($password = env('SUPER_ADMIN_PASSWORD')) {
+        if ($password = config('pos.seed.super_admin_password')) {
             $superAdmin->password = $password;
         }
         $superAdmin->forceFill(['tenant_id' => null, 'is_super_admin' => true, 'locale' => 'en'])->save();
@@ -56,9 +61,12 @@ class DatabaseSeeder extends Seeder
             $rolePermissions = [
                 'Owner' => $permissions,
                 'Manager' => array_values(array_diff($permissions, ['settings.manage'])),
-                'Cashier' => ['dashboard.view', 'pos.access', 'sales.view'],
-                'Storekeeper' => ['dashboard.view', 'inventory.view'],
-                'Accountant' => ['dashboard.view', 'sales.view', 'purchases.view', 'reports.view'],
+                'Cashier' => ['dashboard.view', 'pos.access', 'sales.view', 'products.view'],
+                'Storekeeper' => [
+                    'dashboard.view', 'inventory.view', 'inventory.manage', 'products.view', 'products.manage',
+                    'categories.view', 'brands.view', 'units.view', 'warehouses.view',
+                ],
+                'Accountant' => ['dashboard.view', 'sales.view', 'purchases.view', 'reports.view', 'products.view', 'inventory.view'],
             ];
 
             foreach ($rolePermissions as $name => $abilities) {
@@ -71,17 +79,26 @@ class DatabaseSeeder extends Seeder
             }
 
             $owner = User::query()->firstOrCreate(
-                ['email' => env('DEMO_OWNER_EMAIL', 'owner@demo.test')],
+                ['email' => config('pos.seed.demo_owner_email')],
                 [
                     'name' => 'Demo Owner',
-                    'password' => env('DEMO_OWNER_PASSWORD') ?: Str::random(48),
+                    'password' => config('pos.seed.demo_owner_password') ?: Str::random(48),
                 ],
             );
-            if ($password = env('DEMO_OWNER_PASSWORD')) {
+            if ($password = config('pos.seed.demo_owner_password')) {
                 $owner->password = $password;
             }
             $owner->forceFill(['tenant_id' => $tenant->getKey(), 'is_super_admin' => false, 'locale' => 'en'])->save();
             $owner->assignRole('Owner');
+
+            Warehouse::query()->firstOrCreate(
+                ['code' => 'MAIN'],
+                ['name' => 'Main Store', 'is_default' => true, 'is_active' => true],
+            );
+
+            foreach ([['Piece', 'pcs', false], ['Kilogram', 'kg', true], ['Litre', 'l', true]] as [$name, $short, $decimal]) {
+                Unit::query()->firstOrCreate(['name' => $name], ['short_name' => $short, 'allow_decimal' => $decimal]);
+            }
         });
 
         app(PermissionRegistrar::class)->setPermissionsTeamId(null);
