@@ -80,8 +80,26 @@
         <li class="submenu-open">
             <h6 class="submenu-hdr">Main</h6>
             <ul>
+                @php($menuUser = auth()->user())
                 @foreach (config('menu') as $item)
-                    @if (auth()->user()?->is_super_admin || auth()->user()?->can($item['permission']))
+                    @if (isset($item['children']))
+                        @php($children = collect($item['children'])->filter(fn ($child) => $menuUser?->is_super_admin || $menuUser?->can($child['permission'])))
+                        @if ($children->isNotEmpty())
+                            @php($groupActive = $children->contains(fn ($child) => request()->routeIs($child['route'])))
+                            <li class="submenu">
+                                <a href="javascript:void(0);" @class(['subdrop active' => $groupActive])>
+                                    <i class="{{ $item['icon'] }} fs-16 me-2"></i>
+                                    <span>{{ __($item['label']) }}</span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <ul @style(['display: block' => $groupActive])>
+                                    @foreach ($children as $child)
+                                        <li><a href="{{ route($child['route']) }}" @class(['active' => request()->routeIs($child['route'])])>{{ __($child['label']) }}</a></li>
+                                    @endforeach
+                                </ul>
+                            </li>
+                        @endif
+                    @elseif ($menuUser?->is_super_admin || $menuUser?->can($item['permission']))
                         <li>
                             <a href="{{ route($item['route']) }}" @class(['active' => request()->routeIs($item['route'])])>
                                 <i class="{{ $item['icon'] }} fs-16 me-2"></i>

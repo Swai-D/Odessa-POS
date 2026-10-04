@@ -2,11 +2,24 @@
 
 namespace App\Providers;
 
+use App\Domain\Catalog\Models\Brand;
+use App\Domain\Catalog\Models\Category;
+use App\Domain\Catalog\Models\Product;
+use App\Domain\Catalog\Models\Unit;
+use App\Domain\Inventory\Models\StockMovement;
+use App\Domain\Inventory\Models\Warehouse;
 use App\Models\Tenant;
+use App\Policies\BrandPolicy;
+use App\Policies\CategoryPolicy;
+use App\Policies\ProductPolicy;
+use App\Policies\StockMovementPolicy;
+use App\Policies\UnitPolicy;
+use App\Policies\WarehousePolicy;
 use App\Support\Tenancy\TenantContext;
 use Illuminate\Queue\Events\JobExceptionOccurred;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\ServiceProvider;
 
@@ -25,6 +38,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::policy(Product::class, ProductPolicy::class);
+        Gate::policy(Category::class, CategoryPolicy::class);
+        Gate::policy(Brand::class, BrandPolicy::class);
+        Gate::policy(Unit::class, UnitPolicy::class);
+        Gate::policy(Warehouse::class, WarehousePolicy::class);
+        Gate::policy(StockMovement::class, StockMovementPolicy::class);
+
         Queue::createPayloadUsing(function (): array {
             $tenant = app(TenantContext::class)->get();
 
