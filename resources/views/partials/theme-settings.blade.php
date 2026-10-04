@@ -1,0 +1,1 @@
+<div class="theme-settings" hidden></div>

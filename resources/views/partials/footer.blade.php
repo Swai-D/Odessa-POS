@@ -1,0 +1,1 @@
+<footer class="footer">{{ __('app.name') }}</footer>
