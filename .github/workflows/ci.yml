@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: dom, gd, mbstring, pdo_pgsql, pdo_sqlite, pgsql, sqlite3, xml, zip
+          coverage: none
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Prepare application key
+        run: cp .env.example .env && php artisan key:generate
+
+      - name: Pint
+        run: vendor/bin/pint --test
+
+      - name: PHPStan
+        run: vendor/bin/phpstan analyse --level=5 --memory-limit=2G
+
+      - name: Pest
+        run: vendor/bin/pest
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ':memory:'
+
+      - name: Composer audit
+        run: composer audit
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
