@@ -18,6 +18,7 @@ class ProductStock extends Model
         return ['quantity' => 'decimal:3'];
     }
 
+    /** @return BelongsTo<Product, $this> */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);

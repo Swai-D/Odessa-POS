@@ -5,6 +5,7 @@ use App\Domain\Catalog\Models\Product;
 use App\Domain\Inventory\Models\ProductStock;
 use App\Domain\Inventory\Models\StockMovement;
 use App\Domain\Inventory\Models\Warehouse;
+use App\Models\Tenant;
 use App\Support\Tenancy\TenantContext;
 
 /** @return array<string, mixed> */
@@ -27,7 +28,7 @@ function productPayload(array $overrides = []): array
     ], $overrides);
 }
 
-function inTenant(App\Models\Tenant $tenant, Closure $callback): mixed
+function inTenant(Tenant $tenant, Closure $callback): mixed
 {
     return app(TenantContext::class)->run($tenant, $callback);
 }

@@ -36,7 +36,7 @@ class CategoryController extends LookupController
         return [
             ['label' => 'catalog.fields.name', 'value' => fn (Category $c) => $c->name],
             ['label' => 'catalog.fields.slug', 'value' => fn (Category $c) => $c->slug],
-            ['label' => 'catalog.fields.parent', 'value' => fn (Category $c) => $c->parent?->name ?? '—'],
+            ['label' => 'catalog.fields.parent', 'value' => fn (Category $c) => $c->parent->name ?? '—'],
             ['label' => 'catalog.fields.products', 'value' => fn (Category $c) => $c->products()->count()],
         ];
     }

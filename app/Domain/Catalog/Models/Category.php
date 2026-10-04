@@ -18,6 +18,7 @@ class Category extends Model
         return ['is_active' => 'boolean'];
     }
 
+    /** @return BelongsTo<Category, $this> */
     public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id');

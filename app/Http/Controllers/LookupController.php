@@ -28,7 +28,7 @@ abstract class LookupController extends Controller
     /** Translation key for the page title. */
     abstract protected function title(): string;
 
-    /** @return list<array{label: string, value: Closure(Model): mixed}> */
+    /** @return list<array{label: string, value: Closure}> */
     abstract protected function columns(): array;
 
     /**
