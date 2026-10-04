@@ -34,6 +34,9 @@ class DatabaseSeeder extends Seeder
                 'password' => env('SUPER_ADMIN_PASSWORD') ?: Str::random(48),
             ],
         );
+        if ($password = env('SUPER_ADMIN_PASSWORD')) {
+            $superAdmin->password = $password;
+        }
         $superAdmin->forceFill(['tenant_id' => null, 'is_super_admin' => true, 'locale' => 'en'])->save();
 
         $tenant = Tenant::firstOrCreate(
@@ -74,6 +77,9 @@ class DatabaseSeeder extends Seeder
                     'password' => env('DEMO_OWNER_PASSWORD') ?: Str::random(48),
                 ],
             );
+            if ($password = env('DEMO_OWNER_PASSWORD')) {
+                $owner->password = $password;
+            }
             $owner->forceFill(['tenant_id' => $tenant->getKey(), 'is_super_admin' => false, 'locale' => 'en'])->save();
             $owner->assignRole('Owner');
         });
