@@ -1,5 +1,8 @@
 * text=auto eol=lf
 
+public/assets/** -text
+resources/template-original/** -text
+
 *.blade.php diff=html
 *.css diff=css
 *.html diff=html

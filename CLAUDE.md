@@ -6,7 +6,7 @@ Laravel 12, PHP 8.3, PostgreSQL 16, Vite, Pest, Pint, and Larastan level 5. Queu
 
 ## Template preservation
 
-The purchased Dreams POS HTML and assets must remain exactly as supplied. Keep the static files in `public/assets/` and source reference in `resources/template-original/`; never edit, rename, minify, or modernize these files. Build Blade wrappers around them. Do not replace Bootstrap/jQuery with Tailwind. The purchased folders were not available during initial scaffolding, so template fidelity must be completed once they are provided.
+The purchased Dreams POS HTML and assets must remain exactly as supplied. Keep the static files in `public/assets/` and the original source in `resources/template-original/`; never edit, rename, minify, or modernize these files. Build Blade wrappers around them. Do not replace Bootstrap/jQuery with Tailwind. The sidebar's permitted navigation comes from `config/menu.php`.
 
 ## Tenancy
 

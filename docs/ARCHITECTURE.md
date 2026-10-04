@@ -12,7 +12,7 @@ Spatie Permission Teams is enabled with `tenant_id` as its ULID team key. Activi
 
 ## Views and assets
 
-`resources/template-original/` is the read-only purchased-template reference. `public/assets/` is the untouched static asset destination. Blade layouts and placeholder views are under `resources/views`; the purchased source folders were absent during scaffolding, so exact template reproduction is intentionally pending those files. Do not edit, rename, minify, or replace template assets.
+`resources/template-original/` is the read-only purchased-template reference, including the original HTML and bundled asset tree. `public/assets/` is a byte-for-byte copy of the static assets. Blade layouts and template-derived views are under `resources/views`. Do not edit, rename, minify, or replace either source or runtime assets.
 
 The sidebar menu is defined once in `config/menu.php`; each entry names its translation key, icon class, route, and permission. The Blade partial filters entries with the current user's permission.
 

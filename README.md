@@ -45,6 +45,6 @@ Tests use SQLite in memory and do not need PostgreSQL. Queue, cache, and session
 
 ## Purchased template
 
-Place the purchased `html-temp/` and `assets/` directories at the repository root. Copy the HTML pages unchanged to `resources/template-original/` and assets unchanged to `public/assets/`. Never edit or reformat either copy. The original folders were not included in this scaffold, so the current Blade files are structural placeholders, not pixel-matched template pages.
+The supplied 265 Dreams POS HTML pages and bundled asset tree are preserved under `resources/template-original/`; the runtime asset copy in `public/assets/` is byte-for-byte identical. The dashboard, POS, sign-in, and error views use template-derived markup. The application sidebar intentionally limits navigation to the permission-filtered entries in `config/menu.php`. Never edit, rename, or reformat the reference pages or static assets.
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for tenancy and code conventions.
