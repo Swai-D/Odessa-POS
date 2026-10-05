@@ -7,8 +7,8 @@ use App\Domain\Sales\Models\Sale;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PaymentRequest;
 use App\Support\Money;
-use App\Support\TenantSettings;
 use App\Support\Tenancy\TenantContext;
+use App\Support\TenantSettings;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -43,7 +43,7 @@ class SaleController extends Controller
             'sale' => $sale->load(['items', 'payments.user', 'customer', 'user', 'warehouse']),
             'format' => $request->query('format') === 'thermal' ? 'thermal' : 'a4',
             'canPay' => Gate::allows('update', $sale),
-            'business' => (string) (new TenantSettings)->get('business_name', app(TenantContext::class)->get()?->name ?? config('app.name')),
+            'business' => (string) (new TenantSettings)->get('business_name', app(TenantContext::class)->get()->name ?? config('app.name')),
         ]);
     }
 
@@ -55,7 +55,7 @@ class SaleController extends Controller
 
         return Pdf::loadView('sales.receipt-pdf', [
             'sale' => $sale,
-            'business' => (string) (new TenantSettings)->get('business_name', app(TenantContext::class)->get()?->name ?? config('app.name')),
+            'business' => (string) (new TenantSettings)->get('business_name', app(TenantContext::class)->get()->name ?? config('app.name')),
         ])->setPaper('a4')->stream($sale->number.'.pdf');
     }
 
