@@ -11,6 +11,7 @@ use App\Domain\Inventory\Models\Warehouse;
 use App\Domain\People\Models\Customer;
 use App\Domain\Sales\Models\Sale;
 use App\Models\Tenant;
+use App\Models\User;
 use App\Policies\BrandPolicy;
 use App\Policies\CategoryPolicy;
 use App\Policies\CustomerPolicy;
@@ -42,6 +43,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::define('manage-settings', fn (User $user): bool => $user->is_super_admin || $user->can('settings.manage'));
         Gate::policy(Product::class, ProductPolicy::class);
         Gate::policy(Category::class, CategoryPolicy::class);
         Gate::policy(Brand::class, BrandPolicy::class);

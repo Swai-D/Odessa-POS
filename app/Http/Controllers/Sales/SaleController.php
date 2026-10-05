@@ -44,6 +44,7 @@ class SaleController extends Controller
             'format' => $request->query('format') === 'thermal' ? 'thermal' : 'a4',
             'canPay' => Gate::allows('update', $sale),
             'business' => (string) (new TenantSettings)->get('business_name', app(TenantContext::class)->get()->name ?? config('app.name')),
+            'footer' => (string) (new TenantSettings)->get('receipt_footer', ''),
         ]);
     }
 
@@ -56,6 +57,7 @@ class SaleController extends Controller
         return Pdf::loadView('sales.receipt-pdf', [
             'sale' => $sale,
             'business' => (string) (new TenantSettings)->get('business_name', app(TenantContext::class)->get()->name ?? config('app.name')),
+            'footer' => (string) (new TenantSettings)->get('receipt_footer', ''),
         ])->setPaper('a4')->stream($sale->number.'.pdf');
     }
 

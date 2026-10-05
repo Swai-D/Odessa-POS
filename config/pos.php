@@ -2,6 +2,7 @@
 
 return [
     'default_currency' => env('POS_DEFAULT_CURRENCY', 'TZS'),
+    'currencies' => ['TZS', 'KES', 'UGX', 'USD', 'EUR'],
     'features' => [
         'printer' => false,
         'barcode_scanner' => false,

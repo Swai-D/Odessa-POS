@@ -103,7 +103,7 @@
 			</table>
 		@endif
 
-		<p class="text-center mt-3 mb-0">{{ __('pos.sales.thank_you') }}</p>
+		<p class="text-center mt-3 mb-0">{{ $footer !== '' ? $footer : __('pos.sales.thank_you') }}</p>
 	</div>
 
 	@if ($canPay && $sale->balance_due > 0)
