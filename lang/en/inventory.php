@@ -21,6 +21,7 @@ return [
         'adjustment_in' => 'Adjustment (add)',
         'adjustment_out' => 'Adjustment (remove)',
         'sale' => 'Sale',
+        'sale_return' => 'Sale return',
         'purchase' => 'Purchase',
     ],
     'directions' => [

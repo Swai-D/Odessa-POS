@@ -2,6 +2,11 @@
 
 return [
     'errors' => [
+        'refund_method_required' => 'Choose how the refund is paid out.',
+        'return_item_invalid' => 'One of the items does not belong to this sale.',
+        'return_exceeds' => 'More of :product is being returned than was sold.',
+        'return_whole_quantity' => ':product can only be returned in whole units.',
+        'nothing_to_return' => 'Enter a quantity for at least one item.',
         'product_unavailable' => 'One or more products are no longer available.',
         'whole_quantity' => ':product can only be sold in whole units.',
         'nothing_to_charge' => 'There is nothing to charge for this order.',
@@ -86,6 +91,19 @@ return [
         'confirm_clear' => 'Clear the whole cart?',
     ],
     'sales' => [
+        'return_saved' => 'Return recorded.',
+        'returns' => 'Returns',
+        'return_items' => 'Return items',
+        'returned' => 'Returned',
+        'return_qty' => 'Return qty',
+        'refund_method' => 'Refund paid by',
+        'refund_hint' => 'The refund first reduces any balance the customer still owes; only the rest is paid out.',
+        'reason' => 'Reason',
+        'return_number' => 'Return No.',
+        'credit_applied' => 'Reduced balance',
+        'refunded' => 'Paid out',
+        'net_total' => 'Net after returns',
+        'submit_return' => 'Record return',
         'title' => 'Sales',
         'subtitle' => 'Completed sales, receipts and customer balances.',
         'number' => 'Receipt No.',

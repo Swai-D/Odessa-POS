@@ -21,6 +21,8 @@ class StockMovement extends Model
 
     public const SALE = 'sale';
 
+    public const SALE_RETURN = 'sale_return';
+
     protected $fillable = [
         'product_id', 'warehouse_id', 'user_id', 'type', 'quantity', 'balance_after', 'reason',
         'reference_type', 'reference_id',

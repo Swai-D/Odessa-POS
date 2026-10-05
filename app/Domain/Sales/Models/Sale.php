@@ -23,7 +23,7 @@ class Sale extends Model
     protected $fillable = [
         'number', 'idempotency_key', 'customer_id', 'user_id', 'warehouse_id', 'currency',
         'subtotal', 'discount_total', 'tax_total', 'total', 'amount_paid', 'balance_due',
-        'change_given', 'payment_status', 'note', 'sold_at',
+        'change_given', 'returned_total', 'payment_status', 'note', 'sold_at',
     ];
 
     protected function casts(): array
@@ -36,6 +36,7 @@ class Sale extends Model
             'amount_paid' => 'integer',
             'balance_due' => 'integer',
             'change_given' => 'integer',
+            'returned_total' => 'integer',
             'sold_at' => 'datetime',
         ];
     }
@@ -44,6 +45,12 @@ class Sale extends Model
     public function items(): HasMany
     {
         return $this->hasMany(SaleItem::class);
+    }
+
+    /** @return HasMany<SaleReturn, $this> */
+    public function returns(): HasMany
+    {
+        return $this->hasMany(SaleReturn::class);
     }
 
     /** @return HasMany<Payment, $this> */
