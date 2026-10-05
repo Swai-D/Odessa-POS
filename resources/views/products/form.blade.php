@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@php($editing = $product->exists)
-@section('title', ($editing ? __('catalog.edit_product') : __('catalog.add_product')).' - Odessa POS')
-
 @php
+	$editing = $product->exists;
 	$old = fn (string $key, mixed $default = null) => old($key, $product->{$key} ?? $default);
 	$checked = fn (string $key) => (bool) old($key, $product->{$key});
 	$money = fn (string $key) => old($key, \App\Support\Money::toMajor((int) $product->{$key}));
 @endphp
+
+@section('title', ($editing ? __('catalog.edit_product') : __('catalog.add_product')).' - Odessa POS')
 
 @section('content')
 <div class="content">

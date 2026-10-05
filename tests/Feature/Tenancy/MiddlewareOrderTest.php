@@ -49,3 +49,13 @@ it('does not load a tenant user from the session on another tenant', function ()
         ->get('/products')
         ->assertRedirect(route('login'));
 });
+
+it('renders the product create and edit forms for a tenant user', function (): void {
+    $tenant = createTenant('shop-a');
+    $user = createTenantUser($tenant, inventoryAdminPermissions());
+
+    $this->withSession(sessionFor($user))->withHeader('X-Tenant', 'shop-a')
+        ->get('/products/create')
+        ->assertOk()
+        ->assertSee(__('catalog.add_product'));
+});
