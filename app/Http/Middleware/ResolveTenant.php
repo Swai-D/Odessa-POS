@@ -3,9 +3,11 @@
 namespace App\Http\Middleware;
 
 use App\Models\Tenant;
+use App\Models\User;
 use App\Support\Tenancy\TenantContext;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\PermissionRegistrar;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -35,6 +37,17 @@ class ResolveTenant
 
             if ($identifier) {
                 $tenant = Tenant::query()->where('slug', $identifier)->first();
+            } else {
+                // Resolve before auth middleware: its user query already has the tenant global scope.
+                $sessionUserId = $request->session()->get(Auth::guard('web')->getName());
+                $sessionUser = $sessionUserId
+                    ? User::query()->withoutGlobalScope('tenant')->find($sessionUserId)
+                    : null;
+
+                if ($sessionUser && ! $sessionUser->is_super_admin && $sessionUser->tenant_id) {
+                    $identifier = (string) $sessionUser->tenant_id;
+                    $tenant = Tenant::query()->find($sessionUser->tenant_id);
+                }
             }
         }
 
