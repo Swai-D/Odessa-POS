@@ -1,0 +1,72 @@
+[
+  {
+    "name": "single inclusive line, no discount",
+    "lines": [{"quantity": 2, "unit_price": 118000, "tax_rate": 18, "tax_inclusive": true}],
+    "discount": null,
+    "expected": {"lines": [{"gross": 236000, "discount": 0, "tax": 36000, "total": 236000}], "subtotal": 236000, "discount_total": 0, "tax_total": 36000, "total": 236000}
+  },
+  {
+    "name": "exclusive tax is added on top",
+    "lines": [{"quantity": 1, "unit_price": 100000, "tax_rate": 18, "tax_inclusive": false}],
+    "discount": null,
+    "expected": {"lines": [{"gross": 100000, "discount": 0, "tax": 18000, "total": 118000}], "subtotal": 100000, "discount_total": 0, "tax_total": 18000, "total": 118000}
+  },
+  {
+    "name": "zero tax rate",
+    "lines": [{"quantity": 3, "unit_price": 50000, "tax_rate": 0, "tax_inclusive": true}],
+    "discount": null,
+    "expected": {"lines": [{"gross": 150000, "discount": 0, "tax": 0, "total": 150000}], "subtotal": 150000, "discount_total": 0, "tax_total": 0, "total": 150000}
+  },
+  {
+    "name": "weighed quantity with decimals",
+    "lines": [{"quantity": 1.25, "unit_price": 840000, "tax_rate": 0, "tax_inclusive": true}],
+    "discount": null,
+    "expected": {"lines": [{"gross": 1050000, "discount": 0, "tax": 0, "total": 1050000}], "subtotal": 1050000, "discount_total": 0, "tax_total": 0, "total": 1050000}
+  },
+  {
+    "name": "percent discount split across two lines",
+    "lines": [
+      {"quantity": 1, "unit_price": 100000, "tax_rate": 0, "tax_inclusive": true},
+      {"quantity": 1, "unit_price": 300000, "tax_rate": 0, "tax_inclusive": true}
+    ],
+    "discount": {"type": "percent", "value": 10},
+    "expected": {"lines": [{"gross": 100000, "discount": 10000, "tax": 0, "total": 90000}, {"gross": 300000, "discount": 30000, "tax": 0, "total": 270000}], "subtotal": 400000, "discount_total": 40000, "tax_total": 0, "total": 360000}
+  },
+  {
+    "name": "fixed discount leftover units are placed deterministically",
+    "lines": [
+      {"quantity": 1, "unit_price": 100, "tax_rate": 0, "tax_inclusive": true},
+      {"quantity": 1, "unit_price": 100, "tax_rate": 0, "tax_inclusive": true},
+      {"quantity": 1, "unit_price": 100, "tax_rate": 0, "tax_inclusive": true}
+    ],
+    "discount": {"type": "fixed", "value": 100},
+    "expected": {"lines": [{"gross": 100, "discount": 34, "tax": 0, "total": 66}, {"gross": 100, "discount": 33, "tax": 0, "total": 67}, {"gross": 100, "discount": 33, "tax": 0, "total": 67}], "subtotal": 300, "discount_total": 100, "tax_total": 0, "total": 200}
+  },
+  {
+    "name": "fixed discount is capped at the subtotal",
+    "lines": [{"quantity": 1, "unit_price": 5000, "tax_rate": 18, "tax_inclusive": false}],
+    "discount": {"type": "fixed", "value": 999999},
+    "expected": {"lines": [{"gross": 5000, "discount": 5000, "tax": 0, "total": 0}], "subtotal": 5000, "discount_total": 5000, "tax_total": 0, "total": 0}
+  },
+  {
+    "name": "discount reduces the taxable amount (inclusive)",
+    "lines": [{"quantity": 1, "unit_price": 118000, "tax_rate": 18, "tax_inclusive": true}],
+    "discount": {"type": "percent", "value": 50},
+    "expected": {"lines": [{"gross": 118000, "discount": 59000, "tax": 9000, "total": 59000}], "subtotal": 118000, "discount_total": 59000, "tax_total": 9000, "total": 59000}
+  },
+  {
+    "name": "mixed inclusive and exclusive lines with discount",
+    "lines": [
+      {"quantity": 2, "unit_price": 59000, "tax_rate": 18, "tax_inclusive": true},
+      {"quantity": 1, "unit_price": 200000, "tax_rate": 18, "tax_inclusive": false}
+    ],
+    "discount": {"type": "percent", "value": 5},
+    "expected": {"lines": [{"gross": 118000, "discount": 5900, "tax": 17100, "total": 112100}, {"gross": 200000, "discount": 10000, "tax": 34200, "total": 224200}], "subtotal": 318000, "discount_total": 15900, "tax_total": 51300, "total": 336300}
+  },
+  {
+    "name": "empty cart",
+    "lines": [],
+    "discount": null,
+    "expected": {"lines": [], "subtotal": 0, "discount_total": 0, "tax_total": 0, "total": 0}
+  }
+]

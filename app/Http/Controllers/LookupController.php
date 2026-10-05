@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Support\Tenancy\TenantContext;
 use Closure;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -46,6 +47,17 @@ abstract class LookupController extends Controller
     }
 
     /**
+     * Hook to add aggregates or filters to the list query.
+     *
+     * @param  Builder<Model>  $query
+     * @return Builder<Model>
+     */
+    protected function scope(Builder $query): Builder
+    {
+        return $query;
+    }
+
+    /**
      * @param  array<string, mixed>  $data
      * @return array<string, mixed>
      */
@@ -69,7 +81,7 @@ abstract class LookupController extends Controller
             'route' => $this->route(),
             'columns' => $this->columns(),
             'fields' => $this->fields(),
-            'records' => $this->model()::query()->with($this->with())->orderBy('name')->get(),
+            'records' => $this->scope($this->model()::query()->with($this->with()))->orderBy('name')->get(),
             'canManage' => Gate::allows('create', $this->model()),
         ]);
     }

@@ -40,6 +40,9 @@ jobs:
           DB_CONNECTION: sqlite
           DB_DATABASE: ':memory:'
 
+      - name: POS calculator (JS)
+        run: node tests/js/calc.test.mjs
+
       - name: Composer audit
         run: .github/scripts/annotate.sh 'Composer audit' composer audit
 

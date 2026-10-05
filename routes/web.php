@@ -7,6 +7,11 @@ use App\Http\Controllers\Catalog\UnitController;
 use App\Http\Controllers\Inventory\StockAdjustmentController;
 use App\Http\Controllers\Inventory\StockController;
 use App\Http\Controllers\Inventory\WarehouseController;
+use App\Http\Controllers\People\CustomerController;
+use App\Http\Controllers\Sales\CheckoutController;
+use App\Http\Controllers\Sales\PosController;
+use App\Http\Controllers\Sales\PosCustomerController;
+use App\Http\Controllers\Sales\SaleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -26,7 +31,14 @@ Route::post('/language/{locale}', function (Request $request, string $locale) {
 
 Route::middleware('auth')->group(function (): void {
     Route::view('/dashboard', 'dashboard')->name('dashboard');
-    Route::view('/pos', 'pos.index')->name('pos.index');
+    Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
+    Route::get('/pos/products', [PosController::class, 'products'])->name('pos.products');
+    Route::post('/pos/checkout', CheckoutController::class)->name('pos.checkout');
+    Route::post('/pos/customers', [PosCustomerController::class, 'store'])->name('pos.customers.store');
+    Route::get('/pos/held', [PosController::class, 'heldIndex'])->name('pos.held.index');
+    Route::post('/pos/held', [PosController::class, 'hold'])->name('pos.held.store');
+    Route::post('/pos/held/{heldOrder}/resume', [PosController::class, 'resume'])->name('pos.held.resume');
+    Route::delete('/pos/held/{heldOrder}', [PosController::class, 'discard'])->name('pos.held.destroy');
     $lookup = ['index', 'store', 'update', 'destroy'];
     Route::resource('products', ProductController::class)->except(['show']);
     Route::resource('categories', CategoryController::class)->only($lookup);
@@ -36,7 +48,11 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
     Route::get('/stock-adjustments', [StockAdjustmentController::class, 'index'])->name('stock-adjustments.index');
     Route::post('/stock-adjustments', [StockAdjustmentController::class, 'store'])->name('stock-adjustments.store');
-    Route::view('/sales', 'modules.placeholder', ['title' => 'app.menu.sales'])->name('sales.index');
+    Route::get('/sales', [SaleController::class, 'index'])->name('sales.index');
+    Route::get('/sales/{sale}', [SaleController::class, 'show'])->name('sales.show');
+    Route::get('/sales/{sale}/receipt.pdf', [SaleController::class, 'pdf'])->name('sales.pdf');
+    Route::post('/sales/{sale}/payments', [SaleController::class, 'storePayment'])->name('sales.payments.store');
+    Route::resource('customers', CustomerController::class)->only($lookup);
     Route::view('/purchases', 'modules.placeholder', ['title' => 'app.menu.purchases'])->name('purchases.index');
     Route::view('/people', 'modules.placeholder', ['title' => 'app.menu.people'])->name('people.index');
     Route::view('/reports', 'modules.placeholder', ['title' => 'app.menu.reports'])->name('reports.index');

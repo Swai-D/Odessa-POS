@@ -8,6 +8,7 @@ return [
         'inventory' => 'Inventory',
         'sales' => 'Sales',
         'purchases' => 'Purchases',
+        'customers' => 'Customers',
         'people' => 'People',
         'reports' => 'Reports',
         'products' => 'Products',

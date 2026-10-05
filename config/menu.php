@@ -18,7 +18,7 @@ return [
     ],
     ['label' => 'app.menu.sales', 'icon' => 'ti ti-shopping-cart', 'route' => 'sales.index', 'permission' => 'sales.view'],
     ['label' => 'app.menu.purchases', 'icon' => 'ti ti-truck-delivery', 'route' => 'purchases.index', 'permission' => 'purchases.view'],
-    ['label' => 'app.menu.people', 'icon' => 'ti ti-users', 'route' => 'people.index', 'permission' => 'people.view'],
+    ['label' => 'app.menu.customers', 'icon' => 'ti ti-users', 'route' => 'customers.index', 'permission' => 'customers.view'],
     ['label' => 'app.menu.reports', 'icon' => 'ti ti-chart-bar', 'route' => 'reports.index', 'permission' => 'reports.view'],
     ['label' => 'app.menu.settings', 'icon' => 'ti ti-settings', 'route' => 'settings.index', 'permission' => 'settings.manage'],
 ];
