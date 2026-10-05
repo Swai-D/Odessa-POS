@@ -10,7 +10,9 @@ class UpdateTenantSettingsAction
     /** @param  array<string, mixed>  $data  validated SettingsRequest data */
     public function handle(Tenant $tenant, array $data): Tenant
     {
+        /** @var array<string, mixed> $settings */
         $settings = $tenant->settings ?? [];
+        $existing = (array) ($settings['features'] ?? []);
 
         $features = [];
         foreach (array_keys(config('pos.features')) as $feature) {
@@ -20,7 +22,7 @@ class UpdateTenantSettingsAction
         $settings['business_name'] = $data['business_name'];
         $settings['currency'] = $data['currency'];
         $settings['receipt_footer'] = $data['receipt_footer'] ?? null;
-        $settings['features'] = array_merge($settings['features'] ?? [], $features);
+        $settings['features'] = array_merge($existing, $features);
 
         $tenant->update(['settings' => $settings]);
 
