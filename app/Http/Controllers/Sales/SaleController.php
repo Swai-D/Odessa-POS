@@ -40,7 +40,7 @@ class SaleController extends Controller
         Gate::authorize('view', $sale);
 
         return view('sales.show', [
-            'sale' => $sale->load(['items', 'payments.user', 'customer', 'user', 'warehouse']),
+            'sale' => $sale->load(['items', 'payments.user', 'customer', 'user', 'warehouse', 'returns']),
             'format' => $request->query('format') === 'thermal' ? 'thermal' : 'a4',
             'canPay' => Gate::allows('update', $sale),
             'business' => (string) (new TenantSettings)->get('business_name', app(TenantContext::class)->get()->name ?? config('app.name')),

@@ -21,6 +21,7 @@ return [
         'adjustment_in' => 'Marekebisho (ongeza)',
         'adjustment_out' => 'Marekebisho (punguza)',
         'sale' => 'Mauzo',
+        'sale_return' => 'Mauzo yaliyorudishwa',
         'purchase' => 'Manunuzi',
     ],
     'directions' => [

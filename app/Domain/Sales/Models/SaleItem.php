@@ -12,7 +12,7 @@ class SaleItem extends Model
 
     protected $fillable = [
         'sale_id', 'product_id', 'product_name', 'sku', 'quantity', 'unit_price', 'cost_price',
-        'tax_rate', 'tax_inclusive', 'gross', 'discount', 'tax', 'total',
+        'tax_rate', 'tax_inclusive', 'gross', 'discount', 'tax', 'total', 'returned_quantity', 'returned_amount',
     ];
 
     protected function casts(): array
@@ -27,7 +27,15 @@ class SaleItem extends Model
             'discount' => 'integer',
             'tax' => 'integer',
             'total' => 'integer',
+            'returned_quantity' => 'decimal:3',
+            'returned_amount' => 'integer',
         ];
+    }
+
+    /** Quantity that can still be returned. */
+    public function remainingQuantity(): float
+    {
+        return round((float) $this->quantity - (float) $this->returned_quantity, 3);
     }
 
     /** @return BelongsTo<Sale, $this> */

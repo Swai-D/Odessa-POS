@@ -12,6 +12,7 @@ use App\Http\Controllers\Sales\CheckoutController;
 use App\Http\Controllers\Sales\PosController;
 use App\Http\Controllers\Sales\PosCustomerController;
 use App\Http\Controllers\Sales\SaleController;
+use App\Http\Controllers\Sales\SaleReturnController;
 use App\Http\Controllers\Settings\SettingsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -53,6 +54,7 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/sales/{sale}', [SaleController::class, 'show'])->name('sales.show');
     Route::get('/sales/{sale}/receipt.pdf', [SaleController::class, 'pdf'])->name('sales.pdf');
     Route::post('/sales/{sale}/payments', [SaleController::class, 'storePayment'])->name('sales.payments.store');
+    Route::post('/sales/{sale}/returns', [SaleReturnController::class, 'store'])->name('sales.returns.store');
     Route::resource('customers', CustomerController::class)->only($lookup);
     Route::view('/purchases', 'modules.placeholder', ['title' => 'app.menu.purchases'])->name('purchases.index');
     Route::view('/people', 'modules.placeholder', ['title' => 'app.menu.people'])->name('people.index');

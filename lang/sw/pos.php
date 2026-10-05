@@ -2,6 +2,11 @@
 
 return [
     'errors' => [
+        'refund_method_required' => 'Chagua jinsi marejesho yatakavyolipwa.',
+        'return_item_invalid' => 'Moja ya bidhaa si ya mauzo haya.',
+        'return_exceeds' => ':product inarudishwa zaidi ya iliyouzwa.',
+        'return_whole_quantity' => ':product inaweza kurudishwa kwa vipande kamili tu.',
+        'nothing_to_return' => 'Weka idadi kwa angalau bidhaa moja.',
         'product_unavailable' => 'Bidhaa moja au zaidi hazipatikani tena.',
         'whole_quantity' => ':product inauzwa kwa vipande kamili tu.',
         'nothing_to_charge' => 'Hakuna kiasi cha kutoza kwenye oda hii.',
@@ -86,6 +91,19 @@ return [
         'confirm_clear' => 'Futa oda yote?',
     ],
     'sales' => [
+        'return_saved' => 'Marejesho yamehifadhiwa.',
+        'returns' => 'Marejesho',
+        'return_items' => 'Rudisha bidhaa',
+        'returned' => 'Zilizorudishwa',
+        'return_qty' => 'Idadi ya kurudisha',
+        'refund_method' => 'Marejesho yalipwe kwa',
+        'refund_hint' => 'Marejesho kwanza hupunguza deni la mteja; kilichobaki ndicho kinacholipwa.',
+        'reason' => 'Sababu',
+        'return_number' => 'Namba ya marejesho',
+        'credit_applied' => 'Deni lililopunguzwa',
+        'refunded' => 'Kilicholipwa',
+        'net_total' => 'Jumla baada ya marejesho',
+        'submit_return' => 'Hifadhi marejesho',
         'title' => 'Mauzo',
         'subtitle' => 'Mauzo yaliyokamilika, stakabadhi na madeni ya wateja.',
         'number' => 'Na. ya Stakabadhi',
