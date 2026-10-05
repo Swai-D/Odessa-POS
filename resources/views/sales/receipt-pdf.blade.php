@@ -79,6 +79,6 @@
 		</table>
 	@endif
 
-	<p class="muted" style="margin-top: 24px; text-align: center;">{{ __('pos.sales.thank_you') }}</p>
+	<p class="muted" style="margin-top: 24px; text-align: center;">{{ $footer !== '' ? $footer : __('pos.sales.thank_you') }}</p>
 </body>
 </html>
