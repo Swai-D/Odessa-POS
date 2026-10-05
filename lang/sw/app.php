@@ -9,6 +9,7 @@ return [
         'sales' => 'Mauzo',
         'purchases' => 'Manunuzi',
         'customers' => 'Wateja',
+        'suppliers' => 'Wasambazaji',
         'people' => 'Watu',
         'reports' => 'Ripoti',
         'products' => 'Bidhaa',

@@ -21,6 +21,8 @@ class StockMovement extends Model
 
     public const SALE = 'sale';
 
+    public const PURCHASE = 'purchase';
+
     public const SALE_RETURN = 'sale_return';
 
     protected $fillable = [

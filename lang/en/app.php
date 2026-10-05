@@ -9,6 +9,7 @@ return [
         'sales' => 'Sales',
         'purchases' => 'Purchases',
         'customers' => 'Customers',
+        'suppliers' => 'Suppliers',
         'people' => 'People',
         'reports' => 'Reports',
         'products' => 'Products',
