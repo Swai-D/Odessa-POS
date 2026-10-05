@@ -19,6 +19,8 @@ class StockMovement extends Model
 
     public const ADJUSTMENT_OUT = 'adjustment_out';
 
+    public const SALE = 'sale';
+
     protected $fillable = [
         'product_id', 'warehouse_id', 'user_id', 'type', 'quantity', 'balance_after', 'reason',
         'reference_type', 'reference_id',

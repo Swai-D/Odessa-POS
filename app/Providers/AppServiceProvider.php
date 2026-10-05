@@ -8,10 +8,14 @@ use App\Domain\Catalog\Models\Product;
 use App\Domain\Catalog\Models\Unit;
 use App\Domain\Inventory\Models\StockMovement;
 use App\Domain\Inventory\Models\Warehouse;
+use App\Domain\People\Models\Customer;
+use App\Domain\Sales\Models\Sale;
 use App\Models\Tenant;
 use App\Policies\BrandPolicy;
 use App\Policies\CategoryPolicy;
+use App\Policies\CustomerPolicy;
 use App\Policies\ProductPolicy;
+use App\Policies\SalePolicy;
 use App\Policies\StockMovementPolicy;
 use App\Policies\UnitPolicy;
 use App\Policies\WarehousePolicy;
@@ -44,6 +48,8 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Unit::class, UnitPolicy::class);
         Gate::policy(Warehouse::class, WarehousePolicy::class);
         Gate::policy(StockMovement::class, StockMovementPolicy::class);
+        Gate::policy(Customer::class, CustomerPolicy::class);
+        Gate::policy(Sale::class, SalePolicy::class);
 
         Queue::createPayloadUsing(function (): array {
             $tenant = app(TenantContext::class)->get();

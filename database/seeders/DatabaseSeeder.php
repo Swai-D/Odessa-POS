@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             'products.view', 'products.manage', 'categories.view', 'categories.manage',
             'brands.view', 'brands.manage', 'units.view', 'units.manage',
             'warehouses.view', 'warehouses.manage', 'inventory.manage',
+            'sales.manage', 'customers.view', 'customers.manage',
         ];
 
         foreach ($permissions as $permission) {
@@ -61,12 +62,12 @@ class DatabaseSeeder extends Seeder
             $rolePermissions = [
                 'Owner' => $permissions,
                 'Manager' => array_values(array_diff($permissions, ['settings.manage'])),
-                'Cashier' => ['dashboard.view', 'pos.access', 'sales.view', 'products.view'],
+                'Cashier' => ['dashboard.view', 'pos.access', 'sales.view', 'products.view', 'customers.view', 'customers.manage'],
                 'Storekeeper' => [
                     'dashboard.view', 'inventory.view', 'inventory.manage', 'products.view', 'products.manage',
                     'categories.view', 'brands.view', 'units.view', 'warehouses.view',
                 ],
-                'Accountant' => ['dashboard.view', 'sales.view', 'purchases.view', 'reports.view', 'products.view', 'inventory.view'],
+                'Accountant' => ['dashboard.view', 'sales.view', 'sales.manage', 'customers.view', 'purchases.view', 'reports.view', 'products.view', 'inventory.view'],
             ];
 
             foreach ($rolePermissions as $name => $abilities) {

@@ -8,6 +8,7 @@ return [
         'inventory' => 'Hesabu ya bidhaa',
         'sales' => 'Mauzo',
         'purchases' => 'Manunuzi',
+        'customers' => 'Wateja',
         'people' => 'Watu',
         'reports' => 'Ripoti',
         'products' => 'Bidhaa',
