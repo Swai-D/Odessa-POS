@@ -15,6 +15,7 @@ use App\Http\Controllers\Sales\PosController;
 use App\Http\Controllers\Sales\PosCustomerController;
 use App\Http\Controllers\Sales\SaleController;
 use App\Http\Controllers\Sales\SaleReturnController;
+use App\Http\Controllers\Settings\IntegrationController;
 use App\Http\Controllers\Settings\SettingsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -54,6 +55,7 @@ Route::middleware('auth')->group(function (): void {
     Route::post('/stock-adjustments', [StockAdjustmentController::class, 'store'])->name('stock-adjustments.store');
     Route::get('/sales', [SaleController::class, 'index'])->name('sales.index');
     Route::get('/sales/{sale}', [SaleController::class, 'show'])->name('sales.show');
+    Route::get('/sales/{sale}/escpos', [SaleController::class, 'escpos'])->name('sales.escpos');
     Route::get('/sales/{sale}/receipt.pdf', [SaleController::class, 'pdf'])->name('sales.pdf');
     Route::post('/sales/{sale}/payments', [SaleController::class, 'storePayment'])->name('sales.payments.store');
     Route::post('/sales/{sale}/returns', [SaleReturnController::class, 'store'])->name('sales.returns.store');
@@ -68,4 +70,6 @@ Route::middleware('auth')->group(function (): void {
     Route::view('/reports', 'modules.placeholder', ['title' => 'app.menu.reports'])->name('reports.index');
     Route::get('/settings', [SettingsController::class, 'edit'])->name('settings.index');
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
+    Route::get('/settings/integrations', [IntegrationController::class, 'index'])->name('settings.integrations');
+    Route::put('/settings/integrations/{channel}', [IntegrationController::class, 'update'])->name('settings.integrations.update');
 });

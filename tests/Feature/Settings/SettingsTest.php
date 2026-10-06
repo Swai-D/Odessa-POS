@@ -11,15 +11,15 @@ it('saves business settings and feature flags for the current tenant only', func
         'business_name' => 'Mama Asha Shop',
         'currency' => 'KES',
         'receipt_footer' => 'Asante, karibu tena',
-        'features' => ['printer' => '1', 'tra_vfd' => '0'],
+        'features' => ['barcode_scanner' => '1', 'cash_drawer' => '0'],
     ])->assertRedirect('/settings')->assertSessionHasNoErrors();
 
     $settings = new TenantSettings($a->fresh());
     expect($settings->get('business_name'))->toBe('Mama Asha Shop')
         ->and($settings->get('currency'))->toBe('KES')
-        ->and($settings->feature('printer'))->toBeTrue()
-        ->and($settings->feature('tra_vfd'))->toBeFalse()
-        ->and($settings->feature('mobile_money'))->toBeFalse()
+        ->and($settings->feature('barcode_scanner'))->toBeTrue()
+        ->and($settings->feature('cash_drawer'))->toBeFalse()
+        ->and($settings->feature('batch_tracking'))->toBeFalse()
         ->and((new TenantSettings($b->fresh()))->get('business_name'))->toBeNull();
 });
 
