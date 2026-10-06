@@ -2,6 +2,7 @@
 
 namespace App\Domain\Settings\Actions;
 
+use App\Domain\Integrations\Services\IntegrationRegistry;
 use App\Models\Tenant;
 
 /** Saves the tenant's business settings, keeping any settings keys this form does not own. */
@@ -15,7 +16,7 @@ class UpdateTenantSettingsAction
         $existing = (array) ($settings['features'] ?? []);
 
         $features = [];
-        foreach (array_keys(config('pos.features')) as $feature) {
+        foreach (array_diff(array_keys(config('pos.features')), app(IntegrationRegistry::class)->ownedFeatures()) as $feature) {
             $features[$feature] = (bool) ($data['features'][$feature] ?? false);
         }
 

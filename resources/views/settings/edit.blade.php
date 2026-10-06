@@ -11,6 +11,9 @@
 				<h6>{{ __('settings.hint') }}</h6>
 			</div>
 		</div>
+		<div class="page-btn">
+			<a href="{{ route('settings.integrations') }}" class="btn btn-white"><i class="ti ti-plug-connected me-1"></i>{{ __('integrations.title') }}</a>
+		</div>
 	</div>
 
 	@include('partials.flash')

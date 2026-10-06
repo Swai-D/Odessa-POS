@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Settings;
 
+use App\Domain\Integrations\Services\IntegrationRegistry;
 use App\Domain\Settings\Actions\UpdateTenantSettingsAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SettingsRequest;
@@ -13,13 +14,13 @@ use Illuminate\Support\Facades\Gate;
 
 class SettingsController extends Controller
 {
-    public function edit(): View
+    public function edit(IntegrationRegistry $registry): View
     {
         Gate::authorize('manage-settings');
 
         $settings = new TenantSettings;
         $features = [];
-        foreach (array_keys(config('pos.features')) as $feature) {
+        foreach (array_diff(array_keys(config('pos.features')), $registry->ownedFeatures()) as $feature) {
             $features[$feature] = $settings->feature($feature);
         }
 

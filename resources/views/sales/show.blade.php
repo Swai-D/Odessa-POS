@@ -25,6 +25,13 @@
 </style>
 @endpush
 
+@if ($escpos)
+@push('extra-js')
+<script>window.ESCPOS_I18N = { failed: @json(__('integrations.print_failed', ['message' => ':message'])), unsupported: @json(__('integrations.print_unsupported')) };</script>
+<script src="{{ asset('js/escpos-print.js') }}"></script>
+@endpush
+@endif
+
 @section('content')
 <div class="content">
 	<div class="page-header">
@@ -38,6 +45,9 @@
 			<a class="btn btn-white {{ $format === 'a4' ? 'active' : '' }}" href="{{ route('sales.show', [$sale, 'format' => 'a4']) }}">{{ __('pos.sales.a4') }}</a>
 			<a class="btn btn-white {{ $format === 'thermal' ? 'active' : '' }}" href="{{ route('sales.show', [$sale, 'format' => 'thermal']) }}">{{ __('pos.sales.thermal') }}</a>
 			<a class="btn btn-white" href="{{ route('sales.pdf', $sale) }}"><i class="ti ti-file-type-pdf me-1"></i>{{ __('pos.sales.pdf') }}</a>
+			@if ($escpos)
+				<button type="button" class="btn btn-secondary" id="print-thermal" data-url="{{ route('sales.escpos', $sale) }}"><i class="ti ti-receipt me-1"></i>{{ __('integrations.print_thermal') }}</button>
+			@endif
 			<button type="button" class="btn btn-primary" onclick="window.print()"><i class="ti ti-printer me-1"></i>{{ __('pos.sales.print') }}</button>
 		</div>
 	</div>
