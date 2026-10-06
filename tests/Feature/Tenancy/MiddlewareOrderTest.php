@@ -1,6 +1,7 @@
 <?php
 
 use App\Domain\Catalog\Models\Product;
+use App\Domain\People\Models\Customer;
 use App\Support\Tenancy\TenantContext;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,6 +24,18 @@ it('loads a tenant user from the session on a tenant request', function (): void
         ->withHeader('X-Tenant', 'shop-a')
         ->get('/products')
         ->assertOk();
+});
+
+it('resolves the authenticated local session tenant when creating customers without a header', function (): void {
+    $tenant = createTenant('shop-a');
+    $user = createTenantUser($tenant, ['customers.view', 'customers.manage']);
+
+    $this->withSession(sessionFor($user))
+        ->post('/customers', ['name' => 'Local Session Customer', 'is_active' => '1'])
+        ->assertRedirect(route('customers.index'));
+
+    expect(Customer::query()->withoutGlobalScope('tenant')->where('name', 'Local Session Customer')->value('tenant_id'))
+        ->toBe($tenant->getKey());
 });
 
 it('resolves route model bindings inside the current tenant', function (): void {
