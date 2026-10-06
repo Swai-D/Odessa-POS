@@ -46,8 +46,9 @@ class SaveIntegrationAction
             );
         }
 
-        $settings = (array) ($tenant->settings ?? []);
-        $features = (array) ($settings['features'] ?? []);
+        /** @var array<string, mixed> $settings */
+        $settings = $tenant->settings ?? [];
+        $features = (array) data_get($settings, 'features', []);
         $features[$this->registry->feature($channel)] = $enabled && $class !== null;
         $settings['features'] = $features;
 

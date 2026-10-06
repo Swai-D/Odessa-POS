@@ -17,7 +17,7 @@ interface Driver
     /**
      * Configuration fields. `secret` fields are stored encrypted and never shown again.
      *
-     * @return list<array{name: string, label: string, type: 'text'|'password'|'number'|'select', required?: bool, secret?: bool, options?: array<string, string>, default?: string}>
+     * @return list<array{name: string, label: string, type: 'text'|'password'|'number'|'select', required?: bool, secret?: bool, options?: array<int|string, string>, default?: string}>
      */
     public static function fields(): array;
 }

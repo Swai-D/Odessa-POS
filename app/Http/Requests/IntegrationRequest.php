@@ -48,7 +48,7 @@ class IntegrationRequest extends FormRequest
         foreach ($class::fields() as $field) {
             $name = $field['name'];
             $secret = (bool) ($field['secret'] ?? false);
-            $hasSavedSecret = $secret && isset(($saved?->secrets ?? [])[$name]);
+            $hasSavedSecret = $secret && $saved !== null && isset($saved->secrets[$name]);
             $required = (bool) ($field['required'] ?? false) && $this->boolean('enabled') && ! $hasSavedSecret;
 
             $rules['config.'.$name] = [

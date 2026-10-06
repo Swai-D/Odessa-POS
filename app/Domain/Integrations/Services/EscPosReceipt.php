@@ -22,7 +22,7 @@ class EscPosReceipt
         $out .= self::ESC.'a'."\x01"; // centre
         $out .= self::ESC.'E'."\x01".self::GS.'!'."\x11".$this->text($business)."\n"; // bold, double size
         $out .= self::GS.'!'."\x00".self::ESC.'E'."\x00";
-        $out .= $this->text($sale->number)."\n".($sale->sold_at?->format('Y-m-d H:i') ?? '')."\n";
+        $out .= $this->text($sale->number)."\n".date('Y-m-d H:i', (int) strtotime((string) $sale->sold_at))."\n";
         $out .= self::ESC.'a'."\x00"; // left
         $out .= $rule;
 
@@ -67,8 +67,7 @@ class EscPosReceipt
         $right = $this->text($right);
         $gap = max(1, $cols - strlen($left) - strlen($right));
 
-        return $left.str_repeat(' ', $gap).$right."
-";
+        return $left.str_repeat(' ', $gap).$right."\n";
     }
 
     /** Printers use single-byte code pages; keep to plain ASCII so nothing prints as garbage. */
