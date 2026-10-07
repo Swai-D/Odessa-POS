@@ -78,7 +78,10 @@
 				<div id="sidebar-menu" class="sidebar-menu">
     @php
         $menuUser = auth()->user();
-        $canSee = fn (array $item): bool => $menuUser !== null && ($menuUser->is_super_admin || $menuUser->can($item['permission']));
+        $plan = \App\Support\Plans::current();
+        $canSee = fn (array $item): bool => $menuUser !== null
+            && ($menuUser->is_super_admin || $menuUser->can($item['permission']))
+            && (! isset($item['feature']) || $plan->allows($item['feature']));
     @endphp
     <ul>
         @foreach (config('menu') as $section)

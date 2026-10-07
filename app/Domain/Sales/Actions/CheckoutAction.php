@@ -13,6 +13,7 @@ use App\Domain\Sales\Models\Sale;
 use App\Domain\Sales\Services\DocumentNumber;
 use App\Domain\Sales\Services\SaleCalculator;
 use App\Models\User;
+use App\Support\Plans;
 use App\Support\TenantSettings;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
@@ -227,6 +228,10 @@ class CheckoutAction
         $balance = $total - $paid;
 
         if ($balance > 0) {
+            if (! Plans::current()->allows('credit_sales')) {
+                throw ValidationException::withMessages(['payments' => __('plans.credit_sales_not_in_plan')]);
+            }
+
             if (! $customer) {
                 throw ValidationException::withMessages(['payments' => __('pos.errors.customer_required_for_credit')]);
             }

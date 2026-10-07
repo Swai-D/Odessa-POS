@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\RequirePlanFeature;
 use App\Http\Middleware\RequireTenant;
 use App\Http\Middleware\ResolveTenant;
 use App\Http\Middleware\SetLocale;
@@ -20,7 +21,10 @@ return Application::configure(basePath: dirname(__DIR__))
             SetLocale::class,
         ]);
 
-        $middleware->alias(['tenant.required' => RequireTenant::class]);
+        $middleware->alias([
+            'tenant.required' => RequireTenant::class,
+            'plan' => RequirePlanFeature::class,
+        ]);
 
         // The tenant must be known before the session user is loaded (Authenticate) and before route
         // model binding (SubstituteBindings): both query tenant-scoped models. Laravel sorts those two

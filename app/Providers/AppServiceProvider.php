@@ -24,6 +24,7 @@ use App\Policies\StockMovementPolicy;
 use App\Policies\SupplierPolicy;
 use App\Policies\UnitPolicy;
 use App\Policies\WarehousePolicy;
+use App\Support\Plans;
 use App\Support\Tenancy\TenantContext;
 use Illuminate\Queue\Events\JobExceptionOccurred;
 use Illuminate\Queue\Events\JobProcessed;
@@ -48,6 +49,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::define('manage-settings', fn (User $user): bool => $user->is_super_admin || $user->can('settings.manage'));
+        Gate::define('plan-feature', fn (?User $user, string $feature): bool => Plans::current()->allows($feature));
         Gate::policy(Product::class, ProductPolicy::class);
         Gate::policy(Category::class, CategoryPolicy::class);
         Gate::policy(Brand::class, BrandPolicy::class);
