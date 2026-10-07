@@ -27,294 +27,131 @@
 
 				<!-- Header Menu -->
 				<ul class="nav user-menu">
+					@php
+						$navUser = auth()->user();
+						$navPlan = \App\Support\Plans::current();
+						$hasShop = app(\App\Support\Tenancy\TenantContext::class)->get() !== null;
+						// Quick "Add New" links: shown only when the user holds the permission and the plan has the feature.
+						$quick = collect([
+							['app.menu.products', 'ti ti-square-plus', 'products.create', 'products.manage', null],
+							['app.menu.categories', 'ti ti-brand-codepen', 'categories.index', 'categories.manage', null],
+							['app.menu.customers', 'ti ti-users', 'customers.index', 'customers.manage', null],
+							['app.menu.stock_adjustments', 'ti ti-stairs-up', 'stock-adjustments.index', 'inventory.manage', null],
+							['app.menu.purchases', 'ti ti-truck-delivery', 'purchases.create', 'purchases.manage', 'purchasing'],
+							['app.menu.suppliers', 'ti ti-building-store', 'suppliers.index', 'suppliers.manage', 'purchasing'],
+						])->filter(fn (array $q): bool => $hasShop && $navUser !== null
+							&& ($navUser->is_super_admin || $navUser->can($q[3]))
+							&& ($q[4] === null || $navPlan->allows($q[4])));
+					@endphp
 
-					<!-- Search -->
-					<li class="nav-item nav-searchinputs">
-						<div class="top-nav-search">
-							<a href="javascript:void(0);" class="responsive-search">
-								<i class="fa fa-search"></i>
+					@if ($quick->isNotEmpty())
+						<li class="nav-item dropdown link-nav">
+							<a href="javascript:void(0);" class="btn btn-primary btn-md d-inline-flex align-items-center" data-bs-toggle="dropdown">
+								<i class="ti ti-circle-plus me-1"></i>{{ __('app.add') }}
 							</a>
-							<form action="index.html#" class="dropdown">
-								<div class="searchinputs input-group dropdown-toggle" id="dropdownMenuClickable" data-bs-toggle="dropdown" data-bs-auto-close="outside">
-									<input type="text" placeholder="Search">
-									<div class="search-addon">
-										<span><i class="ti ti-search"></i></span>
-									</div>
-									<span class="input-group-text">
-										<kbd class="d-flex align-items-center"><img src="{{ asset('assets/img/icons/command.svg') }}" alt="img" class="me-1">K</kbd>
-									</span>
-								</div>
-								<div class="dropdown-menu search-dropdown" aria-labelledby="dropdownMenuClickable">
-									<div class="search-info">
-										<h6><span><i data-feather="search" class="feather-16"></i></span>Recent Searches
-										</h6>
-										<ul class="search-tags">
-											<li><a href="javascript:void(0);">Products</a></li>
-											<li><a href="javascript:void(0);">Sales</a></li>
-											<li><a href="javascript:void(0);">Applications</a></li>
-										</ul>
-									</div>
-									<div class="search-info">
-										<h6><span><i data-feather="help-circle" class="feather-16"></i></span>Help</h6>
-										<p>How to Change Product Volume from 0 to 200 on Inventory management</p>
-										<p>Change Product Name</p>
-									</div>
-									<div class="search-info">
-										<h6><span><i data-feather="user" class="feather-16"></i></span>Customers</h6>
-										<ul class="customers">
-											<li><a href="javascript:void(0);">Aron Varu<img src="{{ asset('assets/img/profiles/avator1.jpg') }}" alt="Img" class="img-fluid"></a></li>
-											<li><a href="javascript:void(0);">Jonita<img src="{{ asset('assets/img/profiles/avatar-01.jpg') }}" alt="Img" class="img-fluid"></a></li>
-											<li><a href="javascript:void(0);">Aaron<img src="{{ asset('assets/img/profiles/avatar-10.jpg') }}" alt="Img" class="img-fluid"></a></li>
-										</ul>
-									</div>
-								</div>
-							</form>
-						</div>
-					</li>
-					<!-- /Search -->
-
-					<!-- Select Store -->
-					<li class="nav-item dropdown has-arrow main-drop select-store-dropdown">
-						<a href="javascript:void(0);" class="dropdown-toggle nav-link select-store"
-							data-bs-toggle="dropdown">
-							<span class="user-info">
-								<span class="user-letter">
-									<img src="{{ asset('assets/img/store/store-01.png') }}" alt="Store Logo" class="img-fluid">
-								</span>
-								<span class="user-detail">
-									<span class="user-name">Freshmart</span>
-								</span>
-							</span>
-						</a>
-						<div class="dropdown-menu dropdown-menu-right">
-							<a href="javascript:void(0);" class="dropdown-item">
-								<img src="{{ asset('assets/img/store/store-01.png') }}" alt="Store Logo" class="img-fluid">Freshmart
-							</a>
-							<a href="javascript:void(0);" class="dropdown-item">
-								<img src="{{ asset('assets/img/store/store-02.png') }}" alt="Store Logo" class="img-fluid">Grocery Apex
-							</a>
-							<a href="javascript:void(0);" class="dropdown-item">
-								<img src="{{ asset('assets/img/store/store-03.png') }}" alt="Store Logo" class="img-fluid">Grocery Bevy
-							</a>
-							<a href="javascript:void(0);" class="dropdown-item">
-								<img src="{{ asset('assets/img/store/store-04.png') }}" alt="Store Logo" class="img-fluid">Grocery Eden
-							</a>
-						</div>
-					</li>
-					<!-- /Select Store -->
-
-					<li class="nav-item dropdown link-nav">
-						<a href="javascript:void(0);" class="btn btn-primary btn-md d-inline-flex align-items-center" data-bs-toggle="dropdown">
-							<i class="ti ti-circle-plus me-1"></i>Add New
-						</a>
-						<div class="dropdown-menu dropdown-xl dropdown-menu-center">
-							<div class="row g-2">
-								<div class="col-md-2">
-									<a href="category-list.html" class="link-item">
-										<span class="link-icon">
-											<i class="ti ti-brand-codepen"></i>
-										</span>
-										<p>Category</p>
-									</a>
-								</div>
-								<div class="col-md-2">
-									<a href="add-product.html" class="link-item">
-										<span class="link-icon">
-											<i class="ti ti-square-plus"></i>
-										</span>
-										<p>Product</p>
-									</a>
-								</div>
-								<div class="col-md-2">
-									<a href="category-list.html" class="link-item">
-										<span class="link-icon">
-											<i class="ti ti-shopping-bag"></i>
-										</span>
-										<p>Purchase</p>
-									</a>
-								</div>
-								<div class="col-md-2">
-									<a href="online-orders.html" class="link-item">
-										<span class="link-icon">
-											<i class="ti ti-shopping-cart"></i>
-										</span>
-										<p>Sale</p>
-									</a>
-								</div>
-								<div class="col-md-2">
-									<a href="expense-list.html" class="link-item">
-										<span class="link-icon">
-											<i class="ti ti-file-text"></i>
-										</span>
-										<p>Expense</p>
-									</a>
-								</div>
-								<div class="col-md-2">
-									<a href="quotation-list.html" class="link-item">
-										<span class="link-icon">
-											<i class="ti ti-device-floppy"></i>
-										</span>
-										<p>Quotation</p>
-									</a>
-								</div>
-								<div class="col-md-2">
-									<a href="sales-returns.html" class="link-item">
-										<span class="link-icon">
-											<i class="ti ti-copy"></i>
-										</span>
-										<p>Return</p>
-									</a>
-								</div>
-								<div class="col-md-2">
-									<a href="users.html" class="link-item">
-										<span class="link-icon">
-											<i class="ti ti-user"></i>
-										</span>
-										<p>User</p>
-									</a>
-								</div>
-								<div class="col-md-2">
-									<a href="customers.html" class="link-item">
-										<span class="link-icon">
-											<i class="ti ti-users"></i>
-										</span>
-										<p>Customer</p>
-									</a>
-								</div>
-								<div class="col-md-2">
-									<a href="sales-report.html" class="link-item">
-										<span class="link-icon">
-											<i class="ti ti-shield"></i>
-										</span>
-										<p>Biller</p>
-									</a>
-								</div>
-								<div class="col-md-2">
-									<a href="suppliers.html" class="link-item">
-										<span class="link-icon">
-											<i class="ti ti-user-check"></i>
-										</span>
-										<p>Supplier</p>
-									</a>
-								</div>
-								<div class="col-md-2">
-									<a href="stock-transfer.html" class="link-item">
-										<span class="link-icon">
-											<i class="ti ti-truck"></i>
-										</span>
-										<p>Transfer</p>
-									</a>
+							<div class="dropdown-menu dropdown-xl dropdown-menu-center">
+								<div class="row g-2">
+									@foreach ($quick as [$label, $icon, $route])
+										<div class="col-md-2">
+											<a href="{{ route($route) }}" class="link-item">
+												<span class="link-icon"><i class="{{ $icon }}"></i></span>
+												<p>{{ __($label) }}</p>
+											</a>
+										</div>
+									@endforeach
 								</div>
 							</div>
-						</div>
-					</li>
-					
-					<li class="nav-item pos-nav">
-						<a href="pos.html" class="btn btn-dark btn-md d-inline-flex align-items-center">
-							<i class="ti ti-device-laptop me-1"></i>POS
-						</a>
-					</li>
+						</li>
+					@endif
 
-					<!-- Flag -->
+					@if ($hasShop && $navUser && ($navUser->is_super_admin || $navUser->can('pos.access')))
+						<li class="nav-item pos-nav">
+							<a href="{{ route('pos.index') }}" class="btn btn-dark btn-md d-inline-flex align-items-center">
+								<i class="ti ti-device-laptop me-1"></i>{{ __('app.menu.pos') }}
+							</a>
+						</li>
+					@endif
+
+					<!-- Language -->
 					<li class="nav-item dropdown has-arrow flag-nav nav-item-box">
-						<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="javascript:void(0);"
-							role="button">
-							<img src="{{ asset('assets/img/flags/us-flag.svg') }}" alt="Language" class="img-fluid">
+						<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="javascript:void(0);" role="button" title="{{ __('app.nav.language') }}">
+							<i class="ti ti-language"></i>
 						</a>
 						<div class="dropdown-menu dropdown-menu-right">
-							<a href="javascript:void(0);" class="dropdown-item">
-								<img src="{{ asset('assets/img/flags/english.svg') }}" alt="Img" height="16">English
-							</a>
-							<a href="javascript:void(0);" class="dropdown-item">
-								<img src="{{ asset('assets/img/flags/arabic.svg') }}" alt="Img" height="16">Arabic
-							</a>
+							@foreach (['en' => 'English', 'sw' => 'Kiswahili'] as $code => $name)
+								<form method="POST" action="{{ route('locale.switch', $code) }}">
+									@csrf
+									<button type="submit" class="dropdown-item w-100 text-start @if (app()->getLocale() === $code) active @endif">{{ $name }}</button>
+								</form>
+							@endforeach
 						</div>
 					</li>
-					<!-- /Flag -->
+					<!-- /Language -->
 
 					<li class="nav-item nav-item-box">
 						<a href="javascript:void(0);" id="btnFullscreen">
 							<i class="ti ti-maximize"></i>
 						</a>
 					</li>
-					<li class="nav-item nav-item-box">
-						<a href="email.html">
-							<i class="ti ti-mail"></i>
-							<span class="badge rounded-pill">1</span>
-						</a>
-					</li>
-					<!-- Notifications -->
-					<li class="nav-item dropdown nav-item-box">
-						<a href="javascript:void(0);" class="dropdown-toggle nav-link" data-bs-toggle="dropdown">
-							<i class="ti ti-bell"></i>
-						</a>
-						<div class="dropdown-menu notifications">
-							<div class="topnav-dropdown-header">
-								<h5 class="notification-title">Notifications</h5>
-								<a href="javascript:void(0)" class="clear-noti">Mark all as read</a>
+
+					<!-- Notifications: real alerts only (low stock, subscription) -->
+					@if ($hasShop)
+						@php
+							$alerts = $navAlerts ?? ['low' => collect(), 'low_count' => 0];
+							$navSubscription = \App\Support\Subscription::current();
+							$subscriptionNotice = $navSubscription->state() !== \App\Support\Subscription::ACTIVE || $navSubscription->shouldWarn();
+							$alertCount = $alerts['low_count'] + ($subscriptionNotice ? 1 : 0);
+						@endphp
+						<li class="nav-item dropdown nav-item-box">
+							<a href="javascript:void(0);" class="dropdown-toggle nav-link" data-bs-toggle="dropdown">
+								<i class="ti ti-bell"></i>
+								@if ($alertCount > 0)<span class="badge rounded-pill">{{ $alertCount }}</span>@endif
+							</a>
+							<div class="dropdown-menu notifications">
+								<div class="topnav-dropdown-header">
+									<h5 class="notification-title">{{ __('app.nav.notifications') }}</h5>
+								</div>
+								<div class="noti-content">
+									<ul class="notification-list">
+										@if ($subscriptionNotice)
+											<li class="notification-message">
+												<div class="media d-flex p-2">
+													<span class="avatar flex-shrink-0 bg-warning-transparent text-warning"><i class="ti ti-calendar-due fs-18"></i></span>
+													<div class="flex-grow-1 ms-2">
+														<p class="noti-details mb-0">
+															@if ($navSubscription->state() === \App\Support\Subscription::READONLY){{ __('subscription.readonly_banner') }}
+															@elseif ($navSubscription->state() === \App\Support\Subscription::GRACE){{ __('subscription.grace_banner', ['date' => $navSubscription->graceEndsAt()?->format('Y-m-d')]) }}
+															@else{{ __('subscription.renew_banner', ['date' => $navSubscription->deadline()?->format('Y-m-d'), 'days' => $navSubscription->daysLeft()]) }}@endif
+														</p>
+													</div>
+												</div>
+											</li>
+										@endif
+										@foreach ($alerts['low'] as $product)
+											<li class="notification-message">
+												<a href="{{ route('stock.index') }}">
+													<div class="media d-flex">
+														<span class="avatar flex-shrink-0 bg-orange-transparent text-orange"><i class="ti ti-box fs-18"></i></span>
+														<div class="flex-grow-1">
+															<p class="noti-details mb-0"><span class="noti-title">{{ $product->name }}</span> {{ __('app.nav.low_stock', ['qty' => rtrim(rtrim((string) ($product->getAttribute('on_hand') ?? 0), '0'), '.') ?: '0']) }}</p>
+														</div>
+													</div>
+												</a>
+											</li>
+										@endforeach
+										@if ($alertCount === 0)
+											<li class="p-3 text-center text-muted">{{ __('app.nav.no_notifications') }}</li>
+										@endif
+									</ul>
+								</div>
+								@if ($alerts['low_count'] > 0 && $navUser && ($navUser->is_super_admin || $navUser->can('inventory.view')))
+									<div class="topnav-dropdown-footer d-flex align-items-center gap-3">
+										<a href="{{ route('stock.index') }}" class="btn btn-primary btn-md w-100">{{ __('dashboard.view_stock') }}</a>
+									</div>
+								@endif
 							</div>
-							<div class="noti-content">
-								<ul class="notification-list">
-									<li class="notification-message">
-										<a href="activities.html">
-											<div class="media d-flex">
-												<span class="avatar flex-shrink-0">
-													<img alt="Img" src="{{ asset('assets/img/profiles/avatar-13.jpg') }}">
-												</span>
-												<div class="flex-grow-1">
-													<p class="noti-details"><span class="noti-title">James Kirwin</span> confirmed his order.  Order No: #78901.Estimated delivery: 2 days</p>
-													<p class="noti-time">4 mins ago</p>
-												</div>
-											</div>
-										</a>
-									</li>
-									<li class="notification-message">
-										<a href="activities.html">
-											<div class="media d-flex">
-												<span class="avatar flex-shrink-0">
-													<img alt="Img" src="{{ asset('assets/img/profiles/avatar-03.jpg') }}">
-												</span>
-												<div class="flex-grow-1">
-													<p class="noti-details"><span class="noti-title">Leo Kelly</span> cancelled his order scheduled for  17 Jan 2026</p>
-													<p class="noti-time">10 mins ago</p>
-												</div>
-											</div>
-										</a>
-									</li>
-									<li class="notification-message">
-										<a href="activities.html" class="recent-msg">
-											<div class="media d-flex">
-												<span class="avatar flex-shrink-0">
-													<img alt="Img" src="{{ asset('assets/img/profiles/avatar-17.jpg') }}">
-												</span>
-												<div class="flex-grow-1">
-													<p class="noti-details">Payment of $50 received for Order #67890 from <span class="noti-title">Antonio Engle</span></p>
-													<p class="noti-time">05 mins ago</p>
-												</div>
-											</div>
-										</a>
-									</li>
-									<li class="notification-message">
-										<a href="activities.html" class="recent-msg">
-											<div class="media d-flex">
-												<span class="avatar flex-shrink-0">
-													<img alt="Img" src="{{ asset('assets/img/profiles/avatar-02.jpg') }}">
-												</span>
-												<div class="flex-grow-1">
-													<p class="noti-details"><span class="noti-title">Andrea</span> confirmed his order.  Order No: #73401.Estimated delivery: 3 days</p>
-													<p class="noti-time">4 mins ago</p>
-												</div>
-											</div>
-										</a>
-									</li>
-								</ul>
-							</div>
-							<div class="topnav-dropdown-footer d-flex align-items-center gap-3">
-								<a href="index.html#" class="btn btn-secondary btn-md w-100">Cancel</a>
-								<a href="activities.html" class="btn btn-primary btn-md w-100">View all</a>
-							</div>
-						</div>
-					</li>
+						</li>
+					@endif
 					<!-- /Notifications -->
 
 					@can('manage-settings')

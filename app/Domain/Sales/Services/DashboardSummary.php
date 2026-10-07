@@ -5,6 +5,7 @@ namespace App\Domain\Sales\Services;
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Sales\Models\Sale;
 use App\Domain\Sales\Models\SaleReturn;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
@@ -64,21 +65,27 @@ class DashboardSummary
     }
 
     /**
-     * Stock-tracked products at or below their alert quantity.
+     * Stock-tracked products at or below their alert quantity, filtered in SQL so it stays cheap on every page.
      *
      * @return Collection<int, Product>
      */
     public function lowStock(int $limit = 8): Collection
     {
+        return $this->lowStockQuery()->withSum('stocks as on_hand', 'quantity')->orderBy('name')->limit($limit)->get();
+    }
+
+    public function lowStockCount(): int
+    {
+        return $this->lowStockQuery()->count();
+    }
+
+    /** @return Builder<Product> */
+    private function lowStockQuery(): Builder
+    {
         return Product::query()
             ->where('is_active', true)
             ->where('track_stock', true)
             ->where('alert_quantity', '>', 0)
-            ->withSum('stocks as on_hand', 'quantity')
-            ->orderBy('name')
-            ->get()
-            ->filter(fn (Product $product): bool => (float) ($product->getAttribute('on_hand') ?? 0) <= (float) $product->alert_quantity)
-            ->take($limit)
-            ->values();
+            ->whereRaw('COALESCE((SELECT SUM(ps.quantity) FROM product_stocks ps WHERE ps.product_id = products.id), 0) <= products.alert_quantity');
     }
 }
