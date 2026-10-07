@@ -12,6 +12,7 @@ use App\Domain\People\Models\Customer;
 use App\Domain\Purchasing\Models\Purchase;
 use App\Domain\Purchasing\Models\Supplier;
 use App\Domain\Sales\Models\Sale;
+use App\Domain\Sales\Services\DashboardSummary;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Policies\BrandPolicy;
@@ -26,11 +27,13 @@ use App\Policies\UnitPolicy;
 use App\Policies\WarehousePolicy;
 use App\Support\Plans;
 use App\Support\Tenancy\TenantContext;
+use Illuminate\Contracts\View\View as ViewContract;
 use Illuminate\Queue\Events\JobExceptionOccurred;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -48,6 +51,21 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Low-stock alerts for the navbar bell, only for users who may see stock.
+        View::composer('partials.header', function (ViewContract $view): void {
+            $user = auth()->user();
+            $low = collect();
+            $count = 0;
+
+            if ($user !== null && app(TenantContext::class)->get() !== null && $user->can('inventory.view')) {
+                $summary = new DashboardSummary;
+                $low = $summary->lowStock(5);
+                $count = $summary->lowStockCount();
+            }
+
+            $view->with('navAlerts', ['low' => $low, 'low_count' => $count]);
+        });
+
         Gate::define('platform', fn (User $user): bool => (bool) $user->is_super_admin);
         Gate::define('manage-settings', fn (User $user): bool => $user->is_super_admin || $user->can('settings.manage'));
         Gate::define('plan-feature', fn (?User $user, string $feature): bool => Plans::current()->allows($feature));
