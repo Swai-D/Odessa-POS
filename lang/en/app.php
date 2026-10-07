@@ -21,6 +21,8 @@ return [
         'stock_adjustments' => 'Stock Adjustments',
         'settings' => 'Settings',
     ],
+    'tenant_required' => "This account does not belong to a shop, so it cannot work with shop data. Sign in with a shop user (for example the demo owner) or open the shop's own address (e.g. demo.localhost).",
+    'tenant_required_title' => 'No shop selected',
     'saved' => 'Saved successfully.',
     'deleted' => 'Deleted successfully.',
     'yes' => 'Yes',

@@ -21,6 +21,8 @@ return [
         'stock_adjustments' => 'Marekebisho ya Stoo',
         'settings' => 'Mipangilio',
     ],
+    'tenant_required' => "Akaunti hii haiko kwenye duka lolote, kwa hiyo haiwezi kufanya kazi na data ya duka. Ingia kwa mtumiaji wa duka (mfano mmiliki wa demo) au fungua anwani ya duka lenyewe (mfano demo.localhost).",
+    'tenant_required_title' => 'Hakuna duka lililochaguliwa',
     'saved' => 'Imehifadhiwa.',
     'deleted' => 'Imefutwa.',
     'yes' => 'Ndiyo',
