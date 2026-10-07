@@ -1,0 +1,58 @@
+<?php
+
+use App\Domain\Sales\Services\DashboardSummary;
+use App\Support\Tenancy\TenantContext;
+
+it('summarises only the shop\'s own sales, credit and low stock', function (): void {
+    $tenant = createTenant('shop-d');
+    $user = createTenantUser($tenant, [...posPermissions(), 'inventory.view', 'dashboard.view']);
+    [$product, $warehouse, $customer] = posFixture($tenant);
+    app(TenantContext::class)->run($tenant, fn () => $product->update(['alert_quantity' => 9]));
+
+    checkout($this, 'shop-d', $user, cart($product, $warehouse, [
+        'payments' => [['method' => 'cash', 'amount' => 200000]],
+    ]))->assertCreated();
+    checkout($this, 'shop-d', $user, cart($product, $warehouse, [
+        'customer_id' => $customer->id,
+        'items' => [['product_id' => $product->id, 'quantity' => 1]],
+        'payments' => [],
+    ]))->assertCreated();
+
+    // Another shop's sale must not leak in.
+    $other = createTenant('shop-e');
+    $otherUser = createTenantUser($other, posPermissions());
+    [$otherProduct, $otherWarehouse] = posFixture($other);
+    checkout($this, 'shop-e', $otherUser, cart($otherProduct, $otherWarehouse, [
+        'payments' => [['method' => 'cash', 'amount' => 200000]],
+    ]))->assertCreated();
+
+    $summary = app(TenantContext::class)->run($tenant, fn () => [
+        'today' => (new DashboardSummary)->today(),
+        'credit' => (new DashboardSummary)->outstandingCredit(),
+        'low' => (new DashboardSummary)->lowStock()->pluck('name')->all(),
+        'days' => (new DashboardSummary)->lastDays(),
+    ]);
+
+    expect($summary['today'])->toBe(['sales_count' => 2, 'sales_total' => 300000, 'credit_given' => 100000, 'returns_total' => 0])
+        ->and($summary['credit'])->toBe(100000)
+        ->and($summary['low'])->toBe(['Soap'])
+        ->and(end($summary['days'])['total'])->toBe(300000)
+        ->and($summary['days'])->toHaveCount(7);
+
+    $this->actingAs($user)->withHeader('X-Tenant', 'shop-d')->get('/dashboard')
+        ->assertOk()
+        ->assertSee('Welcome, '.$user->name)
+        ->assertSee('SL-000001')
+        ->assertSee('Soap')
+        ->assertDontSee('Apple Iphone');
+});
+
+it('shows only the greeting to a user without the sales permission', function (): void {
+    $tenant = createTenant('shop-g');
+    $user = createTenantUser($tenant, ['dashboard.view']);
+
+    $this->actingAs($user)->withHeader('X-Tenant', 'shop-g')->get('/dashboard')
+        ->assertOk()
+        ->assertSee('Welcome, '.$user->name)
+        ->assertDontSee(__('dashboard.recent_sales'));
+});
