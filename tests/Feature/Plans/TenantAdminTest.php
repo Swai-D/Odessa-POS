@@ -5,7 +5,7 @@ use App\Models\User;
 use App\Support\Plans;
 use App\Support\Tenancy\TenantContext;
 
-function superAdmin(): User
+function platformAdmin(): User
 {
     return User::factory()->create(['is_super_admin' => true]);
 }
@@ -36,14 +36,14 @@ it('keeps the shops page away from shop users and guests', function () {
 it('lets a super admin list shops and only shows the platform menu', function () {
     createTenant('shop-a');
 
-    $html = $this->actingAs(superAdmin())->get('/platform/tenants')->assertOk()->assertSee('Shop-a')->getContent();
+    $html = $this->actingAs(platformAdmin())->get('/platform/tenants')->assertOk()->assertSee('Shop-a')->getContent();
 
     expect($html)->toContain(route('platform.tenants.index'))
         ->and($html)->not->toContain(route('products.index'));
 });
 
 it('creates a shop with an owner who can sign in to it', function () {
-    $this->actingAs(superAdmin())->post('/platform/tenants', newShopPayload())
+    $this->actingAs(platformAdmin())->post('/platform/tenants', newShopPayload())
         ->assertRedirect(route('platform.tenants.index'));
 
     $tenant = Tenant::query()->where('slug', 'mama-lishe')->firstOrFail();
@@ -62,11 +62,11 @@ it('creates a shop with an owner who can sign in to it', function () {
 it('validates a new shop', function () {
     createTenant('taken');
 
-    $this->actingAs(superAdmin())
+    $this->actingAs(platformAdmin())
         ->post('/platform/tenants', newShopPayload(['slug' => 'Bad Slug!', 'plan' => 'platinum', 'owner_password' => 'short']))
         ->assertSessionHasErrors(['slug', 'plan', 'owner_password']);
 
-    $this->actingAs(superAdmin())
+    $this->actingAs(platformAdmin())
         ->post('/platform/tenants', newShopPayload(['slug' => 'taken']))
         ->assertSessionHasErrors('slug');
 });
@@ -74,7 +74,7 @@ it('validates a new shop', function () {
 it('changes plan, status and overrides of a shop', function () {
     $tenant = createTenant('shop-b', 'basic');
 
-    $this->actingAs(superAdmin())->put("/platform/tenants/{$tenant->getKey()}", [
+    $this->actingAs(platformAdmin())->put("/platform/tenants/{$tenant->getKey()}", [
         'name' => 'Shop B',
         'status' => 'suspended',
         'plan' => 'medium',
@@ -93,7 +93,7 @@ it('changes plan, status and overrides of a shop', function () {
         ->and($plans->limit('warehouses'))->toBe(3);
 
     // Clearing the overrides returns the shop to its plan.
-    $this->actingAs(superAdmin())->put("/platform/tenants/{$tenant->getKey()}", [
+    $this->actingAs(platformAdmin())->put("/platform/tenants/{$tenant->getKey()}", [
         'name' => 'Shop B', 'status' => 'active', 'plan' => 'basic',
     ])->assertRedirect();
 
