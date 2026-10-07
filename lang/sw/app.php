@@ -2,6 +2,14 @@
 
 return [
     'name' => 'Odessa POS',
+    'nav' => [
+        'my_profile' => 'Wasifu Wangu',
+        'reports' => 'Ripoti',
+        'settings' => 'Mipangilio',
+        'logout' => 'Toka',
+        'super_admin' => 'Msimamizi Mkuu',
+        'user' => 'Mtumiaji',
+    ],
     'menu' => [
         'dashboard' => 'Dashibodi',
         'pos' => 'Mauzo',

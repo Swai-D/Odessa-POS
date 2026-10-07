@@ -317,9 +317,11 @@
 					</li>
 					<!-- /Notifications -->
 
-					<li class="nav-item nav-item-box">
-						<a href="general-settings.html"><i class="ti ti-settings"></i></a>
-					</li>
+					@can('manage-settings')
+						<li class="nav-item nav-item-box">
+							<a href="{{ route('settings.index') }}"><i class="ti ti-settings"></i></a>
+						</li>
+					@endcan
 					<li class="nav-item dropdown has-arrow main-drop profile-nav">
 						<a href="javascript:void(0);" class="nav-link userset" data-bs-toggle="dropdown">
 							<span class="user-info p-0">
@@ -334,15 +336,22 @@
 									<img src="{{ asset('assets/img/profiles/avator1.jpg') }}" alt="Img">
 								</span>
 								<div>
-									<h6 class="fw-medium">John Smilga</h6>
-									<p>Admin</p>
+									<h6 class="fw-medium">{{ auth()->user()?->name }}</h6>
+									<p>{{ auth()->user()?->displayRole() }}</p>
 								</div>
 							</div>
-							<a class="dropdown-item" href="profile.html"><i class="ti ti-user-circle me-2"></i>My Profile</a>
-							<a class="dropdown-item" href="sales-report.html"><i class="ti ti-file-text me-2"></i>Reports</a>
-							<a class="dropdown-item" href="general-settings.html"><i class="ti ti-settings-2 me-2"></i>Settings</a>
+							<a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="ti ti-user-circle me-2"></i>{{ __('app.nav.my_profile') }}</a>
+							@can('reports.view')
+								<a class="dropdown-item" href="{{ route('reports.index') }}"><i class="ti ti-file-text me-2"></i>{{ __('app.nav.reports') }}</a>
+							@endcan
+							@can('manage-settings')
+								<a class="dropdown-item" href="{{ route('settings.index') }}"><i class="ti ti-settings-2 me-2"></i>{{ __('app.nav.settings') }}</a>
+							@endcan
 							<hr class="my-2">
-							<a class="dropdown-item logout" href="signin.html"><i class="ti ti-logout me-2"></i>Logout</a>
+							<form method="POST" action="{{ route('logout') }}">
+								@csrf
+								<button type="submit" class="dropdown-item logout w-100 text-start"><i class="ti ti-logout me-2"></i>{{ __('app.nav.logout') }}</button>
+							</form>
 						</div>
 					</li>
 				</ul>
@@ -353,9 +362,14 @@
 					<a href="javascript:void(0);" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"
 						aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
 					<div class="dropdown-menu dropdown-menu-right">
-						<a class="dropdown-item" href="profile.html">My Profile</a>
-						<a class="dropdown-item" href="general-settings.html">Settings</a>
-						<a class="dropdown-item" href="signin.html">Logout</a>
+						<a class="dropdown-item" href="{{ route('profile.edit') }}">{{ __('app.nav.my_profile') }}</a>
+						@can('manage-settings')
+							<a class="dropdown-item" href="{{ route('settings.index') }}">{{ __('app.nav.settings') }}</a>
+						@endcan
+						<form method="POST" action="{{ route('logout') }}">
+							@csrf
+							<button type="submit" class="dropdown-item w-100 text-start">{{ __('app.nav.logout') }}</button>
+						</form>
 					</div>
 				</div>
 				<!-- /Mobile Menu -->
