@@ -11,6 +11,10 @@ return [
         'user' => 'Mtumiaji',
     ],
     'menu' => [
+        'main' => 'Kuu',
+        'stock' => 'Stoo',
+        'peoples' => 'Watu',
+        'integrations' => 'Miunganisho',
         'dashboard' => 'Dashibodi',
         'pos' => 'Mauzo',
         'inventory' => 'Hesabu ya bidhaa',

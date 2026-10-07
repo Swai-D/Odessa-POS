@@ -24,8 +24,8 @@
 					<div class="avatar avatar-lg online mb-3">
 						<img src="{{ asset('assets/img/customer/customer15.jpg') }}" alt="Img" class="img-fluid rounded-circle">
 					</div>
-					<h6 class="fs-14 fw-bold mb-1">Adrian Herman</h6>
-					<p class="fs-12 mb-0">System Admin</p>
+					<h6 class="fs-14 fw-bold mb-1">{{ auth()->user()?->name }}</h6>
+					<p class="fs-12 mb-0">{{ auth()->user()?->displayRole() }}</p>
 				</div>
 				<div class="sidebar-nav mb-3">
 					<ul class="nav nav-tabs nav-tabs-solid nav-tabs-rounded nav-justified bg-transparent" role="tablist">
@@ -41,8 +41,8 @@
 						<img src="{{ asset('assets/img/customer/customer15.jpg') }}" alt="Img" class="img-fluid rounded-circle">
 					</div>
 					<div class="text-start sidebar-profile-info ms-2">
-						<h6 class="fs-14 fw-bold mb-1">Adrian Herman</h6>
-						<p class="fs-12">System Admin</p>
+						<h6 class="fs-14 fw-bold mb-1">{{ auth()->user()?->name }}</h6>
+						<p class="fs-12">{{ auth()->user()?->displayRole() }}</p>
 					</div>
 				</div>
 				<div class="d-flex align-items-center justify-content-between menu-item mb-3">
@@ -76,40 +76,29 @@
 			</div>
 			<div class="sidebar-inner slimscroll">
 				<div id="sidebar-menu" class="sidebar-menu">
+    @php
+        $menuUser = auth()->user();
+        $canSee = fn (array $item): bool => $menuUser !== null && ($menuUser->is_super_admin || $menuUser->can($item['permission']));
+    @endphp
     <ul>
-        <li class="submenu-open">
-            <h6 class="submenu-hdr">Main</h6>
-            <ul>
-                @php($menuUser = auth()->user())
-                @foreach (config('menu') as $item)
-                    @if (isset($item['children']))
-                        @php($children = collect($item['children'])->filter(fn ($child) => $menuUser?->is_super_admin || $menuUser?->can($child['permission'])))
-                        @if ($children->isNotEmpty())
-                            @php($groupActive = $children->contains(fn ($child) => request()->routeIs($child['route'])))
-                            <li class="submenu">
-                                <a href="javascript:void(0);" @class(['subdrop active' => $groupActive])>
+        @foreach (config('menu') as $section)
+            @php($items = collect($section['items'])->filter($canSee))
+            @if ($items->isNotEmpty())
+                <li class="submenu-open">
+                    <h6 class="submenu-hdr">{{ __($section['label']) }}</h6>
+                    <ul>
+                        @foreach ($items as $item)
+                            <li>
+                                <a href="{{ route($item['route']) }}" @class(['active' => request()->routeIs(...$item['match'])])>
                                     <i class="{{ $item['icon'] }} fs-16 me-2"></i>
                                     <span>{{ __($item['label']) }}</span>
-                                    <span class="menu-arrow"></span>
                                 </a>
-                                <ul @style(['display: block' => $groupActive])>
-                                    @foreach ($children as $child)
-                                        <li><a href="{{ route($child['route']) }}" @class(['active' => request()->routeIs($child['route'])])>{{ __($child['label']) }}</a></li>
-                                    @endforeach
-                                </ul>
                             </li>
-                        @endif
-                    @elseif ($menuUser?->is_super_admin || $menuUser?->can($item['permission']))
-                        <li>
-                            <a href="{{ route($item['route']) }}" @class(['active' => request()->routeIs($item['route'])])>
-                                <i class="{{ $item['icon'] }} fs-16 me-2"></i>
-                                <span>{{ __($item['label']) }}</span>
-                            </a>
-                        </li>
-                    @endif
-                @endforeach
-            </ul>
-        </li>
+                        @endforeach
+                    </ul>
+                </li>
+            @endif
+        @endforeach
     </ul>
 </div>
 </div>

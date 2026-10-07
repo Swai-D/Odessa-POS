@@ -11,6 +11,10 @@ return [
         'user' => 'User',
     ],
     'menu' => [
+        'main' => 'Main',
+        'stock' => 'Stock',
+        'peoples' => 'Peoples',
+        'integrations' => 'Integrations',
         'dashboard' => 'Dashboard',
         'pos' => 'POS',
         'inventory' => 'Inventory',
