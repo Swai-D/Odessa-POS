@@ -58,6 +58,7 @@
     @include('partials.header')
     @include('partials.sidebar')
     <div class="page-wrapper">
+        @include('partials.subscription-banner')
         @yield('content')
         @include('partials.footer')
     </div>

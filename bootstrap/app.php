@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnforceSubscription;
 use App\Http\Middleware\RequirePlanFeature;
 use App\Http\Middleware\RequireTenant;
 use App\Http\Middleware\ResolveTenant;
@@ -24,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'tenant.required' => RequireTenant::class,
             'plan' => RequirePlanFeature::class,
+            'subscription' => EnforceSubscription::class,
         ]);
 
         // The tenant must be known before the session user is loaded (Authenticate) and before route

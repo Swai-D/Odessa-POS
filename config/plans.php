@@ -11,6 +11,12 @@ return [
     'default' => 'basic',
 
     // Older plan names that map onto a current plan (the seeded demo shop gets everything).
+    // Days after the paid-until date during which the shop keeps working normally, with a warning.
+    'grace_days' => 7,
+
+    // Days before the paid-until date from which the renewal reminder is shown.
+    'warn_days' => 7,
+
     'aliases' => ['demo' => 'enterprise'],
 
     // Every feature a plan can switch on. Everything not listed here (POS, products, stock, sales,
