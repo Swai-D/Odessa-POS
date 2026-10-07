@@ -13,7 +13,7 @@ if "$@" >"$out" 2>&1; then
 fi
 
 cat "$out"
-msg="$(head -c 30000 "$out" | sed 's/\x1b\[[0-9;]*m//g' | python3 -c 'import sys; print(sys.stdin.read().replace("%", "%25").replace("\r", "").replace("\n", "%0A"))')"
+msg="$(grep -v '✓' "$out" | head -c 30000 | sed 's/\x1b\[[0-9;]*m//g' | python3 -c 'import sys; print(sys.stdin.read().replace("%", "%25").replace("\r", "").replace("\n", "%0A"))')"
 echo "::error title=${title} failed::${msg}"
 echo "${title}" >>"${GITHUB_WORKSPACE}/.ci-failures"
 exit 0
