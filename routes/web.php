@@ -51,7 +51,7 @@ Route::middleware(['auth', 'can:platform'])->prefix('platform')->name('platform.
 });
 
 // Everything below reads or writes shop data, so it needs a resolved tenant.
-Route::middleware(['auth', 'tenant.required'])->group(function (): void {
+Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (): void {
     Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
     Route::get('/pos/products', [PosController::class, 'products'])->name('pos.products');
     Route::post('/pos/checkout', CheckoutController::class)->name('pos.checkout');

@@ -38,7 +38,7 @@
 								<td>{{ $tenant->name }}</td>
 								<td>{{ $tenant->slug }}</td>
 								<td>{{ __('platform.plans.'.($tenant->plan ?? config('plans.default'))) }}</td>
-								<td>{{ __('platform.statuses.'.$tenant->status) }}</td>
+								<td>{{ __('platform.statuses.'.$tenant->status) }}@if (($state = (new \App\Support\Subscription($tenant))->state()) !== 'active' && $tenant->status !== 'suspended') <span class="badge bg-warning ms-1">{{ __('subscription.states.'.$state) }}</span>@endif</td>
 								<td>{{ $tenant->paid_until?->format('Y-m-d') ?? '—' }}</td>
 								<td class="text-end"><a href="{{ route('platform.tenants.edit', $tenant) }}" class="btn btn-sm btn-white"><i class="ti ti-edit"></i></a></td>
 							</tr>
