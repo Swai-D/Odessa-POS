@@ -2,12 +2,13 @@
 
 use App\Models\User;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 function ownerOf(string $slug, string $plan): array
 {
     $tenant = createTenant($slug, $plan);
     $owner = createTenantUser($tenant, ['settings.manage', 'warehouses.view', 'warehouses.manage']);
-    app(Spatie\Permission\PermissionRegistrar::class)->setPermissionsTeamId($tenant->getKey());
+    app(PermissionRegistrar::class)->setPermissionsTeamId($tenant->getKey());
     foreach (['Owner', 'Cashier'] as $name) {
         Role::query()->firstOrCreate(['name' => $name, 'guard_name' => 'web', 'tenant_id' => $tenant->getKey()]);
     }
@@ -28,12 +29,12 @@ it('lets an owner add a user with a role', function () {
 
     $asha = User::query()->withoutGlobalScope('tenant')->where('email', 'asha@example.com')->firstOrFail();
     expect($asha->tenant_id)->toBe($tenant->getKey());
-    app(Spatie\Permission\PermissionRegistrar::class)->setPermissionsTeamId($tenant->getKey());
+    app(PermissionRegistrar::class)->setPermissionsTeamId($tenant->getKey());
     expect($asha->fresh()->hasRole('Cashier'))->toBeTrue();
 });
 
 it('refuses users beyond the plan limit', function () {
-    [, $owner] = ownerOf('shop-l', 'basic');
+    [$tenant, $owner] = ownerOf('shop-l', 'basic');
     $headers = ['X-Tenant' => 'shop-l'];
 
     $this->actingAs($owner)->withHeaders($headers)->post('/users', staffPayload(['email' => 'a@example.com']))->assertSessionHasNoErrors();
@@ -41,7 +42,7 @@ it('refuses users beyond the plan limit', function () {
     // Owner + 2 = 3 users, the Basic limit.
     $this->actingAs($owner)->withHeaders($headers)->post('/users', staffPayload(['email' => 'c@example.com']))->assertSessionHasErrors('email');
 
-    expect(User::query()->count())->toBe(3);
+    expect(User::query()->withoutGlobalScope('tenant')->where('tenant_id', $tenant->getKey())->count())->toBe(3);
 });
 
 it('does not let an owner touch another shop or lack the permission', function () {
@@ -64,7 +65,7 @@ it('protects the last owner and the signed-in user from deletion', function () {
         ->put("/users/{$owner->getKey()}", staffPayload(['email' => $owner->email, 'role' => 'Cashier']))
         ->assertSessionHasErrors('role');
 
-    expect(User::query()->whereKey($owner->getKey())->exists())->toBeTrue();
+    expect(User::query()->withoutGlobalScope('tenant')->whereKey($owner->getKey())->exists())->toBeTrue();
 });
 
 it('limits warehouses by plan', function () {
