@@ -342,7 +342,9 @@
 							</div>
 							<a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="ti ti-user-circle me-2"></i>{{ __('app.nav.my_profile') }}</a>
 							@can('reports.view')
+								@if (\App\Support\Plans::current()->allows('reports'))
 								<a class="dropdown-item" href="{{ route('reports.index') }}"><i class="ti ti-file-text me-2"></i>{{ __('app.nav.reports') }}</a>
+								@endif
 							@endcan
 							@can('manage-settings')
 								<a class="dropdown-item" href="{{ route('settings.index') }}"><i class="ti ti-settings-2 me-2"></i>{{ __('app.nav.settings') }}</a>

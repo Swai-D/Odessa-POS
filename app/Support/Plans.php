@@ -20,7 +20,7 @@ class Plans
     /** Resolved plan key: the tenant's plan, an alias of it, or the default plan. */
     public function key(): string
     {
-        $raw = (string) ($this->tenant?->plan ?? '');
+        $raw = ($this->tenant instanceof Tenant ? (string) $this->tenant->plan : '');
         $raw = (string) config("plans.aliases.{$raw}", $raw);
 
         return config("plans.plans.{$raw}") !== null ? $raw : (string) config('plans.default');
