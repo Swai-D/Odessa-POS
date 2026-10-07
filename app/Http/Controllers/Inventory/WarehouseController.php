@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Inventory;
 
 use App\Domain\Inventory\Models\Warehouse;
 use App\Http\Controllers\LookupController;
+use App\Support\Plans;
 use Illuminate\Database\Eloquent\Model;
 
 class WarehouseController extends LookupController
@@ -67,6 +68,15 @@ class WarehouseController extends LookupController
         }
 
         return $data;
+    }
+
+    protected function creationBlockedReason(): ?string
+    {
+        $limit = Plans::current()->limit('warehouses');
+
+        return $limit !== null && Warehouse::query()->count() >= $limit
+            ? __('plans.warehouses_limit_reached', ['limit' => $limit])
+            : null;
     }
 
     protected function deletionBlockedReason(Model $record): ?string

@@ -11,6 +11,7 @@ return [
         'user' => 'Mtumiaji',
     ],
     'menu' => [
+        'users' => 'Watumiaji',
         'platform' => 'Jukwaa',
         'tenants' => 'Maduka',
         'main' => 'Kuu',

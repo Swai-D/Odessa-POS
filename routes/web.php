@@ -19,6 +19,7 @@ use App\Http\Controllers\Sales\SaleController;
 use App\Http\Controllers\Sales\SaleReturnController;
 use App\Http\Controllers\Settings\IntegrationController;
 use App\Http\Controllers\Settings\SettingsController;
+use App\Http\Controllers\Settings\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -85,6 +86,7 @@ Route::middleware(['auth', 'tenant.required'])->group(function (): void {
     Route::view('/reports', 'modules.placeholder', ['title' => 'app.menu.reports'])->name('reports.index')->middleware('plan:reports');
     Route::get('/settings', [SettingsController::class, 'edit'])->name('settings.index');
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
+    Route::resource('users', UserController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::get('/settings/integrations', [IntegrationController::class, 'index'])->name('settings.integrations')->middleware('plan:integrations');
     Route::put('/settings/integrations/{channel}', [IntegrationController::class, 'update'])->name('settings.integrations.update')->middleware('plan:integrations');
 });
