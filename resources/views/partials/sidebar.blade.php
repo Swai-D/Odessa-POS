@@ -79,9 +79,20 @@
     @php
         $menuUser = auth()->user();
         $plan = \App\Support\Plans::current();
-        $canSee = fn (array $item): bool => $menuUser !== null
-            && ($menuUser->is_super_admin || $menuUser->can($item['permission']))
-            && (! isset($item['feature']) || $plan->allows($item['feature']));
+        $hasShop = app(\App\Support\Tenancy\TenantContext::class)->get() !== null;
+        $canSee = function (array $item) use ($menuUser, $plan, $hasShop): bool {
+            if ($menuUser === null) {
+                return false;
+            }
+            // Platform items are for super admins; shop items need a shop.
+            if ($item['platform'] ?? false) {
+                return (bool) $menuUser->is_super_admin;
+            }
+
+            return $hasShop
+                && ($menuUser->is_super_admin || $menuUser->can($item['permission']))
+                && (! isset($item['feature']) || $plan->allows($item['feature']));
+        };
     @endphp
     <ul>
         @foreach (config('menu') as $section)
