@@ -102,8 +102,8 @@
 								<span class="user-img"><img src="{{ asset('assets/img/profiles/avator1.jpg') }}" alt="Img">
 									<span class="status online"></span></span>
 								<div class="profilesets">
-									<h6>{{ auth()->user()->name }}</h6>
-									<h5>{{ auth()->user()->displayRole() }}</h5>
+									<h6>{{ auth()->user()?->name }}</h6>
+									<h5>{{ auth()->user()?->displayRole() }}</h5>
 								</div>
 							</div>
 							<hr class="m-0">
@@ -2121,7 +2121,7 @@
 								<div class="tab-content-wrap">
 									<div class="d-flex align-items-center justify-content-between flex-wrap mb-2">
 										<div class="mb-3">
-											<h5 class="mb-1">{{ __('pos.screen.welcome', ['name' => auth()->user()->name]) }}</h5>
+											<h5 class="mb-1">{{ __('pos.screen.welcome', ['name' => auth()->user()?->name]) }}</h5>
 											<p>{{ now()->translatedFormat('F j, Y') }}</p>
 										</div>
 										<div class="d-flex align-items-center flex-wrap mb-2">

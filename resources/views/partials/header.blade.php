@@ -336,8 +336,8 @@
 									<img src="{{ asset('assets/img/profiles/avator1.jpg') }}" alt="Img">
 								</span>
 								<div>
-									<h6 class="fw-medium">{{ auth()->user()->name }}</h6>
-									<p>{{ auth()->user()->displayRole() }}</p>
+									<h6 class="fw-medium">{{ auth()->user()?->name }}</h6>
+									<p>{{ auth()->user()?->displayRole() }}</p>
 								</div>
 							</div>
 							<a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="ti ti-user-circle me-2"></i>{{ __('app.nav.my_profile') }}</a>
