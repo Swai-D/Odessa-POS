@@ -34,8 +34,13 @@ Route::post('/language/{locale}', function (Request $request, string $locale) {
     return redirect()->back();
 })->name('locale.switch');
 
+// The landing page works without a shop (a platform super admin has none).
 Route::middleware('auth')->group(function (): void {
     Route::view('/dashboard', 'dashboard')->name('dashboard');
+});
+
+// Everything below reads or writes shop data, so it needs a resolved tenant.
+Route::middleware(['auth', 'tenant.required'])->group(function (): void {
     Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
     Route::get('/pos/products', [PosController::class, 'products'])->name('pos.products');
     Route::post('/pos/checkout', CheckoutController::class)->name('pos.checkout');
