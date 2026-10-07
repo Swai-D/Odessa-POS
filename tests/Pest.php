@@ -13,9 +13,9 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 
-function createTenant(string $slug): Tenant
+function createTenant(string $slug, string $plan = 'enterprise'): Tenant
 {
-    return Tenant::create(['name' => ucfirst($slug), 'slug' => $slug, 'status' => 'active']);
+    return Tenant::create(['name' => ucfirst($slug), 'slug' => $slug, 'status' => 'active', 'plan' => $plan]);
 }
 
 /**

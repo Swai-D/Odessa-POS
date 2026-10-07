@@ -3,6 +3,7 @@
 namespace App\Domain\Integrations\Services;
 
 use App\Domain\Integrations\Models\TenantIntegration;
+use App\Support\Plans;
 use App\Support\TenantSettings;
 
 /**
@@ -16,6 +17,10 @@ class IntegrationManager
     /** @return array{driver: string, settings: array<string, mixed>, secrets: array<string, mixed>}|null */
     public function active(string $channel): ?array
     {
+        if (! Plans::current()->allows($channel === 'fiscal' ? 'fiscal' : 'integrations')) {
+            return null;
+        }
+
         if (! (new TenantSettings)->feature($this->registry->feature($channel))) {
             return null;
         }

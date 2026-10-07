@@ -18,7 +18,7 @@ return [
         'items' => [
             ['label' => 'app.menu.products', 'icon' => 'ti ti-box', 'route' => 'products.index', 'permission' => 'products.view', 'match' => ['products.*']],
             ['label' => 'app.menu.categories', 'icon' => 'ti ti-list-details', 'route' => 'categories.index', 'permission' => 'categories.view', 'match' => ['categories.*']],
-            ['label' => 'app.menu.brands', 'icon' => 'ti ti-triangles', 'route' => 'brands.index', 'permission' => 'brands.view', 'match' => ['brands.*']],
+            ['label' => 'app.menu.brands', 'icon' => 'ti ti-triangles', 'route' => 'brands.index', 'feature' => 'brands', 'permission' => 'brands.view', 'match' => ['brands.*']],
             ['label' => 'app.menu.units', 'icon' => 'ti ti-brand-unity', 'route' => 'units.index', 'permission' => 'units.view', 'match' => ['units.*']],
             ['label' => 'app.menu.warehouses', 'icon' => 'ti ti-building-warehouse', 'route' => 'warehouses.index', 'permission' => 'warehouses.view', 'match' => ['warehouses.*']],
         ],
@@ -39,27 +39,27 @@ return [
     [
         'label' => 'app.menu.purchases',
         'items' => [
-            ['label' => 'app.menu.purchases', 'icon' => 'ti ti-truck-delivery', 'route' => 'purchases.index', 'permission' => 'purchases.view', 'match' => ['purchases.*']],
+            ['label' => 'app.menu.purchases', 'icon' => 'ti ti-truck-delivery', 'route' => 'purchases.index', 'feature' => 'purchasing', 'permission' => 'purchases.view', 'match' => ['purchases.*']],
         ],
     ],
     [
         'label' => 'app.menu.peoples',
         'items' => [
             ['label' => 'app.menu.customers', 'icon' => 'ti ti-users', 'route' => 'customers.index', 'permission' => 'customers.view', 'match' => ['customers.*']],
-            ['label' => 'app.menu.suppliers', 'icon' => 'ti ti-building-store', 'route' => 'suppliers.index', 'permission' => 'suppliers.view', 'match' => ['suppliers.*']],
+            ['label' => 'app.menu.suppliers', 'icon' => 'ti ti-building-store', 'route' => 'suppliers.index', 'feature' => 'purchasing', 'permission' => 'suppliers.view', 'match' => ['suppliers.*']],
         ],
     ],
     [
         'label' => 'app.menu.reports',
         'items' => [
-            ['label' => 'app.menu.reports', 'icon' => 'ti ti-chart-bar', 'route' => 'reports.index', 'permission' => 'reports.view', 'match' => ['reports.*']],
+            ['label' => 'app.menu.reports', 'icon' => 'ti ti-chart-bar', 'route' => 'reports.index', 'feature' => 'reports', 'permission' => 'reports.view', 'match' => ['reports.*']],
         ],
     ],
     [
         'label' => 'app.menu.settings',
         'items' => [
             ['label' => 'app.menu.settings', 'icon' => 'ti ti-settings', 'route' => 'settings.index', 'permission' => 'settings.manage', 'match' => ['settings.index', 'settings.update']],
-            ['label' => 'app.menu.integrations', 'icon' => 'ti ti-plug-connected', 'route' => 'settings.integrations', 'permission' => 'settings.manage', 'match' => ['settings.integrations*']],
+            ['label' => 'app.menu.integrations', 'icon' => 'ti ti-plug-connected', 'route' => 'settings.integrations', 'feature' => 'integrations', 'permission' => 'settings.manage', 'match' => ['settings.integrations*']],
         ],
     ],
 ];

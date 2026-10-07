@@ -63,7 +63,7 @@
 								<input type="text" name="barcode" class="form-control" value="{{ $old('barcode') }}">
 							</div>
 						</div>
-						@foreach ([['category_id', 'category', $categories], ['brand_id', 'brand', $brands], ['unit_id', 'unit', $units]] as [$field, $label, $options])
+						@foreach (collect([['category_id', 'category', $categories], ['brand_id', 'brand', $brands], ['unit_id', 'unit', $units]])->reject(fn ($f) => $f[0] === 'brand_id' && ! \App\Support\Plans::current()->allows('brands')) as [$field, $label, $options])
 							<div class="col-sm-4 col-12">
 								<div class="mb-3">
 									<label class="form-label">{{ __('catalog.fields.'.$label) }}</label>
