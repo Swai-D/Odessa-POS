@@ -72,6 +72,12 @@ abstract class LookupController extends Controller
         return null;
     }
 
+    /** Return a translated reason when a new record must not be created (for example a plan limit). */
+    protected function creationBlockedReason(): ?string
+    {
+        return null;
+    }
+
     public function index(): View
     {
         Gate::authorize('viewAny', $this->model());
@@ -89,6 +95,10 @@ abstract class LookupController extends Controller
     public function store(Request $request): RedirectResponse
     {
         Gate::authorize('create', $this->model());
+
+        if ($reason = $this->creationBlockedReason()) {
+            return redirect()->route($this->route().'.index')->withErrors(['limit' => $reason]);
+        }
 
         $data = $request->validate($this->rules(null));
         DB::transaction(fn () => $this->model()::create($this->prepare($data, null)));
