@@ -7,6 +7,12 @@
  */
 return [
     [
+        'label' => 'app.menu.platform',
+        'items' => [
+            ['label' => 'app.menu.tenants', 'icon' => 'ti ti-building-store', 'route' => 'platform.tenants.index', 'permission' => null, 'platform' => true, 'match' => ['platform.*']],
+        ],
+    ],
+    [
         'label' => 'app.menu.main',
         'items' => [
             ['label' => 'app.menu.dashboard', 'icon' => 'ti ti-layout-grid', 'route' => 'dashboard', 'permission' => 'dashboard.view', 'match' => ['dashboard']],

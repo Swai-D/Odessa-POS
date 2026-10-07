@@ -11,6 +11,8 @@ return [
         'user' => 'User',
     ],
     'menu' => [
+        'platform' => 'Platform',
+        'tenants' => 'Shops',
         'main' => 'Main',
         'stock' => 'Stock',
         'peoples' => 'Peoples',
