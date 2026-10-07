@@ -8,6 +8,7 @@ use App\Http\Controllers\Inventory\StockAdjustmentController;
 use App\Http\Controllers\Inventory\StockController;
 use App\Http\Controllers\Inventory\WarehouseController;
 use App\Http\Controllers\People\CustomerController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Purchasing\PurchaseController;
 use App\Http\Controllers\Purchasing\SupplierController;
 use App\Http\Controllers\Sales\CheckoutController;
@@ -37,6 +38,9 @@ Route::post('/language/{locale}', function (Request $request, string $locale) {
 // The landing page works without a shop (a platform super admin has none).
 Route::middleware('auth')->group(function (): void {
     Route::view('/dashboard', 'dashboard')->name('dashboard');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 });
 
 // Everything below reads or writes shop data, so it needs a resolved tenant.

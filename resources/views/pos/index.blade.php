@@ -83,9 +83,11 @@
 						<i class="ti ti-maximize"></i>
 					</a>
 				</li>
-				<li class="nav-item nav-item-box" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="POS Settings">
-					<a href="pos-settings.html"><i class="ti ti-settings"></i></a>
-				</li>
+				@can('manage-settings')
+					<li class="nav-item nav-item-box" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{{ __('app.nav.settings') }}">
+						<a href="{{ route('settings.index') }}"><i class="ti ti-settings"></i></a>
+					</li>
+				@endcan
 				<li class="nav-item dropdown has-arrow main-drop profile-nav">
 					<a href="javascript:void(0);" class="nav-link userset" data-bs-toggle="dropdown">
 						<span class="user-info p-0">
@@ -100,16 +102,20 @@
 								<span class="user-img"><img src="{{ asset('assets/img/profiles/avator1.jpg') }}" alt="Img">
 									<span class="status online"></span></span>
 								<div class="profilesets">
-									<h6>John Smilga</h6>
-									<h5>Super Admin</h5>
+									<h6>{{ auth()->user()->name }}</h6>
+									<h5>{{ auth()->user()->displayRole() }}</h5>
 								</div>
 							</div>
 							<hr class="m-0">
-							<a class="dropdown-item" href="profile.html"><i class="me-2" data-feather="user"></i>My
-								Profile</a>
-							<a class="dropdown-item" href="general-settings.html"><i class="me-2" data-feather="settings"></i>Settings</a>
+							<a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="me-2" data-feather="user"></i>{{ __('app.nav.my_profile') }}</a>
+							@can('manage-settings')
+								<a class="dropdown-item" href="{{ route('settings.index') }}"><i class="me-2" data-feather="settings"></i>{{ __('app.nav.settings') }}</a>
+							@endcan
 							<hr class="m-0">
-							<a class="dropdown-item logout" href="signin.html"><img src="{{ asset('assets/img/icons/log-out.svg') }}" class="me-2" alt="img">Logout</a>
+							<form method="POST" action="{{ route('logout') }}">
+								@csrf
+								<button type="submit" class="dropdown-item logout w-100 text-start"><img src="{{ asset('assets/img/icons/log-out.svg') }}" class="me-2" alt="img">{{ __('app.nav.logout') }}</button>
+							</form>
 						</div>
 					</div>
 				</li>
@@ -120,9 +126,14 @@
 			<div class="dropdown mobile-user-menu">
 				<a href="javascript:void(0);" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
 				<div class="dropdown-menu dropdown-menu-right">
-					<a class="dropdown-item" href="profile.html">My Profile</a>
-					<a class="dropdown-item" href="general-settings.html">Settings</a>
-					<a class="dropdown-item" href="signin.html">Logout</a>
+					<a class="dropdown-item" href="{{ route('profile.edit') }}">{{ __('app.nav.my_profile') }}</a>
+					@can('manage-settings')
+						<a class="dropdown-item" href="{{ route('settings.index') }}">{{ __('app.nav.settings') }}</a>
+					@endcan
+					<form method="POST" action="{{ route('logout') }}">
+						@csrf
+						<button type="submit" class="dropdown-item w-100 text-start">{{ __('app.nav.logout') }}</button>
+					</form>
 				</div>
 			</div>
 			<!-- /Mobile Menu -->

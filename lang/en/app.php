@@ -2,6 +2,14 @@
 
 return [
     'name' => 'Odessa POS',
+    'nav' => [
+        'my_profile' => 'My Profile',
+        'reports' => 'Reports',
+        'settings' => 'Settings',
+        'logout' => 'Logout',
+        'super_admin' => 'Super Admin',
+        'user' => 'User',
+    ],
     'menu' => [
         'dashboard' => 'Dashboard',
         'pos' => 'POS',

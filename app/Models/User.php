@@ -49,4 +49,14 @@ class User extends Authenticatable
             'is_super_admin' => 'boolean',
         ];
     }
+
+    /** Name shown under the user's name in the navbar. */
+    public function displayRole(): string
+    {
+        if ($this->is_super_admin) {
+            return __('app.nav.super_admin');
+        }
+
+        return (string) ($this->getRoleNames()->first() ?? __('app.nav.user'));
+    }
 }
