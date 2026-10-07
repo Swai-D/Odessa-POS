@@ -26,7 +26,7 @@ class TemplateViewsTest extends TestCase
         $this->actingAs($user)->get('/dashboard')
             ->assertOk()
             ->assertSee('Welcome, Admin')
-            ->assertSee(__('app.menu.inventory'))
+            ->assertSee(__('app.menu.tenants'))
             ->assertSee(asset('assets/js/script.js'), false);
     }
 

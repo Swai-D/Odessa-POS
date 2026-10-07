@@ -48,6 +48,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::define('platform', fn (User $user): bool => (bool) $user->is_super_admin);
         Gate::define('manage-settings', fn (User $user): bool => $user->is_super_admin || $user->can('settings.manage'));
         Gate::define('plan-feature', fn (?User $user, string $feature): bool => Plans::current()->allows($feature));
         Gate::policy(Product::class, ProductPolicy::class);

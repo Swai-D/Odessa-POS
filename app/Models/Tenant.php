@@ -10,10 +10,10 @@ class Tenant extends Model
 {
     use HasUlids, SoftDeletes;
 
-    protected $fillable = ['name', 'slug', 'domain', 'status', 'plan', 'trial_ends_at', 'settings'];
+    protected $fillable = ['name', 'slug', 'domain', 'status', 'plan', 'trial_ends_at', 'paid_until', 'settings'];
 
     protected function casts(): array
     {
-        return ['trial_ends_at' => 'datetime', 'settings' => 'array'];
+        return ['trial_ends_at' => 'datetime', 'paid_until' => 'datetime', 'settings' => 'array'];
     }
 }

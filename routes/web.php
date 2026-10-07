@@ -8,6 +8,7 @@ use App\Http\Controllers\Inventory\StockAdjustmentController;
 use App\Http\Controllers\Inventory\StockController;
 use App\Http\Controllers\Inventory\WarehouseController;
 use App\Http\Controllers\People\CustomerController;
+use App\Http\Controllers\Platform\TenantController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Purchasing\PurchaseController;
 use App\Http\Controllers\Purchasing\SupplierController;
@@ -41,6 +42,11 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+});
+
+// Platform administration (shops, plans). Super admins only; no shop context needed.
+Route::middleware(['auth', 'can:platform'])->prefix('platform')->name('platform.')->group(function (): void {
+    Route::resource('tenants', TenantController::class)->only(['index', 'create', 'store', 'edit', 'update']);
 });
 
 // Everything below reads or writes shop data, so it needs a resolved tenant.
