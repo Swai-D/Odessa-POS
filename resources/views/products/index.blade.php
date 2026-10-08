@@ -2,7 +2,6 @@
 
 @section('title', __('catalog.product_list').' - Odessa POS')
 
-@include('partials.datatable-assets')
 
 @section('content')
 <div class="content">
@@ -29,11 +28,7 @@
 	<!-- /product list -->
 	<div class="card">
 		<div class="card-header d-flex align-items-center justify-content-between flex-wrap row-gap-3">
-			<div class="search-set">
-				<div class="search-input">
-					<span class="btn-searchset"><i class="ti ti-search fs-14 feather-search"></i></span>
-				</div>
-			</div>
+			@include('partials.list-search')
 			<div class="d-flex table-dropdown my-xl-auto right-content align-items-center flex-wrap row-gap-3">
 				<div class="dropdown me-2">
 					<a href="javascript:void(0);" class="dropdown-toggle btn btn-white btn-md d-inline-flex align-items-center" data-bs-toggle="dropdown">
@@ -61,7 +56,7 @@
 		</div>
 		<div class="card-body p-0">
 			<div class="table-responsive">
-				<table class="table datatable">
+				<table class="table">
 					<thead class="thead-light">
 						<tr>
 							<th>{{ __('catalog.fields.sku') }}</th>
@@ -116,6 +111,7 @@
 					</tbody>
 				</table>
 			</div>
+			@include('partials.pagination', ['paginator' => $products])
 		</div>
 	</div>
 	<!-- /product list -->

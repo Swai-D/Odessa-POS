@@ -25,6 +25,11 @@ class CustomerController extends LookupController
         return 'app.menu.customers';
     }
 
+    protected function searchColumns(): array
+    {
+        return ['name', 'phone', 'email'];
+    }
+
     protected function scope(Builder $query): Builder
     {
         return $query->withSum('sales as outstanding_sum', 'balance_due');

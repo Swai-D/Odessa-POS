@@ -28,6 +28,7 @@ use App\Policies\WarehousePolicy;
 use App\Support\Plans;
 use App\Support\Tenancy\TenantContext;
 use Illuminate\Contracts\View\View as ViewContract;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Queue\Events\JobExceptionOccurred;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
@@ -65,6 +66,8 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with('navAlerts', ['low' => $low, 'low_count' => $count]);
         });
+
+        Paginator::useBootstrapFive();
 
         Gate::define('platform', fn (User $user): bool => (bool) $user->is_super_admin);
         Gate::define('manage-settings', fn (User $user): bool => $user->is_super_admin || $user->can('settings.manage'));

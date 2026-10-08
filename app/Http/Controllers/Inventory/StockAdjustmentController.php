@@ -9,22 +9,25 @@ use App\Domain\Inventory\Services\InsufficientStockException;
 use App\Domain\Inventory\Services\StockService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StockAdjustmentRequest;
+use App\Support\Search;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class StockAdjustmentController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
         Gate::authorize('viewAny', StockMovement::class);
 
         return view('stock.adjustments', [
             'movements' => StockMovement::query()
                 ->with(['product', 'warehouse', 'user'])
+                ->tap(fn ($q) => Search::apply($q, $request->query('q'), ['product.name', 'product.sku']))
                 ->latest('id')
-                ->limit(500)
-                ->get(),
+                ->paginate(25)
+                ->withQueryString(),
             'products' => Product::query()->where('track_stock', true)->orderBy('name')->get(['id', 'name', 'sku']),
             'warehouses' => Warehouse::query()->where('is_active', true)->orderBy('name')->pluck('name', 'id'),
             'canManage' => Gate::allows('create', StockMovement::class),

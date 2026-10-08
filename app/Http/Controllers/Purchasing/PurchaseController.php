@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PurchasePaymentRequest;
 use App\Http\Requests\PurchaseRequest;
 use App\Support\Money;
+use App\Support\Search;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -29,9 +30,10 @@ class PurchaseController extends Controller
             'purchases' => Purchase::query()
                 ->with('supplier:id,name')
                 ->when($request->query('status') === 'unpaid', fn ($q) => $q->where('balance_due', '>', 0))
+                ->tap(fn ($q) => Search::apply($q, $request->query('q'), ['number', 'reference', 'supplier.name']))
                 ->latest('id')
-                ->limit(500)
-                ->get(),
+                ->paginate(25)
+                ->withQueryString(),
             'status' => $request->query('status'),
             'canCreate' => Gate::allows('create', Purchase::class),
         ]);

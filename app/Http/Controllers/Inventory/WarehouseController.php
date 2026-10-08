@@ -70,6 +70,11 @@ class WarehouseController extends LookupController
         return $data;
     }
 
+    protected function searchColumns(): array
+    {
+        return ['name', 'code'];
+    }
+
     protected function creationBlockedReason(): ?string
     {
         $limit = Plans::current()->limit('warehouses');
