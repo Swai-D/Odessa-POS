@@ -21,7 +21,7 @@ class Expense extends Model
 
     protected function casts(): array
     {
-        return ['amount' => 'integer', 'spent_on' => 'date'];
+        return ['amount' => 'integer', 'spent_on' => 'date:Y-m-d'];
     }
 
     /** @return BelongsTo<ExpenseCategory, $this> */
