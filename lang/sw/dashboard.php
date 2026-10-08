@@ -10,6 +10,7 @@ return [
     'sales_today' => 'Mauzo ya leo',
     'returns_today' => 'Marejesho ya leo',
     'credit_today' => 'Mkopo uliotolewa leo',
+    'expenses_month' => 'Matumizi ya mwezi huu',
     'credit_outstanding' => 'Wateja wanadaiwa',
     'last_7_days' => 'Siku 7 zilizopita',
     'sales_count' => 'Mauzo',

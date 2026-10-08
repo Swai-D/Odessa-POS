@@ -36,6 +36,7 @@
 				['bg-secondary', 'text-secondary', 'ti ti-repeat', 'dashboard.returns_today', $data['today']['returns_total']],
 				['bg-teal', 'text-teal', 'ti ti-receipt', 'dashboard.credit_today', $data['today']['credit_given']],
 				['bg-info', 'text-info', 'ti ti-wallet', 'dashboard.credit_outstanding', $data['credit']],
+				...($data['expenses'] !== null ? [['bg-danger', 'text-danger', 'ti ti-receipt-2', 'dashboard.expenses_month', $data['expenses']]] : []),
 			] as [$bg, $text, $icon, $label, $amount])
 				<div class="col-xl-3 col-sm-6 col-12 d-flex">
 					<div class="card {{ $bg }} sale-widget flex-fill">

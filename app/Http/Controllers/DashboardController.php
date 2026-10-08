@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Domain\Sales\Services\DashboardSummary;
+use App\Support\Plans;
 use App\Support\Tenancy\TenantContext;
 use App\Support\TenantSettings;
 use Illuminate\Contracts\View\View;
@@ -28,6 +29,8 @@ class DashboardController extends Controller
                 'days' => $summary->lastDays(),
                 'recent' => $summary->recentSales(),
                 'low' => $summary->lowStock(),
+                // Only shops whose plan has expenses, and users who may see them.
+                'expenses' => Plans::current()->allows('expenses') && $user->can('expenses.view') ? $summary->expensesThisMonth() : null,
             ],
         ]);
     }
