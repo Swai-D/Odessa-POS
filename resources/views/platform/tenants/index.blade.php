@@ -40,7 +40,7 @@
 								<td>{{ __('platform.plans.'.($tenant->plan ?? config('plans.default'))) }}</td>
 								<td>{{ __('platform.statuses.'.$tenant->status) }}@if (($state = (new \App\Support\Subscription($tenant))->state()) !== 'active' && $tenant->status !== 'suspended') <span class="badge bg-warning ms-1">{{ __('subscription.states.'.$state) }}</span>@endif</td>
 								<td>{{ $tenant->paid_until?->format('Y-m-d') ?? '—' }}</td>
-								<td class="text-end"><a href="{{ route('platform.tenants.edit', $tenant) }}" class="btn btn-sm btn-white"><i class="ti ti-edit"></i></a></td>
+								<td class="text-end"><a href="{{ route('platform.tenants.edit', $tenant) }}#renew" class="btn btn-sm btn-white me-1" title="{{ __('platform.renew') }}"><i class="ti ti-cash"></i></a><a href="{{ route('platform.tenants.edit', $tenant) }}" class="btn btn-sm btn-white"><i class="ti ti-edit"></i></a></td>
 							</tr>
 						@empty
 							<tr><td colspan="6" class="text-center text-muted py-4">{{ __('platform.empty') }}</td></tr>

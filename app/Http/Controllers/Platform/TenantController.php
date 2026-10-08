@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Platform;
 
+use App\Domain\Sales\Models\Payment;
 use App\Domain\Settings\Actions\ProvisionTenantAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TenantRequest;
 use App\Models\Tenant;
+use App\Models\TenantPayment;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Str;
 
 /** Platform-level shop management; reachable by super admins only (route middleware `can:platform`). */
 class TenantController extends Controller
@@ -54,6 +57,10 @@ class TenantController extends Controller
             'tenant' => $tenant,
             'plans' => array_keys(config('plans.plans')),
             'overrides' => (array) ($settings['plan_overrides'] ?? []),
+            'payments' => TenantPayment::query()->where('tenant_id', $tenant->getKey())->with('user')->latest('id')->limit(20)->get(),
+            'methods' => Payment::methods(),
+            'idempotencyKey' => (string) Str::uuid(),
+            'currency' => (string) config('pos.default_currency'),
         ]);
     }
 
