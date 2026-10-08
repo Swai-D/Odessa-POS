@@ -11,6 +11,7 @@ use App\Http\Controllers\Inventory\WarehouseController;
 use App\Http\Controllers\People\CustomerController;
 use App\Http\Controllers\Platform\TenantController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Purchasing\PurchaseController;
 use App\Http\Controllers\Purchasing\SupplierController;
 use App\Http\Controllers\Sales\CheckoutController;
@@ -84,7 +85,7 @@ Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (
     Route::post('/purchases/{purchase}/payments', [PurchaseController::class, 'storePayment'])->name('purchases.payments.store')->middleware('plan:purchasing');
     Route::resource('suppliers', SupplierController::class)->only($lookup)->middleware('plan:purchasing');
     Route::view('/people', 'modules.placeholder', ['title' => 'app.menu.people'])->name('people.index');
-    Route::view('/reports', 'modules.placeholder', ['title' => 'app.menu.reports'])->name('reports.index')->middleware('plan:reports');
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index')->middleware('plan:reports');
     Route::get('/settings', [SettingsController::class, 'edit'])->name('settings.index');
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
     Route::resource('users', UserController::class)->only(['index', 'store', 'update', 'destroy']);
