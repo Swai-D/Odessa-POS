@@ -142,10 +142,16 @@ it('refuses report exports without the reports permission', function (): void {
     $this->actingAs($user)->withHeader('X-Tenant', 'shop-xn')->get('/reports/export/daily')->assertForbidden();
 });
 
+it('exports the daily report for a user with the permission', function (): void {
+    $tenant = createTenant('shop-xd');
+    $user = createTenantUser($tenant, ['reports.view']);
+
+    $this->actingAs($user)->withHeader('X-Tenant', 'shop-xd')->get('/reports/export/daily')->assertOk();
+});
+
 it('only exports known reports', function (): void {
     $tenant = createTenant('shop-xk');
     $user = createTenantUser($tenant, ['reports.view']);
 
     $this->actingAs($user)->withHeader('X-Tenant', 'shop-xk')->get('/reports/export/secrets')->assertNotFound();
-    $this->actingAs($user)->withHeader('X-Tenant', 'shop-xk')->get('/reports/export/daily')->assertOk();
 });
