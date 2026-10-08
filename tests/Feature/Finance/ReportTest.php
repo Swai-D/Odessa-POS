@@ -138,5 +138,6 @@ it('guards report exports by plan, permission and report name', function (): voi
     $viewer = createTenantUser($tenant, ['reports.view']);
     $this->actingAs($none)->withHeader('X-Tenant', 'shop-xe')->get('/reports/export/daily')->assertForbidden();
     $this->actingAs($viewer)->withHeader('X-Tenant', 'shop-xe')->get('/reports/export/secrets')->assertNotFound();
-    $this->actingAs($viewer)->withHeader('X-Tenant', 'shop-xe')->get('/reports/export/daily')->assertOk();
+    $ok = $this->actingAs($viewer)->withHeader('X-Tenant', 'shop-xe')->get('/reports/export/daily');
+    expect($ok->status())->toBe(200, substr(strip_tags((string) $ok->baseResponse->getContent()), 0, 300).' | '.($ok->exception?->getMessage() ?? ''));
 });
