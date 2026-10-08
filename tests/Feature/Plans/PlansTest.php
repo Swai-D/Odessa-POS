@@ -35,14 +35,39 @@ it('allows those features on medium and enterprise', function (string $plan) {
     }
 })->with(['medium', 'enterprise']);
 
-it('hides gated items from the basic sidebar', function () {
+it('shows gated items in the basic sidebar as locked, not as normal links', function () {
     [, $user] = planTenant('basic');
 
     $html = $this->actingAs($user)->withHeader('X-Tenant', 'shop-basic')->get('/dashboard')->assertOk()->getContent();
 
-    expect($html)->not->toContain(route('purchases.index'))
-        ->and($html)->not->toContain(route('brands.index'))
-        ->and($html)->not->toContain(route('reports.index'));
+    foreach (['purchases.index', 'brands.index', 'reports.index'] as $name) {
+        expect($html)->toContain('<a href="'.route($name).'" class="text-muted" data-locked="1"')
+            ->and($html)->not->toContain('<a href="'.route($name).'" class="active"');
+    }
+});
+
+it('does not lock items the plan includes', function () {
+    [, $user] = planTenant('medium');
+
+    $html = $this->actingAs($user)->withHeader('X-Tenant', 'shop-medium')->get('/dashboard')->assertOk()->getContent();
+
+    expect($html)->not->toContain('data-locked');
+});
+
+it('names the plan that unlocks a feature on the upgrade page', function () {
+    [, $user] = planTenant('basic');
+    config(['plans.contact' => ['phone' => '+255700000000', 'email' => null]]);
+
+    $this->actingAs($user)->withHeader('X-Tenant', 'shop-basic')->get('/reports')
+        ->assertForbidden()->assertSee('Available from the Medium plan')->assertSee('+255700000000');
+});
+
+it('knows the smallest plan for each feature', function () {
+    expect(Plans::cheapestPlanFor('returns'))->toBe('basic')
+        ->and(Plans::cheapestPlanFor('reports'))->toBe('medium')
+        ->and(Plans::cheapestPlanFor('expenses'))->toBe('medium')
+        ->and(Plans::cheapestPlanFor('fiscal'))->toBe('enterprise')
+        ->and(Plans::cheapestPlanFor('nope'))->toBeNull();
 });
 
 it('resolves limits, aliases and overrides', function () {

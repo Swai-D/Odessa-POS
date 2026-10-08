@@ -44,6 +44,14 @@
 							&& ($q[4] === null || $navPlan->allows($q[4])));
 					@endphp
 
+					@if ($hasShop && $navUser)
+						<li class="nav-item d-none d-md-block">
+							<form method="GET" action="{{ route('search') }}" class="d-flex align-items-center">
+								<input type="search" name="q" value="{{ request()->routeIs('search') ? request('q') : '' }}" class="form-control form-control-sm" placeholder="{{ __('app.search') }}" aria-label="{{ __('app.search') }}" minlength="2">
+							</form>
+						</li>
+					@endif
+
 					@if ($quick->isNotEmpty())
 						<li class="nav-item dropdown link-nav">
 							<a href="javascript:void(0);" class="btn btn-primary btn-md d-inline-flex align-items-center" data-bs-toggle="dropdown">

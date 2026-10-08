@@ -6,6 +6,9 @@ return [
     'credit_sales_not_in_plan' => 'Kuuza kwa mkopo hakumo kwenye kifurushi chako cha sasa.',
     'users_limit_reached' => 'Plan yako inaruhusu hadi watumiaji :limit. Wasiliana nasi kupandisha.',
     'warehouses_limit_reached' => 'Plan yako inaruhusu hadi maghala :limit. Wasiliana nasi kupandisha.',
+    'available_from' => 'Inapatikana kuanzia mpango wa :plan.',
+    'contact_us' => 'Ili kuboresha mpango, wasiliana nasi:',
+    'locked' => 'Haimo kwenye mpango wako',
     'features' => [
         'returns' => 'Marejesho ya mauzo',
         'credit_sales' => 'Mauzo ya mkopo',

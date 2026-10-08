@@ -49,13 +49,13 @@
 				<table class="table">
 					<thead class="thead-light">
 						<tr>
-							<th>{{ __('purchases.number') }}</th>
-							<th>{{ __('purchases.date') }}</th>
+							<th>@include('partials.sort-header', ['label' => __('purchases.number'), 'key' => 'number'])</th>
+							<th>@include('partials.sort-header', ['label' => __('purchases.date'), 'key' => 'date'])</th>
 							<th>{{ __('purchases.supplier') }}</th>
 							<th>{{ __('purchases.reference') }}</th>
-							<th>{{ __('purchases.total') }}</th>
+							<th>@include('partials.sort-header', ['label' => __('purchases.total'), 'key' => 'total'])</th>
 							<th>{{ __('purchases.paid') }}</th>
-							<th>{{ __('purchases.balance') }}</th>
+							<th>@include('partials.sort-header', ['label' => __('purchases.balance'), 'key' => 'balance'])</th>
 							<th>{{ __('purchases.status') }}</th>
 						</tr>
 					</thead>

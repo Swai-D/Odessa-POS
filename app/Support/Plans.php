@@ -41,6 +41,29 @@ class Plans
         return in_array($feature, (array) data_get($this->tenant->settings, 'plan_overrides.features', []), true);
     }
 
+    /** The smallest plan whose own features include `$feature` (ignores per-shop overrides); null when none does. */
+    public static function cheapestPlanFor(string $feature): ?string
+    {
+        foreach (array_keys((array) config('plans.plans')) as $plan) {
+            $granted = self::featuresOf((string) $plan);
+
+            if (in_array('*', $granted, true) || in_array($feature, $granted, true)) {
+                return (string) $plan;
+            }
+        }
+
+        return null;
+    }
+
+    /** @return list<string> */
+    private static function featuresOf(string $plan, int $depth = 0): array
+    {
+        $own = (array) config("plans.plans.{$plan}.features", []);
+        $parent = (string) config("plans.plans.{$plan}.inherits", '');
+
+        return array_values(array_unique($depth < 5 && $parent !== '' ? array_merge(self::featuresOf($parent, $depth + 1), $own) : $own));
+    }
+
     /** The limit for `users`, `warehouses`...; null means unlimited. */
     public function limit(string $name): ?int
     {

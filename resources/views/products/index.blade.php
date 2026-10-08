@@ -59,11 +59,11 @@
 				<table class="table">
 					<thead class="thead-light">
 						<tr>
-							<th>{{ __('catalog.fields.sku') }}</th>
-							<th>{{ __('catalog.fields.name') }}</th>
+							<th>@include('partials.sort-header', ['label' => __('catalog.fields.sku'), 'key' => 'sku'])</th>
+							<th>@include('partials.sort-header', ['label' => __('catalog.fields.name'), 'key' => 'name'])</th>
 							<th>{{ __('catalog.fields.category') }}</th>
 							<th>{{ __('catalog.fields.brand') }}</th>
-							<th>{{ __('catalog.fields.price') }}</th>
+							<th>@include('partials.sort-header', ['label' => __('catalog.fields.price'), 'key' => 'price'])</th>
 							<th>{{ __('catalog.fields.unit') }}</th>
 							<th>{{ __('catalog.fields.qty') }}</th>
 							<th class="no-sort"></th>
