@@ -30,6 +30,7 @@ return [
         'cannot_delete_has_sales' => 'Mteja huyu ana mauzo hivyo hawezi kufutwa. Mwekee hali ya kutofanya kazi badala yake.',
     ],
     'screen' => [
+        'search_customer' => 'Tafuta mteja kwa jina au simu',
         'session_expired' => 'Kipindi chako kimeisha. Tafadhali ingia tena.',
         'welcome' => 'Karibu, :name',
         'search' => 'Tafuta kwa jina, SKU au barcode',

@@ -28,7 +28,7 @@ class StockAdjustmentController extends Controller
                 ->latest('id')
                 ->paginate(25)
                 ->withQueryString(),
-            'products' => Product::query()->where('track_stock', true)->orderBy('name')->get(['id', 'name', 'sku']),
+            'selectedProduct' => $this->productChoice($request->old('product_id')),
             'warehouses' => Warehouse::query()->where('is_active', true)->orderBy('name')->pluck('name', 'id'),
             'canManage' => Gate::allows('create', StockMovement::class),
         ]);
@@ -55,5 +55,13 @@ class StockAdjustmentController extends Controller
         }
 
         return redirect()->route('stock-adjustments.index')->with('status', __('app.saved'));
+    }
+
+    /** @return array{id: int, label: string}|null the product to pre-fill after a failed submit */
+    private function productChoice(mixed $id): ?array
+    {
+        $product = $id ? Product::query()->find($id) : null;
+
+        return $product ? ['id' => (int) $product->getKey(), 'label' => $product->name.' ('.$product->sku.')'] : null;
     }
 }

@@ -30,6 +30,7 @@ return [
         'cannot_delete_has_sales' => 'This customer has sales and cannot be deleted. Mark them inactive instead.',
     ],
     'screen' => [
+        'search_customer' => 'Search customer by name or phone',
         'session_expired' => 'Your session has expired. Please sign in again.',
         'welcome' => 'Welcome, :name',
         'search' => 'Search by name, SKU or barcode',

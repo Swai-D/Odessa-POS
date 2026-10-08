@@ -46,11 +46,12 @@ class PurchaseController extends Controller
         return view('purchases.create', [
             'suppliers' => Supplier::query()->where('is_active', true)->orderBy('name')->pluck('name', 'id'),
             'warehouses' => Warehouse::query()->where('is_active', true)->orderBy('name')->pluck('name', 'id'),
-            'products' => Product::query()->where('is_active', true)->orderBy('name')
-                ->get(['id', 'name', 'sku', 'cost_price'])
-                ->map(fn (Product $p): array => [
-                    'id' => $p->getKey(), 'label' => $p->name.' ('.$p->sku.')', 'cost' => Money::toMajor($p->cost_price),
-                ])->all(),
+            // Only the products of a form that failed validation are preloaded; the rest is searched on demand.
+            'restoredProducts' => Product::query()
+                ->whereKey(collect(old('items', []))->pluck('product_id')->filter()->all())
+                ->get(['id', 'name', 'sku'])
+                ->mapWithKeys(fn (Product $p): array => [$p->getKey() => $p->name.' ('.$p->sku.')'])
+                ->all(),
             'methods' => Payment::methods(),
             'idempotencyKey' => (string) Str::uuid(),
         ]);

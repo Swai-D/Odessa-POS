@@ -84,12 +84,7 @@
 				<div class="modal-body">
 					<div class="mb-3">
 						<label class="form-label">{{ __('inventory.fields.product') }}<span class="text-danger ms-1">*</span></label>
-						<select name="product_id" class="form-select" required>
-							<option value="">{{ __('catalog.select') }}</option>
-							@foreach ($products as $product)
-								<option value="{{ $product->id }}" @selected((string) old('product_id') === (string) $product->id)>{{ $product->name }} ({{ $product->sku }})</option>
-							@endforeach
-						</select>
+						@include('partials.product-picker', ['name' => 'product_id', 'tracked' => true, 'required' => true, 'selected' => $selectedProduct, 'id' => 'adjustment-product'])
 					</div>
 					<div class="mb-3">
 						<label class="form-label">{{ __('inventory.fields.warehouse') }}<span class="text-danger ms-1">*</span></label>
@@ -128,4 +123,9 @@
 	</div>
 </div>
 @endif
+@endpush
+
+@push('extra-js')
+<script src="{{ asset('js/product-picker.js') }}"></script>
+<script>ProductPicker.attachAll(document);</script>
 @endpush

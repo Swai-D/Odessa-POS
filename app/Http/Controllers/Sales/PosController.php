@@ -29,7 +29,7 @@ class PosController extends Controller
         return view('pos.index', [
             'warehouses' => $warehouses,
             'categories' => Category::query()->where('is_active', true)->orderBy('name')->limit(40)->get(['id', 'name']),
-            'customers' => Customer::query()->where('is_active', true)->orderBy('name')->limit(500)->get(['id', 'name', 'phone']),
+            'customers' => Customer::query()->where('is_active', true)->orderBy('name')->limit(20)->get(['id', 'name', 'phone']),
             'currency' => (string) (new TenantSettings)->get('currency', config('pos.default_currency')),
             'paymentMethods' => Payment::methods(),
             'canCreateCustomer' => Gate::allows('create', Customer::class),
