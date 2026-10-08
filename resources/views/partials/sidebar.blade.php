@@ -74,9 +74,10 @@
             }
 
             return $hasShop
-                && ($menuUser->is_super_admin || $menuUser->can($item['permission']))
-                && (! isset($item['feature']) || $plan->allows($item['feature']));
+                && ($menuUser->is_super_admin || $menuUser->can($item['permission']));
         };
+        // Visible but not in the shop's plan: shown dimmed with a lock; opening it explains how to upgrade.
+        $isLocked = fn (array $item): bool => isset($item['feature']) && ! $plan->allows($item['feature']);
     @endphp
     <ul>
         @foreach (config('menu') as $section)
@@ -87,10 +88,18 @@
                     <ul>
                         @foreach ($items as $item)
                             <li>
-                                <a href="{{ route($item['route']) }}" @class(['active' => request()->routeIs(...$item['match'])])>
-                                    <i class="{{ $item['icon'] }} fs-16 me-2"></i>
-                                    <span>{{ __($item['label']) }}</span>
-                                </a>
+                                @if ($isLocked($item))
+                                    <a href="{{ route($item['route']) }}" class="text-muted" data-locked="1" title="{{ __('plans.locked') }}">
+                                        <i class="{{ $item['icon'] }} fs-16 me-2"></i>
+                                        <span>{{ __($item['label']) }}</span>
+                                        <i class="ti ti-lock fs-14 ms-auto"></i>
+                                    </a>
+                                @else
+                                    <a href="{{ route($item['route']) }}" @class(['active' => request()->routeIs(...$item['match'])])>
+                                        <i class="{{ $item['icon'] }} fs-16 me-2"></i>
+                                        <span>{{ __($item['label']) }}</span>
+                                    </a>
+                                @endif
                             </li>
                         @endforeach
                     </ul>

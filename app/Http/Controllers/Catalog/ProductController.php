@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
 use App\Support\Money;
 use App\Support\Search;
+use App\Support\Sort;
 use App\Support\TenantSettings;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -30,13 +31,15 @@ class ProductController extends Controller
             ->withSum('stocks', 'quantity')
             ->when($request->integer('category'), fn ($q, $id) => $q->where('category_id', $id))
             ->when($request->integer('brand'), fn ($q, $id) => $q->where('brand_id', $id))
-            ->tap(fn ($q) => Search::apply($q, $request->query('q'), ['name', 'sku', 'barcode']))
-            ->orderBy('name')
-            ->paginate(25)
-            ->withQueryString();
+            ->tap(fn ($q) => Search::apply($q, $request->query('q'), ['name', 'sku', 'barcode']));
+
+        [$sort, $dir] = Sort::apply($products, $request, ['sku' => 'sku', 'name' => 'name', 'price' => 'selling_price'], 'name');
+        $products = $products->paginate(25)->withQueryString();
 
         return view('products.index', [
             'products' => $products,
+            'sort' => $sort,
+            'dir' => $dir,
             'categories' => Category::query()->orderBy('name')->get(['id', 'name']),
             'brands' => Brand::query()->orderBy('name')->get(['id', 'name']),
             'canManage' => Gate::allows('create', Product::class),

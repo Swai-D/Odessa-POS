@@ -17,6 +17,12 @@ return [
     // Days before the paid-until date from which the renewal reminder is shown.
     'warn_days' => 7,
 
+    // Shown on the "not in your plan" page so a shop knows who to call to upgrade. Set in .env.
+    'contact' => [
+        'phone' => env('PLAN_CONTACT_PHONE'),
+        'email' => env('PLAN_CONTACT_EMAIL'),
+    ],
+
     'aliases' => ['demo' => 'enterprise'],
 
     // Every feature a plan can switch on. Everything not listed here (POS, products, stock, sales,

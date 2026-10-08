@@ -11,6 +11,7 @@ use App\Http\Requests\ExpenseRequest;
 use App\Support\Csv;
 use App\Support\Money;
 use App\Support\Search;
+use App\Support\Sort;
 use App\Support\TenantSettings;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
@@ -54,8 +55,14 @@ class ExpenseController extends Controller
 
         [$query, $from, $to, $category] = $this->filtered($request);
 
+        $ordered = clone $query;
+        [$sort, $dir] = Sort::apply($ordered, $request, ['date' => 'spent_on', 'amount' => 'amount'], 'date', 'desc');
+        $expenses = $ordered->paginate(25)->withQueryString();
+
         return view('expenses.index', [
-            'expenses' => (clone $query)->orderByDesc('spent_on')->orderByDesc('id')->paginate(25)->withQueryString(),
+            'expenses' => $expenses,
+            'sort' => $sort,
+            'dir' => $dir,
             'total' => (int) (clone $query)->sum('amount'),
             'from' => $from,
             'to' => $to,

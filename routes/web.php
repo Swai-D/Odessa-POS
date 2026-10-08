@@ -22,6 +22,7 @@ use App\Http\Controllers\Sales\PosController;
 use App\Http\Controllers\Sales\PosCustomerController;
 use App\Http\Controllers\Sales\SaleController;
 use App\Http\Controllers\Sales\SaleReturnController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\Settings\IntegrationController;
 use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\Settings\UserController;
@@ -58,6 +59,7 @@ Route::middleware(['auth', 'can:platform'])->prefix('platform')->name('platform.
 
 // Everything below reads or writes shop data, so it needs a resolved tenant.
 Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (): void {
+    Route::get('/search', SearchController::class)->name('search');
     Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
     Route::get('/pos/products', [PosController::class, 'products'])->name('pos.products');
     Route::post('/pos/checkout', CheckoutController::class)->name('pos.checkout');

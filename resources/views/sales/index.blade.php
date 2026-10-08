@@ -44,13 +44,13 @@
 				<table class="table">
 					<thead class="thead-light">
 						<tr>
-							<th>{{ __('pos.sales.number') }}</th>
-							<th>{{ __('pos.sales.date') }}</th>
+							<th>@include('partials.sort-header', ['label' => __('pos.sales.number'), 'key' => 'number'])</th>
+							<th>@include('partials.sort-header', ['label' => __('pos.sales.date'), 'key' => 'date'])</th>
 							<th>{{ __('pos.sales.customer') }}</th>
 							<th>{{ __('pos.sales.cashier') }}</th>
-							<th>{{ __('pos.sales.total') }}</th>
+							<th>@include('partials.sort-header', ['label' => __('pos.sales.total'), 'key' => 'total'])</th>
 							<th>{{ __('pos.sales.paid') }}</th>
-							<th>{{ __('pos.sales.balance') }}</th>
+							<th>@include('partials.sort-header', ['label' => __('pos.sales.balance'), 'key' => 'balance'])</th>
 							<th>{{ __('pos.sales.status') }}</th>
 							<th class="no-sort"></th>
 						</tr>

@@ -63,13 +63,13 @@
 				<table class="table">
 					<thead class="thead-light">
 						<tr>
-							<th>{{ __('expenses.date') }}</th>
+							<th>@include('partials.sort-header', ['label' => __('expenses.date'), 'key' => 'date'])</th>
 							<th>{{ __('expenses.category') }}</th>
 							<th>{{ __('expenses.method') }}</th>
 							<th>{{ __('expenses.reference') }}</th>
 							<th>{{ __('expenses.note') }}</th>
 							<th>{{ __('expenses.recorded_by') }}</th>
-							<th class="text-end">{{ __('expenses.amount') }}</th>
+							<th class="text-end">@include('partials.sort-header', ['label' => __('expenses.amount'), 'key' => 'amount'])</th>
 							@if ($canManage)<th class="no-sort"></th>@endif
 						</tr>
 					</thead>
