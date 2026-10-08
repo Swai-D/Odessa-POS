@@ -66,7 +66,7 @@
 							<thead class="thead-light"><tr><th>{{ __('reports.product') }}</th><th class="text-end">{{ __('reports.quantity') }}</th><th class="text-end">{{ __('reports.revenue') }}</th><th class="text-end">{{ __('reports.profit') }}</th></tr></thead>
 							<tbody>
 								@forelse ($top as $row)
-									<tr><td>{{ $row->name }}</td><td class="text-end">{{ $qty($row->quantity) }}</td><td class="text-end">{{ $money($row->revenue) }}</td><td class="text-end">{{ $money($row->profit) }}</td></tr>
+									<tr><td>{{ $row['name'] }}</td><td class="text-end">{{ $qty($row['quantity']) }}</td><td class="text-end">{{ $money($row['revenue']) }}</td><td class="text-end">{{ $money($row['profit']) }}</td></tr>
 								@empty
 									<tr><td colspan="4" class="text-center text-muted py-4">{{ __('reports.no_data') }}</td></tr>
 								@endforelse
@@ -84,7 +84,7 @@
 						<table class="table mb-0">
 							<tbody>
 								@forelse ($methods as $row)
-									<tr><td>{{ __('pos.methods.'.$row->method) }}</td><td class="text-end">{{ $money($row->amount) }}</td></tr>
+									<tr><td>{{ __('pos.methods.'.$row['method']) }}</td><td class="text-end">{{ $money($row['amount']) }}</td></tr>
 								@empty
 									<tr><td class="text-center text-muted py-4">{{ __('reports.no_data') }}</td></tr>
 								@endforelse
@@ -105,7 +105,7 @@
 						<table class="table mb-0">
 							<tbody>
 								@forelse ($balances as $row)
-									<tr><td>{{ $row->name }}</td><td class="text-end">{{ $money($row->balance) }}</td></tr>
+									<tr><td>{{ $row['name'] }}</td><td class="text-end">{{ $money($row['balance']) }}</td></tr>
 								@empty
 									<tr><td class="text-center text-muted py-4">{{ __('reports.nobody_owes') }}</td></tr>
 								@endforelse
