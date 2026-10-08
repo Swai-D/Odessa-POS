@@ -30,8 +30,6 @@
 				<div class="sidebar-nav mb-3">
 					<ul class="nav nav-tabs nav-tabs-solid nav-tabs-rounded nav-justified bg-transparent" role="tablist">
 						<li class="nav-item"><a class="nav-link active border-0" href="{{ route('dashboard') }}#">Menu</a></li>
-						<li class="nav-item"><a class="nav-link border-0" href="chat.html">Chats</a></li>
-						<li class="nav-item"><a class="nav-link border-0" href="email.html">Inbox</a></li>
 					</ul>
 				</div>
 			</div>
@@ -51,27 +49,13 @@
 							<i class="ti ti-layout-grid-remove"></i>
 						</a>
 					</div>
-					<div>
-						<a href="chat.html" class="btn btn-sm btn-icon bg-light">
-							<i class="ti ti-brand-hipchat"></i>
-						</a>
-					</div>
-					<div>
-						<a href="email.html" class="btn btn-sm btn-icon bg-light position-relative">
-							<i class="ti ti-message"></i>
-						</a>
-					</div>
-					<div class="notification-item">
-						<a href="activities.html" class="btn btn-sm btn-icon bg-light position-relative">
-							<i class="ti ti-bell"></i>
-							<span class="notification-status-dot"></span>
-						</a>
-					</div>
+@can('manage-settings')
 					<div class="me-0">
-						<a href="general-settings.html" class="btn btn-sm btn-icon bg-light">
+						<a href="{{ route('settings.index') }}" class="btn btn-sm btn-icon bg-light">
 							<i class="ti ti-settings"></i>
 						</a>
 					</div>
+					@endcan
 				</div>
 			</div>
 			<div class="sidebar-inner slimscroll">
