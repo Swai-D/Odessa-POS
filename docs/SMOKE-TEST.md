@@ -63,6 +63,11 @@ Use two browser profiles (or a private window) so a platform admin and a shop us
 - [ ] A Cashier (no expenses permission) sees neither the menu items nor the profit and loss card.
 - [ ] A shop that existed before this release: Owner, Manager and Accountant can open Expenses without re-creating roles.
 
+## 7c. Search, sorting and upgrade prompts
+- [ ] Navbar search: type a product name, a customer, a sale number; results are grouped and each link opens the right page. A Cashier does not see groups they have no permission for.
+- [ ] Click the column headers (Products: SKU, name, price; Sales and Purchases: number, date, total, balance; Expenses: date, amount): the arrow shows the direction, a second click reverses it, and your search and filters stay.
+- [ ] On a Basic shop, Brands, Purchases, Suppliers, Reports, Expenses show dimmed with a lock. Clicking one opens the "not in your plan" page naming the plan that includes it, with your contact details (set `PLAN_CONTACT_PHONE` / `PLAN_CONTACT_EMAIL` in `.env`).
+
 ## 8. Hardware and integrations (needs the real device)
 - [ ] ESC/POS thermal printer through the browser (Web Serial/WebUSB): not tested on real hardware yet.
 - [ ] Barcode scanner (keyboard wedge) in the till search box.
