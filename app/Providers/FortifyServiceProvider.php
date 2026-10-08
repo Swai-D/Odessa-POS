@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\User;
+use App\Support\Tenancy\TenantContext;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -33,11 +34,18 @@ class FortifyServiceProvider extends ServiceProvider
                 ->where('email', strtolower((string) $request->input(Fortify::username())))
                 ->first();
 
-            if ($user && Hash::check((string) $request->password, $user->password)) {
-                return $user;
+            if (! $user || ! Hash::check((string) $request->password, $user->password)) {
+                return null;
             }
 
-            return null;
+            // On a shop's own address (subdomain, domain or the local override) only that shop's users may sign in.
+            $tenant = app(TenantContext::class)->get();
+
+            if ($tenant !== null && $user->tenant_id !== $tenant->getKey()) {
+                return null;
+            }
+
+            return $user;
         });
 
         RateLimiter::for('login', fn (Request $request) => Limit::perMinute(5)->by(
