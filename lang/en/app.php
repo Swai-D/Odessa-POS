@@ -2,6 +2,7 @@
 
 return [
     'name' => 'Odessa POS',
+    'showing' => 'Showing :from–:to of :total',
     'nav' => [
         'my_profile' => 'My Profile',
         'reports' => 'Reports',

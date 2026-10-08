@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\Search;
 use App\Support\Tenancy\TenantContext;
 use Closure;
 use Illuminate\Contracts\View\View;
@@ -78,7 +79,13 @@ abstract class LookupController extends Controller
         return null;
     }
 
-    public function index(): View
+    /** @return list<string> columns the list search looks in */
+    protected function searchColumns(): array
+    {
+        return ['name'];
+    }
+
+    public function index(Request $request): View
     {
         Gate::authorize('viewAny', $this->model());
 
@@ -87,7 +94,10 @@ abstract class LookupController extends Controller
             'route' => $this->route(),
             'columns' => $this->columns(),
             'fields' => $this->fields(),
-            'records' => $this->scope($this->model()::query()->with($this->with()))->orderBy('name')->get(),
+            'records' => Search::apply($this->scope($this->model()::query()->with($this->with())), $request->query('q'), $this->searchColumns())
+                ->orderBy('name')
+                ->paginate(25)
+                ->withQueryString(),
             'canManage' => Gate::allows('create', $this->model()),
         ]);
     }

@@ -9,6 +9,7 @@ use App\Domain\Sales\Models\Sale;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PaymentRequest;
 use App\Support\Money;
+use App\Support\Search;
 use App\Support\Tenancy\TenantContext;
 use App\Support\TenantSettings;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -28,9 +29,10 @@ class SaleController extends Controller
         $sales = Sale::query()
             ->with(['customer:id,name', 'user:id,name'])
             ->when($request->query('status') === 'unpaid', fn ($q) => $q->where('balance_due', '>', 0))
+            ->tap(fn ($q) => Search::apply($q, $request->query('q'), ['number', 'customer.name']))
             ->latest('id')
-            ->limit(500)
-            ->get();
+            ->paginate(25)
+            ->withQueryString();
 
         return view('sales.index', [
             'sales' => $sales,

@@ -10,6 +10,7 @@ use App\Domain\Catalog\Models\Unit;
 use App\Domain\Inventory\Models\Warehouse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
+use App\Support\Search;
 use App\Support\TenantSettings;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -27,8 +28,10 @@ class ProductController extends Controller
             ->withSum('stocks', 'quantity')
             ->when($request->integer('category'), fn ($q, $id) => $q->where('category_id', $id))
             ->when($request->integer('brand'), fn ($q, $id) => $q->where('brand_id', $id))
+            ->tap(fn ($q) => Search::apply($q, $request->query('q'), ['name', 'sku', 'barcode']))
             ->orderBy('name')
-            ->get();
+            ->paginate(25)
+            ->withQueryString();
 
         return view('products.index', [
             'products' => $products,

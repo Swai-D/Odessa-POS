@@ -2,6 +2,7 @@
 
 return [
     'name' => 'Odessa POS',
+    'showing' => 'Inaonyesha :from–:to kati ya :total',
     'nav' => [
         'my_profile' => 'Wasifu Wangu',
         'reports' => 'Ripoti',
