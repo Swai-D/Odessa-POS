@@ -5,6 +5,8 @@ use App\Http\Controllers\Catalog\CategoryController;
 use App\Http\Controllers\Catalog\ProductController;
 use App\Http\Controllers\Catalog\UnitController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Finance\ExpenseCategoryController;
+use App\Http\Controllers\Finance\ExpenseController;
 use App\Http\Controllers\Inventory\StockAdjustmentController;
 use App\Http\Controllers\Inventory\StockController;
 use App\Http\Controllers\Inventory\WarehouseController;
@@ -90,6 +92,9 @@ Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index')->middleware('plan:reports');
     Route::get('/reports/export/{report}', [ReportController::class, 'export'])
         ->where('report', 'daily|products|payments|balances|stock')->name('reports.export')->middleware('plan:reports');
+    Route::get('/expenses/export', [ExpenseController::class, 'export'])->name('expenses.export')->middleware('plan:expenses');
+    Route::resource('expenses', ExpenseController::class)->only(['index', 'store', 'update', 'destroy'])->middleware('plan:expenses');
+    Route::resource('expense-categories', ExpenseCategoryController::class)->only($lookup)->middleware('plan:expenses');
     Route::get('/settings', [SettingsController::class, 'edit'])->name('settings.index');
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
     Route::resource('users', UserController::class)->only(['index', 'store', 'update', 'destroy']);

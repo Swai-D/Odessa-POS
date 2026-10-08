@@ -1,6 +1,12 @@
 <?php
 
 return [
+    'profit_loss' => 'Faida na hasara',
+    'profit_loss_hint' => 'Mauzo bila kodi ukitoa gharama ya bidhaa zilizouzwa ni faida ghafi; kisha matumizi yanatolewa. Manunuzi huhesabiwa tu bidhaa zikiuzwa.',
+    'cost_of_goods' => 'Gharama ya bidhaa zilizouzwa',
+    'gross_profit' => 'Faida ghafi',
+    'expenses' => 'Matumizi',
+    'net_profit' => 'Faida halisi',
     'title' => 'Ripoti',
     'hint' => 'Mauzo, stoo na madeni ya duka lako',
     'from' => 'Kuanzia',

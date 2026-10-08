@@ -13,6 +13,7 @@ return [
         'purchasing' => 'Manunuzi na wasambazaji',
         'integrations' => 'Miunganisho',
         'reports' => 'Ripoti',
+        'expenses' => 'Matumizi na faida/hasara',
         'fiscal' => 'Risiti za TRA',
     ],
 ];

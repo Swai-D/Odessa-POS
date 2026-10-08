@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Domain\Finance\Services\ReportService;
+use App\Support\Csv;
 use App\Support\Money;
 use App\Support\Plans;
 use App\Support\TenantSettings;
@@ -67,21 +68,15 @@ class ReportController extends Controller
 
         $filename = sprintf('%s-%s-%s.csv', $report, $from->format('Ymd'), $to->format('Ymd'));
 
-        return response()->streamDownload(function () use ($header, $rows): void {
-            $out = fopen('php://output', 'w');
-            fwrite($out, "\xEF\xBB\xBF"); // UTF-8 BOM so Excel reads Swahili text correctly.
-            fputcsv($out, array_map(self::cell(...), $header));
-            foreach ($rows as $row) {
-                fputcsv($out, array_map(self::cell(...), $row));
-            }
-            fclose($out);
-        }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);
+        return Csv::download($filename, $header, $rows);
     }
 
-    /** Neutralise spreadsheet formulas in text coming from shop data (names typed by users). */
-    private static function cell(mixed $value): mixed
+    /** Profit and loss needs expenses in the plan, and the permission to see expenses. */
+    private function canSeeProfitLoss(Request $request): bool
     {
-        return is_string($value) && $value !== '' && in_array($value[0], ['=', '+', '-', '@', "\t", "\r"], true) ? "'".$value : $value;
+        $user = $request->user();
+
+        return Plans::current()->allows('expenses') && $user !== null && ($user->is_super_admin || $user->can('expenses.view'));
     }
 
     public function index(Request $request): View
@@ -102,6 +97,7 @@ class ReportController extends Controller
             'stock' => $reports->stockValuation(),
             'low' => $reports->lowStock(),
             'purchases' => Plans::current()->allows('purchasing') ? $reports->purchases() : null,
+            'profitLoss' => $this->canSeeProfitLoss($request) ? $reports->profitAndLoss() : null,
         ]);
     }
 }

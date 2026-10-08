@@ -134,6 +134,22 @@
 		</div>
 	</div>
 
+	@if ($profitLoss)
+		<div class="card">
+			<div class="card-header"><h5 class="mb-0">{{ __('reports.profit_loss') }}</h5><small class="text-muted">{{ __('reports.profit_loss_hint') }}</small></div>
+			<div class="card-body">
+				<div class="d-flex justify-content-between mb-2"><span>{{ __('reports.revenue') }}</span><strong>{{ $money($profitLoss['revenue']) }}</strong></div>
+				<div class="d-flex justify-content-between mb-2"><span>{{ __('reports.cost_of_goods') }}</span><strong>{{ $money($profitLoss['cost']) }}</strong></div>
+				<div class="d-flex justify-content-between border-top pt-2 mb-3"><span>{{ __('reports.gross_profit') }}</span><strong>{{ $money($profitLoss['gross_profit']) }}</strong></div>
+				<div class="d-flex justify-content-between mb-1"><span>{{ __('reports.expenses') }}</span><strong>{{ $money($profitLoss['expenses']) }}</strong></div>
+				@foreach ($profitLoss['by_category'] as $row)
+					<div class="d-flex justify-content-between text-muted ps-3 fs-13"><span>{{ $row['name'] }}</span><span>{{ $money($row['amount']) }}</span></div>
+				@endforeach
+				<div class="d-flex justify-content-between border-top pt-2 mt-3 fs-16"><span class="fw-bold">{{ __('reports.net_profit') }}</span><strong class="{{ $profitLoss['net_profit'] < 0 ? 'text-danger' : 'text-success' }}">{{ $money($profitLoss['net_profit']) }}</strong></div>
+			</div>
+		</div>
+	@endif
+
 	@if ($purchases)
 		<div class="card">
 			<div class="card-header"><h5 class="mb-0">{{ __('reports.purchases') }}</h5></div>

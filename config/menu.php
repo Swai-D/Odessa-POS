@@ -56,6 +56,13 @@ return [
         ],
     ],
     [
+        'label' => 'app.menu.finance',
+        'items' => [
+            ['label' => 'app.menu.expenses', 'icon' => 'ti ti-receipt-2', 'route' => 'expenses.index', 'feature' => 'expenses', 'permission' => 'expenses.view', 'match' => ['expenses.*']],
+            ['label' => 'app.menu.expense_categories', 'icon' => 'ti ti-category', 'route' => 'expense-categories.index', 'feature' => 'expenses', 'permission' => 'expenses.view', 'match' => ['expense-categories.*']],
+        ],
+    ],
+    [
         'label' => 'app.menu.reports',
         'items' => [
             ['label' => 'app.menu.reports', 'icon' => 'ti ti-chart-bar', 'route' => 'reports.index', 'feature' => 'reports', 'permission' => 'reports.view', 'match' => ['reports.*']],
