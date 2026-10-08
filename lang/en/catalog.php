@@ -43,6 +43,8 @@ return [
     'stock_options' => 'Stock & Options',
     'optional_features' => 'Optional features',
     'select' => 'Select',
+    'search_product' => 'Type a name, SKU or barcode',
+    'pick_product' => 'Pick a product from the list',
     'low_stock' => 'Low stock',
     'inactive' => 'Inactive',
     'no_warehouse_hint' => 'Create a warehouse first to record opening stock.',

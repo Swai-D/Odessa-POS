@@ -116,9 +116,13 @@
 @endsection
 
 @push('extra-js')
+<script src="{{ asset('js/product-picker.js') }}"></script>
 <script>
 	(function () {
-		var products = @json($products);
+		var restoredProducts = @json($restoredProducts);
+		var lookupUrl = @json(route('products.lookup'));
+		var pickMessage = @json(__('catalog.pick_product'));
+		var placeholder = @json(__('catalog.search_product'));
 		var oldItems = @json(old('items', []));
 		var body = document.querySelector('#lines tbody');
 		var counter = 0;
@@ -140,26 +144,26 @@
 		function addLine(item) {
 			var i = counter++;
 			var row = document.createElement('tr');
-			var options = '<option value=""></option>' + products.map(function (p) {
-				return '<option value="' + p.id + '" data-cost="' + p.cost + '">' + p.label.replace(/</g, '&lt;') + '</option>';
-			}).join('');
 			row.innerHTML =
-				'<td><select class="form-select line-product" name="items[' + i + '][product_id]" required>' + options + '</select></td>' +
+				'<td><div class="js-product-picker" data-url="' + lookupUrl + '" data-required="1" data-message="' + pickMessage + '">' +
+					'<input type="text" class="form-control" list="products-dl-' + i + '" placeholder="' + placeholder + '" autocomplete="off">' +
+					'<datalist id="products-dl-' + i + '"></datalist>' +
+					'<input type="hidden" class="line-product" name="items[' + i + '][product_id]"></div></td>' +
 				'<td><input type="number" class="form-control line-qty" name="items[' + i + '][quantity]" min="0.001" step="any" required></td>' +
 				'<td><input type="number" class="form-control line-cost" name="items[' + i + '][unit_cost]" min="0" step="0.01" required></td>' +
 				'<td class="text-end line-total">0.00</td>' +
 				'<td><a href="javascript:void(0);" class="text-danger line-remove"><i class="ti ti-trash"></i></a></td>';
 			body.appendChild(row);
 
-			var select = row.querySelector('.line-product');
-			if (item) {
-				select.value = item.product_id || '';
+			var picker = row.querySelector('.js-product-picker');
+			if (item && item.product_id) {
+				row.querySelector('.line-product').value = item.product_id;
+				picker.querySelector('input[type="text"]').value = restoredProducts[item.product_id] || '';
 				row.querySelector('.line-qty').value = item.quantity || '';
 				row.querySelector('.line-cost').value = item.unit_cost || '';
 			}
-			select.addEventListener('change', function () {
-				var option = select.options[select.selectedIndex];
-				if (option && option.dataset.cost) { row.querySelector('.line-cost').value = option.dataset.cost; }
+			ProductPicker.attach(picker, function (product) {
+				row.querySelector('.line-cost').value = product.cost;
 				recalc();
 			});
 			row.querySelectorAll('input').forEach(function (input) { input.addEventListener('input', recalc); });

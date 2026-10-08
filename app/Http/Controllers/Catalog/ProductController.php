@@ -10,9 +10,11 @@ use App\Domain\Catalog\Models\Unit;
 use App\Domain\Inventory\Models\Warehouse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
+use App\Support\Money;
 use App\Support\Search;
 use App\Support\TenantSettings;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -38,6 +40,23 @@ class ProductController extends Controller
             'categories' => Category::query()->orderBy('name')->get(['id', 'name']),
             'brands' => Brand::query()->orderBy('name')->get(['id', 'name']),
             'canManage' => Gate::allows('create', Product::class),
+        ]);
+    }
+
+    /** Search-as-you-type feed for product pickers: name, SKU or barcode; optionally only stock-tracked products. */
+    public function lookup(Request $request): JsonResponse
+    {
+        Gate::authorize('viewAny', Product::class);
+
+        $query = Product::query()->where('is_active', true)
+            ->when($request->boolean('tracked'), fn ($q) => $q->where('track_stock', true));
+
+        return response()->json([
+            'data' => Search::apply($query, $request->query('q'), ['name', 'sku', 'barcode'])
+                ->orderBy('name')->limit(20)->get(['id', 'name', 'sku', 'cost_price'])
+                ->map(fn (Product $p): array => [
+                    'id' => $p->getKey(), 'label' => $p->name.' ('.$p->sku.')', 'cost' => Money::toMajor($p->cost_price),
+                ])->all(),
         ]);
     }
 

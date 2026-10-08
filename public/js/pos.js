@@ -225,6 +225,47 @@
 
 	function selectedCustomer() { return $('#pos-customer').value; }
 
+	function customerLabel(customer) { return customer.name + (customer.phone ? ' (' + customer.phone + ')' : ''); }
+
+	// Replace the picker's options with search results, always keeping walk-in and the current choice.
+	function fillCustomers(list) {
+		var select = $('#pos-customer');
+		var current = select.value;
+		var currentOption = current ? select.querySelector('option[value="' + current + '"]') : null;
+		var keep = currentOption ? { id: current, label: currentOption.textContent } : null;
+		select.innerHTML = '<option value="">' + esc(CFG.walkIn) + '</option>';
+		if (keep) { appendCustomer(select, keep.id, keep.label); }
+		list.forEach(function (customer) {
+			if (String(customer.id) !== String(current)) { appendCustomer(select, customer.id, customerLabel(customer)); }
+		});
+		select.value = current;
+	}
+
+	function appendCustomer(select, id, label) {
+		var option = document.createElement('option');
+		option.value = id;
+		option.textContent = label;
+		select.appendChild(option);
+	}
+
+	var customerTimer = null;
+	function searchCustomers(term) {
+		request('GET', CFG.routes.customerSearch + '?q=' + encodeURIComponent(term)).then(function (result) {
+			if (result.ok) { fillCustomers(result.data.data || []); }
+		});
+	}
+
+	// A held order may point at a customer the picker has not loaded yet.
+	function ensureCustomer(id) {
+		if (!id) { $('#pos-customer').value = ''; return; }
+		var select = $('#pos-customer');
+		if (select.querySelector('option[value="' + id + '"]')) { select.value = String(id); return; }
+		request('GET', CFG.routes.customerSearch + '?id=' + encodeURIComponent(id)).then(function (result) {
+			var found = result.ok && result.data.data && result.data.data[0];
+			if (found) { appendCustomer(select, found.id, customerLabel(found)); select.value = String(found.id); updatePaySummary(); }
+		});
+	}
+
 	/* ---------- payment modal ---------- */
 
 	function payRow(method, amountMinor) {
@@ -403,7 +444,7 @@
 					if (byId[item.product_id]) { addProduct(byId[item.product_id], parseFloat(item.quantity)); }
 				});
 				state.discount = held.discount || { type: 'none', value: 0 };
-				$('#pos-customer').value = held.customer_id ? String(held.customer_id) : '';
+				ensureCustomer(held.customer_id);
 				modal('pos-held').hide();
 				render();
 			});
@@ -564,6 +605,11 @@
 
 	// Customer changes affect the credit warning in the payment dialog.
 	$('#pos-customer').addEventListener('change', updatePaySummary);
+	$('#pos-customer-search').addEventListener('input', function () {
+		var term = this.value.trim();
+		clearTimeout(customerTimer);
+		customerTimer = setTimeout(function () { searchCustomers(term); }, 250);
+	});
 
 	render();
 	loadProducts();

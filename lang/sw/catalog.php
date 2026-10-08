@@ -43,6 +43,8 @@ return [
     'stock_options' => 'Stoo na Machaguo',
     'optional_features' => 'Vipengele vya hiari',
     'select' => 'Chagua',
+    'search_product' => 'Andika jina, SKU au barcode',
+    'pick_product' => 'Chagua bidhaa kutoka kwenye orodha',
     'low_stock' => 'Stoo ndogo',
     'inactive' => 'Haitumiki',
     'no_warehouse_hint' => 'Tengeneza ghala kwanza ili kuweka stoo ya kuanzia.',

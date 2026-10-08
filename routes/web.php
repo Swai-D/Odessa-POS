@@ -57,12 +57,14 @@ Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (
     Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
     Route::get('/pos/products', [PosController::class, 'products'])->name('pos.products');
     Route::post('/pos/checkout', CheckoutController::class)->name('pos.checkout');
+    Route::get('/pos/customers', [PosCustomerController::class, 'index'])->name('pos.customers.index');
     Route::post('/pos/customers', [PosCustomerController::class, 'store'])->name('pos.customers.store');
     Route::get('/pos/held', [PosController::class, 'heldIndex'])->name('pos.held.index');
     Route::post('/pos/held', [PosController::class, 'hold'])->name('pos.held.store');
     Route::post('/pos/held/{heldOrder}/resume', [PosController::class, 'resume'])->name('pos.held.resume');
     Route::delete('/pos/held/{heldOrder}', [PosController::class, 'discard'])->name('pos.held.destroy');
     $lookup = ['index', 'store', 'update', 'destroy'];
+    Route::get('/products/lookup', [ProductController::class, 'lookup'])->name('products.lookup');
     Route::resource('products', ProductController::class)->except(['show']);
     Route::resource('categories', CategoryController::class)->only($lookup);
     Route::resource('brands', BrandController::class)->only($lookup)->middleware('plan:brands');
