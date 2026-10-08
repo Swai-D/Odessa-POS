@@ -40,24 +40,24 @@ it('reports sales, best sellers, payments, balances and stock from the shop\'s o
 
     $result = reportsFor($tenant, callback: fn (ReportService $r) => [
         'summary' => $r->salesSummary(),
-        'top' => $r->topProducts()->first(),
-        'methods' => $r->paymentsByMethod()->all(),
-        'balances' => $r->customerBalances()->all(),
+        'top' => $r->topProducts()[0],
+        'methods' => $r->paymentsByMethod(),
+        'balances' => $r->customerBalances(),
         'stock' => $r->stockValuation(),
         'days' => $r->salesByDay(),
     ]);
 
     expect($result['summary'])->toBe(['count' => 2, 'gross' => 300000, 'discounts' => 0, 'tax' => 0, 'returns' => 0, 'net' => 300000, 'paid' => 200000, 'credit' => 100000])
-        ->and($result['top']->name)->toBe('Soap')
-        ->and($result['top']->quantity)->toBe(3.0)
-        ->and($result['top']->revenue)->toBe(300000)
-        ->and($result['top']->profit)->toBe(150000)
+        ->and($result['top']['name'])->toBe('Soap')
+        ->and($result['top']['quantity'])->toBe(3.0)
+        ->and($result['top']['revenue'])->toBe(300000)
+        ->and($result['top']['profit'])->toBe(150000)
         ->and($result['methods'])->toHaveCount(1)
-        ->and($result['methods'][0]->method)->toBe('cash')
-        ->and($result['methods'][0]->amount)->toBe(200000)
+        ->and($result['methods'][0]['method'])->toBe('cash')
+        ->and($result['methods'][0]['amount'])->toBe(200000)
         ->and($result['balances'])->toHaveCount(1)
-        ->and($result['balances'][0]->name)->toBe('Asha')
-        ->and($result['balances'][0]->balance)->toBe(100000)
+        ->and($result['balances'][0]['name'])->toBe('Asha')
+        ->and($result['balances'][0]['balance'])->toBe(100000)
         ->and($result['stock'])->toBe(['value' => 350000, 'units' => 7.0, 'products' => 1])
         ->and($result['days'])->toHaveCount(7)
         ->and(end($result['days'])['total'])->toBe(300000);
@@ -89,15 +89,15 @@ it('excludes tax from revenue and profit', function (): void {
     });
 
     checkout($this, 'shop-t', $user, [
-        'idempotency_key' => 'tax-1',
+        'idempotency_key' => 'tax-key-1',
         'warehouse_id' => $warehouse->id,
         'items' => [['product_id' => $vat->id, 'quantity' => 1]],
         'payments' => [['method' => 'cash', 'amount' => 118000]],
     ])->assertCreated();
 
-    $top = reportsFor($tenant, callback: fn (ReportService $r) => $r->topProducts()->firstWhere('name', 'Taxed'));
+    $top = reportsFor($tenant, callback: fn (ReportService $r) => collect($r->topProducts())->firstWhere('name', 'Taxed'));
 
-    expect($top->revenue)->toBe(100000)->and($top->profit)->toBe(50000);
+    expect($top['revenue'])->toBe(100000)->and($top['profit'])->toBe(50000);
 });
 
 it('shows the reports page only to users with the permission', function (): void {

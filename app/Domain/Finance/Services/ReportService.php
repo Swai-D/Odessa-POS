@@ -66,9 +66,9 @@ class ReportService
      * Best sellers by net revenue. Revenue and profit exclude tax and are net of returns; profit uses the cost
      * price recorded on the sale line at the time of sale.
      *
-     * @return Collection<int, object{name: string, quantity: float, revenue: int, profit: int}>
+     * @return list<array{name: string, quantity: float, revenue: int, profit: int}>
      */
-    public function topProducts(int $limit = 10): Collection
+    public function topProducts(int $limit = 10): array
     {
         $net = '(sale_items.total - sale_items.returned_amount)';
         $revenue = "({$net} - sale_items.tax * {$net} * 1.0 / NULLIF(sale_items.total, 0))";
@@ -84,16 +84,18 @@ class ReportService
             ->orderByDesc('revenue')
             ->limit($limit)
             ->get()
-            ->map(fn (SaleItem $row): object => (object) [
+            ->map(fn (SaleItem $row): array => [
                 'name' => (string) $row->getAttribute('name'),
                 'quantity' => (float) $row->getAttribute('quantity'),
                 'revenue' => (int) round((float) $row->getAttribute('revenue')),
                 'profit' => (int) round((float) $row->getAttribute('profit')),
-            ]);
+            ])
+            ->values()
+            ->all();
     }
 
-    /** @return Collection<int, object{method: string, amount: int}> */
-    public function paymentsByMethod(): Collection
+    /** @return list<array{method: string, amount: int}> */
+    public function paymentsByMethod(): array
     {
         return Payment::query()
             ->whereBetween('paid_at', [$this->from, $this->to])
@@ -101,15 +103,17 @@ class ReportService
             ->selectRaw('method, SUM(amount) as amount')
             ->orderByDesc('amount')
             ->get()
-            ->map(fn (Payment $row): object => (object) ['method' => $row->method, 'amount' => (int) $row->getAttribute('amount')]);
+            ->map(fn (Payment $row): array => ['method' => $row->method, 'amount' => (int) $row->getAttribute('amount')])
+            ->values()
+            ->all();
     }
 
     /**
      * What customers owe right now (not limited to the period).
      *
-     * @return Collection<int, object{name: string, balance: int}>
+     * @return list<array{name: string, balance: int}>
      */
-    public function customerBalances(int $limit = 15): Collection
+    public function customerBalances(int $limit = 15): array
     {
         return Sale::query()
             ->join('customers', 'customers.id', '=', 'sales.customer_id')
@@ -119,7 +123,9 @@ class ReportService
             ->orderByDesc('balance')
             ->limit($limit)
             ->get()
-            ->map(fn (Sale $row): object => (object) ['name' => (string) $row->getAttribute('name'), 'balance' => (int) $row->getAttribute('balance')]);
+            ->map(fn (Sale $row): array => ['name' => (string) $row->getAttribute('name'), 'balance' => (int) $row->getAttribute('balance')])
+            ->values()
+            ->all();
     }
 
     /** Stock on hand valued at cost price, right now. @return array{value: int, units: float, products: int} */
