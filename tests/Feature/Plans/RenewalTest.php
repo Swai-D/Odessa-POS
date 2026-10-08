@@ -107,5 +107,5 @@ it('shows the renewal form and payment history on the shop page', function (): v
     $this->actingAs(platformAdmin())->post(renewalUrl($tenant), renewalPayload(['reference' => 'REF-HISTORY']))->assertRedirect();
 
     $this->actingAs(platformAdmin())->get("/platform/tenants/{$tenant->getKey()}/edit")
-        ->assertOk()->assertSee('Renew subscription')->assertSee('REF-HISTORY')->assertSee('500.00');
+        ->assertOk()->assertSee('Renew subscription')->assertSee('REF-HISTORY')->assertSee('50,000.00');
 });
