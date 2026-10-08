@@ -51,6 +51,10 @@ Use two browser profiles (or a private window) so a platform admin and a shop us
 - [ ] Set it 8+ days back: the shop becomes read-only. Pages open, but saving, selling and adjusting are refused with the "subscription expired" message.
 - [ ] Set status Suspended: the shop is switched off. Set it back to Active with a future date: everything works again and no data was lost.
 
+- [ ] As super admin, open Shops > a shop > "Renew subscription": record 1 month with an amount; paid-until moves forward and the payment shows in the history below.
+- [ ] Renew a shop that lapsed a month ago: the new period starts from the payment day, and the shop is writable again.
+- [ ] Press the button twice quickly (or refresh after submitting): only one payment is recorded.
+
 ## 7b. Expenses (Medium and Enterprise)
 - [ ] On a Medium shop: Finance > Expenses appears in the sidebar; on a Basic shop it does not and `/expenses` shows the upgrade page.
 - [ ] Add a category (Expense categories), then add an expense with a decimal amount; edit it and delete it from the list.
