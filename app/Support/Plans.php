@@ -44,6 +44,10 @@ class Plans
     /** The smallest plan whose own features include `$feature` (ignores per-shop overrides); null when none does. */
     public static function cheapestPlanFor(string $feature): ?string
     {
+        if (! in_array($feature, (array) config('plans.features'), true)) {
+            return null;
+        }
+
         foreach (array_keys((array) config('plans.plans')) as $plan) {
             $granted = self::featuresOf((string) $plan);
 

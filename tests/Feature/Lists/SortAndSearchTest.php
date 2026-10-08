@@ -4,7 +4,6 @@ use App\Domain\Catalog\Models\Product;
 use App\Domain\People\Models\Customer;
 use App\Domain\Purchasing\Models\Supplier;
 use App\Support\Tenancy\TenantContext;
-use Illuminate\Support\Carbon;
 
 function pricedProducts($tenant, array $prices): void
 {
