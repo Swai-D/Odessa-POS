@@ -2,6 +2,7 @@
 
 use App\Domain\Sales\Services\DashboardSummary;
 use App\Support\Tenancy\TenantContext;
+use Illuminate\Support\Carbon;
 
 it('summarises only the shop\'s own sales, credit and low stock', function (): void {
     $tenant = createTenant('shop-d');
@@ -61,7 +62,7 @@ it('shows this month\'s expenses on the dashboard only to those who may see them
     $tenant = createTenant('shop-dx', 'medium');
     $user = createTenantUser($tenant, ['sales.view', 'dashboard.view', 'expenses.view']);
     addExpense($tenant, 'Rent', 250000);
-    addExpense($tenant, 'Old', 99999, Illuminate\Support\Carbon::today()->subMonths(2)->format('Y-m-d'));
+    addExpense($tenant, 'Old', 99999, Carbon::today()->subMonths(2)->format('Y-m-d'));
     $other = createTenant('shop-dy', 'medium');
     addExpense($other, 'Secret', 777700);
 
