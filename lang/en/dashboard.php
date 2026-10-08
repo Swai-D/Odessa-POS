@@ -10,6 +10,7 @@ return [
     'sales_today' => 'Sales today',
     'returns_today' => 'Returns today',
     'credit_today' => 'Credit given today',
+    'expenses_month' => 'Expenses this month',
     'credit_outstanding' => 'Customers owe',
     'last_7_days' => 'Last 7 days',
     'sales_count' => 'Sales',

@@ -56,3 +56,30 @@ it('shows only the greeting to a user without the sales permission', function ()
         ->assertSee('Welcome, '.$user->name)
         ->assertDontSee(__('dashboard.recent_sales'));
 });
+
+it('shows this month\'s expenses on the dashboard only to those who may see them on a plan with expenses', function (): void {
+    $tenant = createTenant('shop-dx', 'medium');
+    $user = createTenantUser($tenant, ['sales.view', 'dashboard.view', 'expenses.view']);
+    addExpense($tenant, 'Rent', 250000);
+    addExpense($tenant, 'Old', 99999, Illuminate\Support\Carbon::today()->subMonths(2)->format('Y-m-d'));
+    $other = createTenant('shop-dy', 'medium');
+    addExpense($other, 'Secret', 777700);
+
+    $page = $this->actingAs($user)->withHeader('X-Tenant', 'shop-dx')->get('/dashboard')->assertOk();
+    $page->assertSee('Expenses this month')->assertSee('2,500.00')->assertDontSee('7,777.00')->assertDontSee('999.99');
+});
+
+it('hides the expenses card without the permission', function (): void {
+    $tenant = createTenant('shop-dz', 'medium');
+    $user = createTenantUser($tenant, ['sales.view', 'dashboard.view']);
+    addExpense($tenant, 'Rent', 250000);
+
+    $this->actingAs($user)->withHeader('X-Tenant', 'shop-dz')->get('/dashboard')->assertOk()->assertDontSee('Expenses this month');
+});
+
+it('hides the expenses card on a plan without expenses', function (): void {
+    $tenant = createTenant('shop-dw', 'basic');
+    $user = createTenantUser($tenant, ['sales.view', 'dashboard.view', 'expenses.view']);
+
+    $this->actingAs($user)->withHeader('X-Tenant', 'shop-dw')->get('/dashboard')->assertOk()->assertDontSee('Expenses this month');
+});

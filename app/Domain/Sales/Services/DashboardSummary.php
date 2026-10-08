@@ -3,6 +3,7 @@
 namespace App\Domain\Sales\Services;
 
 use App\Domain\Catalog\Models\Product;
+use App\Domain\Finance\Models\Expense;
 use App\Domain\Sales\Models\Sale;
 use App\Domain\Sales\Models\SaleReturn;
 use Illuminate\Database\Eloquent\Builder;
@@ -28,6 +29,16 @@ class DashboardSummary
             'credit_given' => (int) (clone $sales)->sum('balance_due'),
             'returns_total' => (int) SaleReturn::query()->whereBetween('returned_at', $range)->sum('total'),
         ];
+    }
+
+    /** Expenses recorded for the current calendar month, in minor units. */
+    public function expensesThisMonth(): int
+    {
+        $now = $this->now ?? Carbon::now();
+
+        return (int) Expense::query()
+            ->whereBetween('spent_on', [$now->copy()->startOfMonth()->format('Y-m-d'), $now->copy()->endOfMonth()->format('Y-m-d')])
+            ->sum('amount');
     }
 
     /** Unpaid customer balances across all sales. */
