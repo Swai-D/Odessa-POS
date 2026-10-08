@@ -34,5 +34,9 @@ return [
     'payable' => 'Tunayodaiwa na wasambazaji',
     'by_day' => 'Mauzo kwa siku',
     'sales' => 'Mauzo',
+    'method' => 'Njia',
+    'balance' => 'Deni',
+    'on_hand' => 'Zilizopo',
+    'alert_quantity' => 'Kiwango cha tahadhari',
     'no_data' => 'Hakuna data kwa kipindi hiki.',
 ];
