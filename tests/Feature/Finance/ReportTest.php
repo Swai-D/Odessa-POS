@@ -128,16 +128,30 @@ it('exports a report as CSV with Excel-safe text', function (): void {
         ->toContain('1000.00');
 });
 
-it('guards report exports by plan, permission and report name', function (): void {
-    $basic = createTenant('shop-xb', 'basic');
-    $basicUser = createTenantUser($basic, ['reports.view']);
-    $this->actingAs($basicUser)->withHeader('X-Tenant', 'shop-xb')->get('/reports/export/daily')->assertForbidden();
+it('refuses report exports on the basic plan', function (): void {
+    $tenant = createTenant('shop-xb', 'basic');
+    $user = createTenantUser($tenant, ['reports.view']);
 
-    $tenant = createTenant('shop-xe');
-    $none = createTenantUser($tenant, ['dashboard.view']);
-    $viewer = createTenantUser($tenant, ['reports.view']);
-    $this->actingAs($none)->withHeader('X-Tenant', 'shop-xe')->get('/reports/export/daily')->assertForbidden();
-    $this->actingAs($viewer)->withHeader('X-Tenant', 'shop-xe')->get('/reports/export/secrets')->assertNotFound();
-    $ok = $this->actingAs($viewer)->withHeader('X-Tenant', 'shop-xe')->get('/reports/export/daily');
-    expect($ok->status())->toBe(200, substr(strip_tags((string) $ok->baseResponse->getContent()), 0, 300).' | '.($ok->exception?->getMessage() ?? ''));
+    $this->actingAs($user)->withHeader('X-Tenant', 'shop-xb')->get('/reports/export/daily')->assertForbidden();
+});
+
+it('refuses report exports without the reports permission', function (): void {
+    $tenant = createTenant('shop-xn');
+    $user = createTenantUser($tenant, ['dashboard.view']);
+
+    $this->actingAs($user)->withHeader('X-Tenant', 'shop-xn')->get('/reports/export/daily')->assertForbidden();
+});
+
+it('exports the daily report for a user with the permission', function (): void {
+    $tenant = createTenant('shop-xd');
+    $user = createTenantUser($tenant, ['reports.view']);
+
+    $this->actingAs($user)->withHeader('X-Tenant', 'shop-xd')->get('/reports/export/daily')->assertOk();
+});
+
+it('only exports known reports', function (): void {
+    $tenant = createTenant('shop-xk');
+    $user = createTenantUser($tenant, ['reports.view']);
+
+    $this->actingAs($user)->withHeader('X-Tenant', 'shop-xk')->get('/reports/export/secrets')->assertNotFound();
 });
