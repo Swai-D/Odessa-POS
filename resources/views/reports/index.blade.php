@@ -4,6 +4,8 @@
 
 @section('content')
 @php
+	$exportQuery = ['from' => $from->format('Y-m-d'), 'to' => $to->format('Y-m-d')];
+	$export = fn (string $report) => route('reports.export', ['report' => $report] + $exportQuery);
 	$money = fn (int $amount) => \App\Support\Money::format($amount, $currency);
 	$qty = fn (float $value) => rtrim(rtrim(number_format($value, 3, '.', ''), '0'), '.') ?: '0';
 @endphp
@@ -59,7 +61,7 @@
 	<div class="row">
 		<div class="col-xl-7 d-flex">
 			<div class="card flex-fill">
-				<div class="card-header"><h5 class="mb-0">{{ __('reports.top_products') }}</h5><small class="text-muted">{{ __('reports.top_products_hint') }}</small></div>
+				<div class="card-header d-flex justify-content-between align-items-start"><div><h5 class="mb-0">{{ __('reports.top_products') }}</h5><small class="text-muted">{{ __('reports.top_products_hint') }}</small></div><a href="{{ $export('products') }}" class="btn btn-sm btn-white"><i class="ti ti-download me-1"></i>CSV</a></div>
 				<div class="card-body p-0">
 					<div class="table-responsive">
 						<table class="table mb-0">
@@ -78,7 +80,7 @@
 		</div>
 		<div class="col-xl-5 d-flex">
 			<div class="card flex-fill">
-				<div class="card-header"><h5 class="mb-0">{{ __('reports.payments_by_method') }}</h5></div>
+				<div class="card-header d-flex justify-content-between align-items-center"><h5 class="mb-0">{{ __('reports.payments_by_method') }}</h5><a href="{{ $export('payments') }}" class="btn btn-sm btn-white"><i class="ti ti-download me-1"></i>CSV</a></div>
 				<div class="card-body p-0">
 					<div class="table-responsive">
 						<table class="table mb-0">
@@ -99,7 +101,7 @@
 	<div class="row">
 		<div class="col-xl-6 d-flex">
 			<div class="card flex-fill">
-				<div class="card-header"><h5 class="mb-0">{{ __('reports.customer_balances') }}</h5><small class="text-muted">{{ __('reports.as_of_now') }}</small></div>
+				<div class="card-header d-flex justify-content-between align-items-start"><div><h5 class="mb-0">{{ __('reports.customer_balances') }}</h5><small class="text-muted">{{ __('reports.as_of_now') }}</small></div><a href="{{ $export('balances') }}" class="btn btn-sm btn-white"><i class="ti ti-download me-1"></i>CSV</a></div>
 				<div class="card-body p-0">
 					<div class="table-responsive">
 						<table class="table mb-0">
@@ -121,7 +123,7 @@
 				<div class="card-body">
 					<div class="d-flex justify-content-between mb-2"><span>{{ __('reports.stock_value') }}</span><strong>{{ $money($stock['value']) }}</strong></div>
 					<div class="d-flex justify-content-between mb-3"><span>{{ __('reports.stock_units') }}</span><strong>{{ $qty($stock['units']) }} ({{ trans_choice('reports.products_count', $stock['products'], ['count' => $stock['products']]) }})</strong></div>
-					<h6>{{ __('reports.low_stock') }}</h6>
+					<div class="d-flex justify-content-between align-items-center"><h6 class="mb-0">{{ __('reports.low_stock') }}</h6><a href="{{ $export('stock') }}" class="btn btn-sm btn-white"><i class="ti ti-download me-1"></i>CSV</a></div>
 					@forelse ($low as $product)
 						<div class="d-flex justify-content-between border-top py-1"><span>{{ $product->name }}</span><span>{{ $qty((float) ($product->getAttribute('on_hand') ?? 0)) }} / {{ $qty((float) $product->alert_quantity) }}</span></div>
 					@empty
@@ -143,7 +145,7 @@
 	@endif
 
 	<div class="card">
-		<div class="card-header"><h5 class="mb-0">{{ __('reports.by_day') }}</h5></div>
+		<div class="card-header d-flex justify-content-between align-items-center"><h5 class="mb-0">{{ __('reports.by_day') }}</h5><a href="{{ $export('daily') }}" class="btn btn-sm btn-white"><i class="ti ti-download me-1"></i>CSV</a></div>
 		<div class="card-body p-0">
 			<div class="table-responsive">
 				<table class="table mb-0">

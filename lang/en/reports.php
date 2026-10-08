@@ -34,5 +34,9 @@ return [
     'payable' => 'Owed to suppliers',
     'by_day' => 'Sales by day',
     'sales' => 'Sales',
+    'method' => 'Method',
+    'balance' => 'Balance',
+    'on_hand' => 'On hand',
+    'alert_quantity' => 'Alert quantity',
     'no_data' => 'No data for this period.',
 ];

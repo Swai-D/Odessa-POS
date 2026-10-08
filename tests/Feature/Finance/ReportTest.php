@@ -109,3 +109,35 @@ it('shows the reports page only to users with the permission', function (): void
     $this->actingAs($other)->withHeader('X-Tenant', 'shop-v')->get('/reports')->assertForbidden();
     $this->actingAs($viewer)->withHeader('X-Tenant', 'shop-v')->get('/reports?from=2026-10-05&to=2026-10-01')->assertSessionHasErrors('to');
 });
+
+it('exports a report as CSV with Excel-safe text', function (): void {
+    $tenant = createTenant('shop-x');
+    $user = createTenantUser($tenant, [...posPermissions(), 'reports.view']);
+    [$product, $warehouse] = posFixture($tenant);
+    app(TenantContext::class)->run($tenant, fn () => $product->update(['name' => '=HYPERLINK("x")']));
+    checkout($this, 'shop-x', $user, cart($product, $warehouse, ['payments' => [['method' => 'cash', 'amount' => 200000]]]))->assertCreated();
+
+    $response = $this->actingAs($user)->withHeader('X-Tenant', 'shop-x')->get('/reports/export/products');
+    $csv = $response->streamedContent();
+
+    $response->assertOk()->assertHeader('content-type', 'text/csv; charset=UTF-8');
+    expect($csv)->toStartWith("\xEF\xBB\xBF")
+        ->toContain(__('reports.revenue'))
+        ->toContain("'=HYPERLINK")
+        ->toContain('2000.00')
+        ->toContain('1000.00');
+});
+
+it('guards report exports by plan, permission and report name', function (): void {
+    $basic = createTenant('shop-xb', 'basic');
+    $basicUser = createTenantUser($basic, ['reports.view']);
+    $this->actingAs($basicUser)->withHeader('X-Tenant', 'shop-xb')->get('/reports/export/daily')->assertForbidden();
+
+    $tenant = createTenant('shop-xe');
+    $none = createTenantUser($tenant, ['dashboard.view']);
+    $viewer = createTenantUser($tenant, ['reports.view']);
+    $this->actingAs($none)->withHeader('X-Tenant', 'shop-xe')->get('/reports/export/daily')->assertForbidden();
+    $this->actingAs($viewer)->withHeader('X-Tenant', 'shop-xe')->get('/reports/export/secrets')->assertNotFound();
+    $ok = $this->actingAs($viewer)->withHeader('X-Tenant', 'shop-xe')->get('/reports/export/daily');
+    expect($ok->status())->toBe(200, substr(strip_tags((string) $ok->baseResponse->getContent()), 0, 300).' | '.($ok->exception?->getMessage() ?? ''));
+});

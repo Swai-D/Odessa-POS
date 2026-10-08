@@ -86,6 +86,8 @@ Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (
     Route::resource('suppliers', SupplierController::class)->only($lookup)->middleware('plan:purchasing');
     Route::view('/people', 'modules.placeholder', ['title' => 'app.menu.people'])->name('people.index');
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index')->middleware('plan:reports');
+    Route::get('/reports/export/{report}', [ReportController::class, 'export'])
+        ->where('report', 'daily|products|payments|balances|stock')->name('reports.export')->middleware('plan:reports');
     Route::get('/settings', [SettingsController::class, 'edit'])->name('settings.index');
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
     Route::resource('users', UserController::class)->only(['index', 'store', 'update', 'destroy']);
