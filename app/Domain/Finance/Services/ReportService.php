@@ -3,6 +3,7 @@
 namespace App\Domain\Finance\Services;
 
 use App\Domain\Catalog\Models\Product;
+use App\Domain\Finance\Models\Expense;
 use App\Domain\Inventory\Models\ProductStock;
 use App\Domain\Purchasing\Models\Purchase;
 use App\Domain\Sales\Models\Payment;
@@ -70,9 +71,7 @@ class ReportService
      */
     public function topProducts(int $limit = 10): array
     {
-        $net = '(sale_items.total - sale_items.returned_amount)';
-        $revenue = "({$net} - sale_items.tax * {$net} * 1.0 / NULLIF(sale_items.total, 0))";
-        $cost = '(sale_items.cost_price * (sale_items.quantity - sale_items.returned_quantity))';
+        [$revenue, $cost] = self::lineExpressions();
 
         return SaleItem::query()
             ->join('sales', 'sales.id', '=', 'sale_items.sale_id')
@@ -169,6 +168,65 @@ class ReportService
             'count' => (clone $purchases)->count(),
             'total' => (int) (clone $purchases)->sum('total'),
             'payable' => (int) Purchase::query()->where('balance_due', '>', 0)->sum('balance_due'),
+        ];
+    }
+
+    /**
+     * SQL for a sale line's revenue (excluding tax, net of returns) and its cost, shared by every profit figure
+     * so the best-sellers table and the profit and loss always add up.
+     *
+     * @return array{0: string, 1: string}
+     */
+    private static function lineExpressions(): array
+    {
+        $net = '(sale_items.total - sale_items.returned_amount)';
+
+        return [
+            "({$net} - sale_items.tax * {$net} * 1.0 / NULLIF(sale_items.total, 0))",
+            '(sale_items.cost_price * (sale_items.quantity - sale_items.returned_quantity))',
+        ];
+    }
+
+    /**
+     * Profit and loss for the period: revenue less the cost of what was sold gives gross profit; expenses are then
+     * taken off to give net profit. Purchases are not a cost here (stock is only a cost once it is sold).
+     *
+     * @return array{revenue: int, cost: int, gross_profit: int, expenses: int, net_profit: int, by_category: list<array{name: string, amount: int}>}
+     */
+    public function profitAndLoss(): array
+    {
+        [$revenueSql, $costSql] = self::lineExpressions();
+
+        $row = SaleItem::query()
+            ->join('sales', 'sales.id', '=', 'sale_items.sale_id')
+            ->whereBetween('sales.sold_at', [$this->from, $this->to])
+            ->selectRaw("COALESCE(SUM({$revenueSql}), 0) as revenue")
+            ->selectRaw("COALESCE(SUM({$revenueSql} - {$costSql}), 0) as profit")
+            ->first();
+
+        $revenue = (int) round((float) $row?->getAttribute('revenue'));
+        $gross = (int) round((float) $row?->getAttribute('profit'));
+
+        $byCategory = Expense::query()
+            ->join('expense_categories', 'expense_categories.id', '=', 'expenses.expense_category_id')
+            ->whereBetween('expenses.spent_on', [$this->from->format('Y-m-d'), $this->to->format('Y-m-d')])
+            ->groupBy('expense_categories.id', 'expense_categories.name')
+            ->selectRaw('expense_categories.name as name, SUM(expenses.amount) as amount')
+            ->orderByDesc('amount')
+            ->get()
+            ->map(fn (Expense $e): array => ['name' => (string) $e->getAttribute('name'), 'amount' => (int) $e->getAttribute('amount')])
+            ->values()
+            ->all();
+
+        $expenses = array_sum(array_column($byCategory, 'amount'));
+
+        return [
+            'revenue' => $revenue,
+            'cost' => $revenue - $gross,
+            'gross_profit' => $gross,
+            'expenses' => $expenses,
+            'net_profit' => $gross - $expenses,
+            'by_category' => $byCategory,
         ];
     }
 }

@@ -13,6 +13,7 @@ return [
         'purchasing' => 'Purchasing and suppliers',
         'integrations' => 'Integrations',
         'reports' => 'Reports',
+        'expenses' => 'Expenses and profit & loss',
         'fiscal' => 'TRA fiscal receipts',
     ],
 ];

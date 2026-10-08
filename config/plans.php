@@ -21,7 +21,7 @@ return [
 
     // Every feature a plan can switch on. Everything not listed here (POS, products, stock, sales,
     // customers, settings...) is part of every plan.
-    'features' => ['returns', 'credit_sales', 'brands', 'purchasing', 'integrations', 'reports', 'fiscal'],
+    'features' => ['returns', 'credit_sales', 'brands', 'purchasing', 'integrations', 'reports', 'expenses', 'fiscal'],
 
     'plans' => [
         'basic' => [
@@ -30,7 +30,7 @@ return [
         ],
         'medium' => [
             'inherits' => 'basic',
-            'features' => ['brands', 'purchasing', 'integrations', 'reports'],
+            'features' => ['brands', 'purchasing', 'integrations', 'reports', 'expenses'],
             'limits' => ['users' => 10, 'warehouses' => 3],
         ],
         'enterprise' => [

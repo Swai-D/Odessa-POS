@@ -27,6 +27,7 @@ class ProvisionTenantAction
         'warehouses.view', 'warehouses.manage', 'inventory.manage',
         'sales.manage', 'customers.view', 'customers.manage',
         'purchases.manage', 'suppliers.view', 'suppliers.manage',
+        'expenses.view', 'expenses.manage',
     ];
 
     /** @return array<string, list<string>> */
@@ -43,7 +44,7 @@ class ProvisionTenantAction
                 'categories.view', 'brands.view', 'units.view', 'warehouses.view',
                 'purchases.view', 'purchases.manage', 'suppliers.view', 'suppliers.manage',
             ],
-            'Accountant' => ['dashboard.view', 'sales.view', 'sales.manage', 'customers.view', 'purchases.view', 'suppliers.view', 'reports.view', 'products.view', 'inventory.view'],
+            'Accountant' => ['dashboard.view', 'sales.view', 'sales.manage', 'customers.view', 'purchases.view', 'suppliers.view', 'reports.view', 'products.view', 'inventory.view', 'expenses.view', 'expenses.manage'],
         ];
     }
 

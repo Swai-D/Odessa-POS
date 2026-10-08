@@ -1,6 +1,12 @@
 <?php
 
 return [
+    'profit_loss' => 'Profit and loss',
+    'profit_loss_hint' => 'Revenue less cost of goods sold is gross profit; expenses are then taken off. Purchases only count once the stock is sold.',
+    'cost_of_goods' => 'Cost of goods sold',
+    'gross_profit' => 'Gross profit',
+    'expenses' => 'Expenses',
+    'net_profit' => 'Net profit',
     'title' => 'Reports',
     'hint' => 'Sales, stock and balances for your shop',
     'from' => 'From',
