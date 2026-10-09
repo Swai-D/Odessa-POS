@@ -2,7 +2,7 @@
 
 /*
  | Sidebar, grouped into sections like the original Dreams POS template (Main, Inventory, Stock, Sales...).
- | An item is shown only when the user holds its permission. `match` lists the route-name patterns for which
+ | An item is shown only when the user holds its permission (or any one of them, when a list is given). `match` lists the route-name patterns for which
  | the item is highlighted, so detail and edit pages keep their section lit up.
  */
 return [
@@ -41,6 +41,7 @@ return [
         'label' => 'app.menu.sales',
         'items' => [
             ['label' => 'app.menu.sales', 'icon' => 'ti ti-file-invoice', 'route' => 'sales.index', 'permission' => 'sales.view', 'match' => ['sales.*']],
+            ['label' => 'app.menu.till', 'icon' => 'ti ti-cash', 'route' => 'till-closings.index', 'permission' => ['till.close', 'till.view'], 'match' => ['till-closings.*']],
         ],
     ],
     [

@@ -20,6 +20,7 @@ return [
         'platform' => 'Platform',
         'tenants' => 'Shops',
         'finance' => 'Finance',
+        'till' => 'Till closing',
         'expenses' => 'Expenses',
         'expense_categories' => 'Expense categories',
         'main' => 'Main',

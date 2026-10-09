@@ -20,6 +20,7 @@ return [
         'platform' => 'Jukwaa',
         'tenants' => 'Maduka',
         'finance' => 'Fedha',
+        'till' => 'Kufunga Till',
         'expenses' => 'Matumizi',
         'expense_categories' => 'Aina za matumizi',
         'main' => 'Kuu',
