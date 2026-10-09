@@ -74,6 +74,11 @@ Use two browser profiles (or a private window) so a platform admin and a shop us
 - [ ] Export the products, change a price in the file, upload it again: only that price changes and stock stays as it was.
 - [ ] Open the exported file in Excel with Swahili text: letters display correctly.
 
+## 7e. Stock transfers
+- [ ] On a shop with two warehouses: Stock > Stock Transfers > New transfer. Move a few units of a product; the transfer page lists it, Stock Levels shows less in the source and more in the destination, and Stock Adjustments shows a "Transfer out" and a "Transfer in" row.
+- [ ] Try to move more than the source holds: you get a clear message and nothing moves (also not for the other lines).
+- [ ] On a Basic shop (one warehouse) the form explains that two warehouses are needed.
+
 ## 8. Hardware and integrations (needs the real device)
 - [ ] ESC/POS thermal printer through the browser (Web Serial/WebUSB): not tested on real hardware yet.
 - [ ] Barcode scanner (keyboard wedge) in the till search box.
