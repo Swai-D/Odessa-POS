@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Support\Money;
 use App\Support\Plans;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -44,19 +45,18 @@ class ImportProductsAction
     public function handle(string $path, ?User $user): array
     {
         [$header, $rows] = $this->read($path);
-        $problems = [];
-        $clean = $this->validate($header, $rows, $problems);
+        [$clean, $problems] = $this->validate($header, $rows);
 
-        $existing = Product::query()->withTrashed()->whereIn('sku', array_column($clean, 'sku'))->get()->keyBy('sku');
+        $existing = Product::query()->withTrashed()->whereIn('sku', array_values(array_filter(array_column($clean, 'sku'))))->get()->keyBy('sku');
         $warehouse = Warehouse::query()->where('is_active', true)->orderByDesc('is_default')->orderBy('id')->first();
 
         foreach ($clean as $line => $row) {
-            $found = $existing->get($row['sku']);
+            $found = $existing->get($row['sku'] ?? '');
 
             if ($found instanceof Product && $found->trashed()) {
-                $problems[] = __('catalog.import.line', ['line' => $line, 'message' => __('catalog.import.deleted_sku', ['sku' => $row['sku']])]);
+                $problems[] = $this->problem($line, __('catalog.import.deleted_sku', ['sku' => $row['sku'] ?? '']));
             } elseif (! $found && (float) ($row['opening_stock'] ?? 0) > 0 && $warehouse === null) {
-                $problems[] = __('catalog.import.line', ['line' => $line, 'message' => __('catalog.import.no_warehouse')]);
+                $problems[] = $this->problem($line, __('catalog.import.no_warehouse'));
             }
         }
 
@@ -128,15 +128,15 @@ class ImportProductsAction
     }
 
     /**
-     * Checks each row and returns the cleaned ones keyed by line; problems are added to $problems.
+     * Checks each row; returns the cleaned ones keyed by file line, and the problems found.
      *
      * @param  list<string>  $header
      * @param  array<int, list<string>>  $rows
-     * @param  list<string>  $problems
-     * @return array<int, array<string, string>>
+     * @return array{0: array<int, array<string, string>>, 1: list<string>} the cleaned rows and the problems found
      */
-    private function validate(array $header, array $rows, array &$problems): array
+    private function validate(array $header, array $rows): array
     {
+        $problems = [];
         $clean = [];
         $seen = [];
 
@@ -167,19 +167,24 @@ class ImportProductsAction
             ], [], array_combine(self::COLUMNS, self::COLUMNS));
 
             foreach ($validator->errors()->all() as $message) {
-                $problems[] = __('catalog.import.line', ['line' => $line, 'message' => $message]);
+                $problems[] = $this->problem($line, $message);
             }
 
             $sku = $row['sku'] ?? '';
             if ($sku !== '' && isset($seen[$sku])) {
-                $problems[] = __('catalog.import.line', ['line' => $line, 'message' => __('catalog.import.duplicate_sku', ['sku' => $sku, 'first' => $seen[$sku]])]);
+                $problems[] = $this->problem($line, __('catalog.import.duplicate_sku', ['sku' => $sku, 'first' => $seen[$sku]]));
             }
             $seen[$sku] = $line;
 
             $clean[$line] = $row;
         }
 
-        return $clean;
+        return [$clean, $problems];
+    }
+
+    private function problem(int $line, mixed $message): string
+    {
+        return (string) __('catalog.import.line', ['line' => $line, 'message' => is_string($message) ? $message : '']);
     }
 
     /** Makes spreadsheet-style cells readable to the validator: "1,500.50" -> "1500.50", "yes" -> "1". */
@@ -206,7 +211,7 @@ class ImportProductsAction
 
     /**
      * @param  array<int, array<string, string>>  $rows
-     * @param  \Illuminate\Support\Collection<string, Product>  $existing
+     * @param  Collection<string, Product>  $existing
      * @param  list<string>  $header
      * @return array{created: int, updated: int, created_lookups: int, notes: list<string>}
      */
