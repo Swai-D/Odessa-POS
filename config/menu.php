@@ -33,6 +33,7 @@ return [
         'label' => 'app.menu.stock',
         'items' => [
             ['label' => 'app.menu.stock_levels', 'icon' => 'ti ti-stack-3', 'route' => 'stock.index', 'permission' => 'inventory.view', 'match' => ['stock.*']],
+            ['label' => 'app.menu.stock_transfers', 'icon' => 'ti ti-arrows-exchange', 'route' => 'stock-transfers.index', 'permission' => 'inventory.view', 'match' => ['stock-transfers.*']],
             ['label' => 'app.menu.stock_adjustments', 'icon' => 'ti ti-stairs-up', 'route' => 'stock-adjustments.index', 'permission' => 'inventory.view', 'match' => ['stock-adjustments.*']],
         ],
     ],

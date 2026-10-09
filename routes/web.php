@@ -10,6 +10,7 @@ use App\Http\Controllers\Finance\ExpenseCategoryController;
 use App\Http\Controllers\Finance\ExpenseController;
 use App\Http\Controllers\Inventory\StockAdjustmentController;
 use App\Http\Controllers\Inventory\StockController;
+use App\Http\Controllers\Inventory\StockTransferController;
 use App\Http\Controllers\Inventory\WarehouseController;
 use App\Http\Controllers\People\CustomerController;
 use App\Http\Controllers\Platform\TenantController;
@@ -84,6 +85,10 @@ Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (
     Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
     Route::get('/stock-adjustments', [StockAdjustmentController::class, 'index'])->name('stock-adjustments.index');
     Route::post('/stock-adjustments', [StockAdjustmentController::class, 'store'])->name('stock-adjustments.store');
+    Route::get('/stock-transfers', [StockTransferController::class, 'index'])->name('stock-transfers.index');
+    Route::get('/stock-transfers/create', [StockTransferController::class, 'create'])->name('stock-transfers.create');
+    Route::post('/stock-transfers', [StockTransferController::class, 'store'])->name('stock-transfers.store');
+    Route::get('/stock-transfers/{stockTransfer}', [StockTransferController::class, 'show'])->name('stock-transfers.show');
     Route::get('/sales', [SaleController::class, 'index'])->name('sales.index');
     Route::get('/sales/{sale}', [SaleController::class, 'show'])->name('sales.show');
     Route::get('/sales/{sale}/escpos', [SaleController::class, 'escpos'])->name('sales.escpos')->middleware('plan:integrations');
