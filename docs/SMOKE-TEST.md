@@ -68,6 +68,12 @@ Use two browser profiles (or a private window) so a platform admin and a shop us
 - [ ] Click the column headers (Products: SKU, name, price; Sales and Purchases: number, date, total, balance; Expenses: date, amount): the arrow shows the direction, a second click reverses it, and your search and filters stay.
 - [ ] On a Basic shop, Brands, Purchases, Suppliers, Reports, Expenses show dimmed with a lock. Clicking one opens the "not in your plan" page naming the plan that includes it, with your contact details (set `PLAN_CONTACT_PHONE` / `PLAN_CONTACT_EMAIL` in `.env`).
 
+## 7d. Product import and export
+- [ ] Products > import icon > download the template, add a few rows in Excel (save as CSV, comma or semicolon both work) and upload: the summary shows created/updated counts and the products appear with prices and opening stock.
+- [ ] Upload a file with a deliberate mistake (negative price, repeated SKU): nothing is imported and each problem names its line.
+- [ ] Export the products, change a price in the file, upload it again: only that price changes and stock stays as it was.
+- [ ] Open the exported file in Excel with Swahili text: letters display correctly.
+
 ## 8. Hardware and integrations (needs the real device)
 - [ ] ESC/POS thermal printer through the browser (Web Serial/WebUSB): not tested on real hardware yet.
 - [ ] Barcode scanner (keyboard wedge) in the till search box.
