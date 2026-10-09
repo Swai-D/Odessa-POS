@@ -8,6 +8,7 @@ use App\Http\Controllers\Catalog\UnitController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Finance\ExpenseCategoryController;
 use App\Http\Controllers\Finance\ExpenseController;
+use App\Http\Controllers\Finance\TillClosingController;
 use App\Http\Controllers\Inventory\StockAdjustmentController;
 use App\Http\Controllers\Inventory\StockController;
 use App\Http\Controllers\Inventory\StockTransferController;
@@ -109,6 +110,10 @@ Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (
     Route::get('/expenses/export', [ExpenseController::class, 'export'])->name('expenses.export')->middleware('plan:expenses');
     Route::resource('expenses', ExpenseController::class)->only(['index', 'store', 'update', 'destroy'])->middleware('plan:expenses');
     Route::resource('expense-categories', ExpenseCategoryController::class)->only($lookup)->middleware('plan:expenses');
+    Route::get('/till-closings', [TillClosingController::class, 'index'])->name('till-closings.index');
+    Route::get('/till-closings/create', [TillClosingController::class, 'create'])->name('till-closings.create');
+    Route::post('/till-closings', [TillClosingController::class, 'store'])->name('till-closings.store');
+    Route::get('/till-closings/{tillClosing}', [TillClosingController::class, 'show'])->name('till-closings.show');
     Route::get('/settings', [SettingsController::class, 'edit'])->name('settings.index');
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
     Route::resource('users', UserController::class)->only(['index', 'store', 'update', 'destroy']);

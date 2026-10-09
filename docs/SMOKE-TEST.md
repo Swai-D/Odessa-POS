@@ -79,6 +79,12 @@ Use two browser profiles (or a private window) so a platform admin and a shop us
 - [ ] Try to move more than the source holds: you get a clear message and nothing moves (also not for the other lines).
 - [ ] On a Basic shop (one warehouse) the form explains that two warehouses are needed.
 
+## 7f. Till closing
+- [ ] As a cashier: make a few cash sales, then Sales > Till closing > Close till. The expected cash equals the cash you took (plus the float from last time). Enter the counted cash and the float to leave, and close; the report page prints.
+- [ ] Close again after more sales: the new report starts where the last one ended and the opening float is the float you left.
+- [ ] Count less or more than expected: the difference shows red or amber. Try leaving more float than counted: you get a clear message.
+- [ ] A cashier sees only their own closings; the owner/manager/accountant sees everyone's with the cashier name.
+
 ## 8. Hardware and integrations (needs the real device)
 - [ ] ESC/POS thermal printer through the browser (Web Serial/WebUSB): not tested on real hardware yet.
 - [ ] Barcode scanner (keyboard wedge) in the till search box.

@@ -27,7 +27,7 @@ class ProvisionTenantAction
         'warehouses.view', 'warehouses.manage', 'inventory.manage',
         'sales.manage', 'customers.view', 'customers.manage',
         'purchases.manage', 'suppliers.view', 'suppliers.manage',
-        'expenses.view', 'expenses.manage',
+        'expenses.view', 'expenses.manage', 'till.close', 'till.view',
     ];
 
     /** @return array<string, list<string>> */
@@ -38,13 +38,13 @@ class ProvisionTenantAction
         return [
             'Owner' => $all,
             'Manager' => array_values(array_diff($all, ['settings.manage'])),
-            'Cashier' => ['dashboard.view', 'pos.access', 'sales.view', 'products.view', 'customers.view', 'customers.manage'],
+            'Cashier' => ['dashboard.view', 'pos.access', 'sales.view', 'products.view', 'customers.view', 'customers.manage', 'till.close'],
             'Storekeeper' => [
                 'dashboard.view', 'inventory.view', 'inventory.manage', 'products.view', 'products.manage',
                 'categories.view', 'brands.view', 'units.view', 'warehouses.view',
                 'purchases.view', 'purchases.manage', 'suppliers.view', 'suppliers.manage',
             ],
-            'Accountant' => ['dashboard.view', 'sales.view', 'sales.manage', 'customers.view', 'purchases.view', 'suppliers.view', 'reports.view', 'products.view', 'inventory.view', 'expenses.view', 'expenses.manage'],
+            'Accountant' => ['dashboard.view', 'sales.view', 'sales.manage', 'customers.view', 'purchases.view', 'suppliers.view', 'reports.view', 'products.view', 'inventory.view', 'expenses.view', 'expenses.manage', 'till.view'],
         ];
     }
 

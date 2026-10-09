@@ -1,0 +1,31 @@
+<?php
+
+return [
+    'title' => 'Kufunga Till',
+    'subtitle' => 'Hesabu pesa za droo na ulinganishe na kinachotarajiwa na mfumo',
+    'close' => 'Funga till',
+    'closed_at' => 'Imefungwa',
+    'cashier' => 'Keshia',
+    'period' => 'Tangu :from hadi :to',
+    'period_label' => 'Kipindi',
+    'opening_float' => 'Chenji ya kuanzia (kutoka kufunga kwa mwisho)',
+    'cash_sales' => 'Pesa taslimu zilizopokelewa',
+    'cash_refunds' => 'Pesa taslimu zilizorudishwa',
+    'expected' => 'Pesa zinazotarajiwa',
+    'counted' => 'Pesa zilizohesabiwa',
+    'difference' => 'Tofauti',
+    'float_kept' => 'Chenji inayobaki droo',
+    'float_hint' => 'Pesa zinazobaki kwa zamu ijayo. Zilizobaki zinatolewa.',
+    'to_bank' => 'Pesa zilizotolewa',
+    'sales' => 'Mauzo',
+    'by_method' => 'Malipo kwa njia',
+    'note' => 'Maelezo',
+    'confirm' => 'Funga till',
+    'report' => 'Ripoti ya till',
+    'print' => 'Chapisha',
+    'done' => 'Till imefungwa.',
+    'none' => 'Hakuna kufunga bado.',
+    'errors' => [
+        'float_too_big' => 'Chenji inayobaki haiwezi kuzidi pesa zilizohesabiwa.',
+    ],
+];

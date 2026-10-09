@@ -1,0 +1,31 @@
+<?php
+
+return [
+    'title' => 'Till closing',
+    'subtitle' => 'Count the cash drawer and compare it with what the system expects',
+    'close' => 'Close till',
+    'closed_at' => 'Closed',
+    'cashier' => 'Cashier',
+    'period' => 'Since :from until :to',
+    'period_label' => 'Period',
+    'opening_float' => 'Float from last closing',
+    'cash_sales' => 'Cash received',
+    'cash_refunds' => 'Cash refunded',
+    'expected' => 'Expected cash',
+    'counted' => 'Counted cash',
+    'difference' => 'Difference',
+    'float_kept' => 'Float left in drawer',
+    'float_hint' => 'Cash that stays for the next shift. The rest is taken out.',
+    'to_bank' => 'Cash taken out',
+    'sales' => 'Sales',
+    'by_method' => 'Payments by method',
+    'note' => 'Note',
+    'confirm' => 'Close till',
+    'report' => 'Till report',
+    'print' => 'Print',
+    'done' => 'Till closed.',
+    'none' => 'No closings yet.',
+    'errors' => [
+        'float_too_big' => 'The float left in the drawer cannot be more than the cash counted.',
+    ],
+];

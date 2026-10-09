@@ -8,6 +8,7 @@ use App\Domain\Catalog\Models\Product;
 use App\Domain\Catalog\Models\Unit;
 use App\Domain\Finance\Models\Expense;
 use App\Domain\Finance\Models\ExpenseCategory;
+use App\Domain\Finance\Models\TillClosing;
 use App\Domain\Inventory\Models\StockMovement;
 use App\Domain\Inventory\Models\StockTransfer;
 use App\Domain\Inventory\Models\Warehouse;
@@ -29,6 +30,7 @@ use App\Policies\SalePolicy;
 use App\Policies\StockMovementPolicy;
 use App\Policies\StockTransferPolicy;
 use App\Policies\SupplierPolicy;
+use App\Policies\TillClosingPolicy;
 use App\Policies\UnitPolicy;
 use App\Policies\WarehousePolicy;
 use App\Support\Plans;
@@ -91,6 +93,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Supplier::class, SupplierPolicy::class);
         Gate::policy(Expense::class, ExpensePolicy::class);
         Gate::policy(ExpenseCategory::class, ExpenseCategoryPolicy::class);
+        Gate::policy(TillClosing::class, TillClosingPolicy::class);
 
         Queue::createPayloadUsing(function (): array {
             $tenant = app(TenantContext::class)->get();
