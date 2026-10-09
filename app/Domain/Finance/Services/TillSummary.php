@@ -27,7 +27,7 @@ class TillSummary
         $end = $now ?? Carbon::now();
         $last = TillClosing::query()->where('user_id', $user->getKey())->orderByDesc('id')->first();
 
-        $start = $last?->period_end ?? $end->copy()->startOfDay();
+        $start = $last->period_end ?? $end->copy()->startOfDay();
         $opening = (int) ($last->float_kept ?? 0);
 
         /** @var array<string, int> $byMethod */
