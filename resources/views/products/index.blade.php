@@ -13,6 +13,10 @@
 			</div>
 		</div>
 		<ul class="table-top-head">
+			<li><a data-bs-toggle="tooltip" data-bs-placement="top" title="{{ __('catalog.import.export') }}" href="{{ route('products.export') }}"><i class="ti ti-file-export"></i></a></li>
+			@if ($canManage)
+				<li><a data-bs-toggle="tooltip" data-bs-placement="top" title="{{ __('catalog.import.title') }}" href="{{ route('products.import') }}"><i class="ti ti-file-import"></i></a></li>
+			@endif
 			<li><a data-bs-toggle="tooltip" data-bs-placement="top" title="Refresh" href="{{ route('products.index') }}"><i class="ti ti-refresh"></i></a></li>
 			<li><a data-bs-toggle="tooltip" data-bs-placement="top" title="Collapse" id="collapse-header"><i class="ti ti-chevron-up"></i></a></li>
 		</ul>

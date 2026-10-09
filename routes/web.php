@@ -3,6 +3,7 @@
 use App\Http\Controllers\Catalog\BrandController;
 use App\Http\Controllers\Catalog\CategoryController;
 use App\Http\Controllers\Catalog\ProductController;
+use App\Http\Controllers\Catalog\ProductTransferController;
 use App\Http\Controllers\Catalog\UnitController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Finance\ExpenseCategoryController;
@@ -70,6 +71,10 @@ Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (
     Route::post('/pos/held/{heldOrder}/resume', [PosController::class, 'resume'])->name('pos.held.resume');
     Route::delete('/pos/held/{heldOrder}', [PosController::class, 'discard'])->name('pos.held.destroy');
     $lookup = ['index', 'store', 'update', 'destroy'];
+    Route::get('/products/export', [ProductTransferController::class, 'export'])->name('products.export');
+    Route::get('/products/import', [ProductTransferController::class, 'create'])->name('products.import');
+    Route::get('/products/import/template', [ProductTransferController::class, 'template'])->name('products.import.template');
+    Route::post('/products/import', [ProductTransferController::class, 'store'])->name('products.import.store');
     Route::get('/products/lookup', [ProductController::class, 'lookup'])->name('products.lookup');
     Route::resource('products', ProductController::class)->except(['show']);
     Route::resource('categories', CategoryController::class)->only($lookup);
