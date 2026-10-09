@@ -18,6 +18,8 @@ return [
     ],
     'types' => [
         'opening' => 'Stoo ya kuanzia',
+        'transfer_in' => 'Uhamisho (kuingia)',
+        'transfer_out' => 'Uhamisho (kutoka)',
         'adjustment_in' => 'Marekebisho (ongeza)',
         'adjustment_out' => 'Marekebisho (punguza)',
         'sale' => 'Mauzo',

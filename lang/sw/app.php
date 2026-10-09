@@ -41,6 +41,7 @@ return [
         'units' => 'Vipimo',
         'warehouses' => 'Maghala',
         'stock_levels' => 'Viwango vya Stoo',
+        'stock_transfers' => 'Uhamisho wa Stock',
         'stock_adjustments' => 'Marekebisho ya Stoo',
         'settings' => 'Mipangilio',
     ],

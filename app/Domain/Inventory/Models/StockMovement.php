@@ -25,6 +25,10 @@ class StockMovement extends Model
 
     public const SALE_RETURN = 'sale_return';
 
+    public const TRANSFER_IN = 'transfer_in';
+
+    public const TRANSFER_OUT = 'transfer_out';
+
     protected $fillable = [
         'product_id', 'warehouse_id', 'user_id', 'type', 'quantity', 'balance_after', 'reason',
         'reference_type', 'reference_id',

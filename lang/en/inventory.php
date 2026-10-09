@@ -18,6 +18,8 @@ return [
     ],
     'types' => [
         'opening' => 'Opening stock',
+        'transfer_in' => 'Transfer in',
+        'transfer_out' => 'Transfer out',
         'adjustment_in' => 'Adjustment (add)',
         'adjustment_out' => 'Adjustment (remove)',
         'sale' => 'Sale',

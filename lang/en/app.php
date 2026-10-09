@@ -41,6 +41,7 @@ return [
         'units' => 'Units',
         'warehouses' => 'Warehouses',
         'stock_levels' => 'Stock Levels',
+        'stock_transfers' => 'Stock Transfers',
         'stock_adjustments' => 'Stock Adjustments',
         'settings' => 'Settings',
     ],
