@@ -2,6 +2,8 @@
 
 return [
     'default_currency' => env('POS_DEFAULT_CURRENCY', 'TZS'),
+    // Most rows one product CSV upload may hold (keeps the request short and the transaction small).
+    'import_max_rows' => 2000,
     'currencies' => ['TZS', 'KES', 'UGX', 'USD', 'EUR'],
     'features' => [
         'printer' => false,
