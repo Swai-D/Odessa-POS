@@ -5,9 +5,11 @@ use App\Domain\Inventory\Models\StockMovement;
 use App\Domain\Inventory\Models\StockTransfer;
 use App\Domain\Inventory\Models\Warehouse;
 use App\Domain\Inventory\Services\StockService;
+use App\Models\Tenant;
+use App\Models\User;
 use App\Support\Tenancy\TenantContext;
 
-/** @return array{0: \App\Models\Tenant, 1: \App\Models\User, 2: Warehouse, 3: Warehouse, 4: Product} */
+/** @return array{0: Tenant, 1: User, 2: Warehouse, 3: Warehouse, 4: Product} */
 function transferShop(string $slug, array $permissions = ['inventory.view', 'inventory.manage'], float $onHand = 10, array $productOverrides = []): array
 {
     $tenant = createTenant($slug, 'medium');
