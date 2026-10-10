@@ -2,14 +2,19 @@
 
 namespace App\Support;
 
+use App\Models\SubscriptionPlan;
 use App\Models\Tenant;
 use App\Support\Tenancy\TenantContext;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
  * What the current shop's plan allows. Outside a shop (a platform super admin) nothing is restricted.
  */
 class Plans
 {
+    /** @var Collection<string, SubscriptionPlan>|null */
+    private ?Collection $catalog = null;
+
     public function __construct(private readonly ?Tenant $tenant = null) {}
 
     public static function current(): self
@@ -23,7 +28,7 @@ class Plans
         $raw = ($this->tenant instanceof Tenant ? (string) $this->tenant->plan : '');
         $raw = (string) config("plans.aliases.{$raw}", $raw);
 
-        return config("plans.plans.{$raw}") !== null ? $raw : (string) config('plans.default');
+        return $this->catalog()->has($raw) ? $raw : (string) config('plans.default');
     }
 
     public function allows(string $feature): bool
@@ -48,24 +53,15 @@ class Plans
             return null;
         }
 
-        foreach (array_keys((array) config('plans.plans')) as $plan) {
-            $granted = self::featuresOf((string) $plan);
+        foreach (SubscriptionPlan::query()->where('is_active', true)->orderBy('sort_order')->get() as $plan) {
+            $granted = $plan->features;
 
             if (in_array('*', $granted, true) || in_array($feature, $granted, true)) {
-                return (string) $plan;
+                return $plan->code;
             }
         }
 
         return null;
-    }
-
-    /** @return list<string> */
-    private static function featuresOf(string $plan, int $depth = 0): array
-    {
-        $own = (array) config("plans.plans.{$plan}.features", []);
-        $parent = (string) config("plans.plans.{$plan}.inherits", '');
-
-        return array_values(array_unique($depth < 5 && $parent !== '' ? array_merge(self::featuresOf($parent, $depth + 1), $own) : $own));
     }
 
     /** The limit for `users`, `warehouses`...; null means unlimited. */
@@ -82,29 +78,19 @@ class Plans
         }
 
         // The plan nearest to this one wins over the plans it inherits from.
-        foreach (array_reverse($this->lineage()) as $plan) {
-            $limits = (array) config("plans.plans.{$plan}.limits", []);
+        $limits = $this->catalog()->get($this->key())->limits;
 
-            if (array_key_exists($name, $limits)) {
-                return $limits[$name] === null ? null : (int) $limits[$name];
-            }
+        if (array_key_exists($name, $limits)) {
+            return $limits[$name] === null ? null : (int) $limits[$name];
         }
 
         return null;
     }
 
-    /** @return list<string> plan keys from the base plan down to this one */
-    private function lineage(): array
+    /** @return Collection<string, SubscriptionPlan> */
+    private function catalog(): Collection
     {
-        $lineage = [];
-        $plan = $this->key();
-
-        while ($plan !== '' && ! in_array($plan, $lineage, true)) {
-            array_unshift($lineage, $plan);
-            $plan = (string) config("plans.plans.{$plan}.inherits", '');
-        }
-
-        return $lineage;
+        return $this->catalog ??= SubscriptionPlan::query()->get()->keyBy('code');
     }
 
     /** @return list<string> */
@@ -112,9 +98,7 @@ class Plans
     {
         $values = [];
 
-        foreach ($this->lineage() as $plan) {
-            $values = array_merge($values, (array) config("plans.plans.{$plan}.{$key}", []));
-        }
+        $values = $this->catalog()->get($this->key())->{$key};
 
         return array_values(array_unique($values));
     }

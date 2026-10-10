@@ -19,6 +19,8 @@ return [
         'users' => 'Watumiaji',
         'platform' => 'Jukwaa',
         'tenants' => 'Maduka',
+        'platform_transactions' => 'Malipo ya usajili',
+        'plans' => 'Mipango ya usajili',
         'finance' => 'Fedha',
         'till' => 'Kufunga Till',
         'expenses' => 'Matumizi',

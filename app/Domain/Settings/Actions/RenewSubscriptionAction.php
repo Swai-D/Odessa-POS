@@ -2,12 +2,14 @@
 
 namespace App\Domain\Settings\Actions;
 
+use App\Models\SubscriptionPlan;
 use App\Models\Tenant;
 use App\Models\TenantPayment;
 use App\Models\User;
 use App\Support\Money;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Records a subscription payment and moves the shop's paid-until date forward.
@@ -18,7 +20,7 @@ use Illuminate\Support\Facades\DB;
  */
 class RenewSubscriptionAction
 {
-    /** @param  array{months: int, amount: float|int|string, method: string, paid_on: string, reference?: string|null, note?: string|null, idempotency_key: string}  $data */
+    /** @param  array{months: int, discount_amount?: float|int|string|null, discount_reason?: string|null, method: string, paid_on: string, reference?: string|null, note?: string|null, idempotency_key: string}  $data */
     public function handle(Tenant $tenant, array $data, ?User $by): TenantPayment
     {
         return DB::transaction(function () use ($tenant, $data, $by): TenantPayment {
@@ -31,6 +33,18 @@ class RenewSubscriptionAction
             // Lock the shop row so two admins renewing at once cannot both start from the same date.
             $locked = Tenant::query()->lockForUpdate()->findOrFail($tenant->getKey());
 
+            $planCode = (string) config("plans.aliases.{$locked->plan}", $locked->plan);
+            $plan = SubscriptionPlan::query()->where('code', $planCode)->first();
+            $price = $plan?->getAttribute((int) $data['months'] === 12 ? 'annual_price' : 'monthly_price');
+            if (! is_int($price) || $price < 1) {
+                throw ValidationException::withMessages(['months' => __('platform.billing_price_missing')]);
+            }
+
+            $discount = Money::toMinor($data['discount_amount'] ?? 0);
+            if ($discount > $price) {
+                throw ValidationException::withMessages(['discount_amount' => __('platform.discount_exceeds_price')]);
+            }
+
             $paidOn = Carbon::parse($data['paid_on'])->startOfDay();
             $start = $locked->paid_until !== null && $locked->paid_until->greaterThan($paidOn)
                 ? $locked->paid_until->copy()->startOfDay()
@@ -41,9 +55,13 @@ class RenewSubscriptionAction
                 'tenant_id' => $locked->getKey(),
                 'user_id' => $by?->getKey(),
                 'idempotency_key' => $data['idempotency_key'],
-                'plan' => $locked->plan,
-                'amount' => Money::toMinor($data['amount']),
-                'currency' => (string) config('pos.default_currency'),
+                'plan' => $planCode,
+                'plan_name' => $plan->name,
+                'plan_price_amount' => $price,
+                'discount_amount' => $discount,
+                'discount_reason' => $discount > 0 ? $data['discount_reason'] : null,
+                'amount' => $price - $discount,
+                'currency' => 'TZS',
                 'method' => $data['method'],
                 'reference' => $data['reference'] ?? null,
                 'note' => $data['note'] ?? null,

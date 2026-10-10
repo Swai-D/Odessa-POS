@@ -40,6 +40,7 @@ it('shows platform-wide shop, renewal and payment information to super admins', 
         ->get('/platform')
         ->assertOk()
         ->assertSee(__('platform.dashboard.title'))
+        ->assertSee(route('platform.payments.index'))
         ->assertSee('Active Shop')
         ->assertSee('Trial Shop')
         ->assertSee('Overdue Shop')

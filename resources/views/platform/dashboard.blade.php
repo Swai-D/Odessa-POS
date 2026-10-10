@@ -116,7 +116,10 @@
 
 		<div class="col-xl-6 d-flex">
 			<div class="card flex-fill">
-				<div class="card-header"><h5 class="mb-0">{{ __('platform.dashboard.recent_payments') }}</h5></div>
+				<div class="card-header d-flex align-items-center justify-content-between gap-2">
+					<h5 class="mb-0">{{ __('platform.dashboard.recent_payments') }}</h5>
+					<a href="{{ route('platform.payments.index') }}" class="btn btn-light btn-sm">{{ __('platform.payments.title') }}</a>
+				</div>
 				<div class="card-body p-0">
 					<div class="table-responsive">
 						<table class="table mb-0">

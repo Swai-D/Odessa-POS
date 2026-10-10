@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\SubscriptionPlan;
 use App\Models\Tenant;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -19,12 +20,21 @@ class TenantRequest extends FormRequest
     {
         $tenant = $this->route('tenant');
         $id = $tenant instanceof Tenant ? $tenant->getKey() : null;
+        $availablePlans = SubscriptionPlan::query()->where('is_active', true)->pluck('code')->all();
+        foreach ((array) config('plans.aliases') as $alias => $code) {
+            if (in_array($code, $availablePlans, true)) {
+                $availablePlans[] = $alias;
+            }
+        }
+        if ($tenant instanceof Tenant && $tenant->plan !== null) {
+            $availablePlans[] = $tenant->plan;
+        }
 
         $rules = [
             'name' => ['required', 'string', 'max:120'],
             'domain' => ['nullable', 'string', 'max:190', Rule::unique('tenants', 'domain')->ignore($id)],
             'status' => ['required', Rule::in(['active', 'trial', 'suspended'])],
-            'plan' => ['required', Rule::in(array_keys(config('plans.plans')))],
+            'plan' => ['required', Rule::in(array_unique($availablePlans))],
             'paid_until' => ['nullable', 'date'],
             'override_features' => ['nullable', 'array'],
             'override_features.*' => [Rule::in(config('plans.features'))],

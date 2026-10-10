@@ -11,6 +11,8 @@ return [
         'items' => [
             ['label' => 'app.menu.dashboard', 'icon' => 'ti ti-layout-dashboard', 'route' => 'platform.dashboard', 'permission' => null, 'platform' => true, 'match' => ['platform.dashboard']],
             ['label' => 'app.menu.tenants', 'icon' => 'ti ti-building-store', 'route' => 'platform.tenants.index', 'permission' => null, 'platform' => true, 'match' => ['platform.tenants.*']],
+            ['label' => 'app.menu.plans', 'icon' => 'ti ti-packages', 'route' => 'platform.plans.index', 'permission' => null, 'platform' => true, 'match' => ['platform.plans.*']],
+            ['label' => 'app.menu.platform_transactions', 'icon' => 'ti ti-receipt-2', 'route' => 'platform.payments.index', 'permission' => null, 'platform' => true, 'match' => ['platform.payments.*']],
         ],
     ],
     [

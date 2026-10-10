@@ -15,6 +15,8 @@ use App\Http\Controllers\Inventory\StockTransferController;
 use App\Http\Controllers\Inventory\WarehouseController;
 use App\Http\Controllers\People\CustomerController;
 use App\Http\Controllers\Platform\PlatformDashboardController;
+use App\Http\Controllers\Platform\PlatformPaymentController;
+use App\Http\Controllers\Platform\SubscriptionPlanController;
 use App\Http\Controllers\Platform\TenantController;
 use App\Http\Controllers\Platform\TenantRenewalController;
 use App\Http\Controllers\ProfileController;
@@ -58,6 +60,9 @@ Route::middleware('auth')->group(function (): void {
 // Platform administration (shops, plans). Super admins only; no shop context needed.
 Route::middleware(['auth', 'can:platform'])->prefix('platform')->name('platform.')->group(function (): void {
     Route::get('/', PlatformDashboardController::class)->name('dashboard');
+    Route::resource('plans', SubscriptionPlanController::class)->except(['show']);
+    Route::get('payments/export', [PlatformPaymentController::class, 'export'])->name('payments.export');
+    Route::get('payments', [PlatformPaymentController::class, 'index'])->name('payments.index');
     Route::resource('tenants', TenantController::class)->only(['index', 'create', 'store', 'edit', 'update']);
     Route::post('tenants/{tenant}/renewals', [TenantRenewalController::class, 'store'])->name('tenants.renewals.store');
 });

@@ -17,14 +17,14 @@ use Illuminate\Support\Carbon;
 class TenantPayment extends Model
 {
     protected $fillable = [
-        'tenant_id', 'user_id', 'idempotency_key', 'plan', 'amount', 'currency', 'method',
+        'tenant_id', 'user_id', 'idempotency_key', 'plan', 'plan_name', 'plan_price_amount', 'discount_amount', 'discount_reason', 'amount', 'currency', 'method',
         'reference', 'note', 'months', 'paid_on', 'period_start', 'period_end',
     ];
 
     protected function casts(): array
     {
         return [
-            'amount' => 'integer', 'months' => 'integer',
+            'amount' => 'integer', 'plan_price_amount' => 'integer', 'discount_amount' => 'integer', 'months' => 'integer',
             'paid_on' => 'date:Y-m-d', 'period_start' => 'date:Y-m-d', 'period_end' => 'date:Y-m-d',
         ];
     }

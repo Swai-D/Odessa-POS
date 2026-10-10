@@ -6,6 +6,7 @@ use App\Domain\Sales\Models\Payment;
 use App\Domain\Settings\Actions\ProvisionTenantAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TenantRequest;
+use App\Models\SubscriptionPlan;
 use App\Models\Tenant;
 use App\Models\TenantPayment;
 use Illuminate\Contracts\View\View;
@@ -24,7 +25,7 @@ class TenantController extends Controller
 
     public function create(): View
     {
-        return view('platform.tenants.create', ['plans' => array_keys(config('plans.plans'))]);
+        return view('platform.tenants.create', ['plans' => $this->planOptions()]);
     }
 
     public function store(TenantRequest $request, ProvisionTenantAction $action): RedirectResponse
@@ -55,12 +56,13 @@ class TenantController extends Controller
 
         return view('platform.tenants.edit', [
             'tenant' => $tenant,
-            'plans' => array_keys(config('plans.plans')),
+            'plans' => $this->planOptions($tenant),
+            'billingPlan' => SubscriptionPlan::query()->where('code', config("plans.aliases.{$tenant->plan}", $tenant->plan))->first(),
             'overrides' => (array) ($settings['plan_overrides'] ?? []),
             'payments' => TenantPayment::query()->where('tenant_id', $tenant->getKey())->with('user')->latest('id')->limit(20)->get(),
             'methods' => Payment::methods(),
             'idempotencyKey' => (string) Str::uuid(),
-            'currency' => (string) config('pos.default_currency'),
+            'currency' => 'TZS',
         ]);
     }
 
@@ -102,5 +104,28 @@ class TenantController extends Controller
         }
 
         $tenant->update(['settings' => $settings]);
+    }
+
+    /** @return array<string, string> */
+    private function planOptions(?Tenant $tenant = null): array
+    {
+        $plans = SubscriptionPlan::query()->where('is_active', true)->orderBy('sort_order')->get()->mapWithKeys(
+            fn (SubscriptionPlan $plan): array => [$plan->code => $plan->name],
+        )->all();
+
+        foreach ((array) config('plans.aliases') as $alias => $code) {
+            if (isset($plans[$code])) {
+                $key = 'platform.plans.'.$alias;
+                $label = __($key);
+                $plans[$alias] = $label === $key ? ucfirst((string) $alias) : $label;
+            }
+        }
+
+        if ($tenant?->plan !== null && ! isset($plans[$tenant->plan])) {
+            $current = SubscriptionPlan::query()->where('code', $tenant->plan)->first();
+            $plans[$tenant->plan] = $current->name ?? ucfirst($tenant->plan);
+        }
+
+        return $plans;
     }
 }

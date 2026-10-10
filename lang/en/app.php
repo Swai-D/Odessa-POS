@@ -19,6 +19,8 @@ return [
         'users' => 'Users',
         'platform' => 'Platform',
         'tenants' => 'Shops',
+        'platform_transactions' => 'Subscription payments',
+        'plans' => 'Plans',
         'finance' => 'Finance',
         'till' => 'Till closing',
         'expenses' => 'Expenses',

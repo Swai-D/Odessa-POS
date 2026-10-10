@@ -26,8 +26,8 @@
 			<div class="col-md-2 mb-3">
 				<label class="form-label">{{ __('platform.plan') }}</label>
 				<select name="plan" class="form-select">
-					@foreach ($plans as $plan)
-						<option value="{{ $plan }}" @selected($value('plan', $tenant->plan ?? config('plans.default')) === $plan)>{{ __('platform.plans.'.$plan) }}</option>
+					@foreach ($plans as $planCode => $planName)
+						<option value="{{ $planCode }}" @selected($value('plan', $tenant->plan ?? config('plans.default')) === $planCode)>{{ $planName }}</option>
 					@endforeach
 				</select>
 			</div>
