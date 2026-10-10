@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'title' => 'Help centre',
+    'subtitle' => 'Step-by-step guides for everything in Odessa POS',
+    'search' => 'Search',
+    'search_placeholder' => 'What do you want to do? e.g. add a product, refund, close till',
+    'results_for' => 'Results for ":term"',
+    'nothing' => 'No guide found for ":term".',
+    'try_again' => 'Try fewer or different words, or browse the topics below.',
+    'browse_all' => 'Browse all topics',
+    'on_this_page' => 'On this page',
+    'plan_badge' => ':plan plan and above',
+    'categories' => [
+        'getting-started' => ['title' => 'Getting started', 'description' => 'Set up your shop and learn your way around'],
+        'selling' => ['title' => 'Selling', 'description' => 'The till, payments, receipts, returns and credit'],
+        'products' => ['title' => 'Products', 'description' => 'Add, organise, import and export your items'],
+        'stock' => ['title' => 'Stock', 'description' => 'Levels, adjustments, transfers and warehouses'],
+        'customers' => ['title' => 'Customers', 'description' => 'Customer records, credit and debt'],
+        'purchasing' => ['title' => 'Purchasing', 'description' => 'Suppliers, buying stock and paying suppliers'],
+        'money' => ['title' => 'Money and reports', 'description' => 'Expenses, closing the till and reports'],
+        'settings' => ['title' => 'Settings and staff', 'description' => 'Shop details, users, roles and integrations'],
+        'plans' => ['title' => 'Plans and subscription', 'description' => 'What each plan includes and how renewal works'],
+        'troubleshooting' => ['title' => 'Problems and answers', 'description' => 'Quick fixes and common questions'],
+    ],
+];

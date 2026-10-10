@@ -97,6 +97,10 @@
 					<!-- /Language -->
 
 					<li class="nav-item nav-item-box">
+						<a href="{{ route('help.index') }}" title="{{ __('help.title') }}"><i class="ti ti-help-circle"></i></a>
+					</li>
+
+					<li class="nav-item nav-item-box">
 						<a href="javascript:void(0);" id="btnFullscreen">
 							<i class="ti ti-maximize"></i>
 						</a>

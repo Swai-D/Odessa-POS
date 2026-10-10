@@ -19,6 +19,7 @@ use App\Http\Controllers\Platform\PlatformPaymentController;
 use App\Http\Controllers\Platform\SubscriptionPlanController;
 use App\Http\Controllers\Platform\TenantController;
 use App\Http\Controllers\Platform\TenantRenewalController;
+use App\Http\Controllers\HelpController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Purchasing\PurchaseController;
 use App\Http\Controllers\Purchasing\SupplierController;
@@ -52,6 +53,8 @@ Route::post('/language/{locale}', function (Request $request, string $locale) {
 // The landing page works without a shop (a platform super admin has none).
 Route::middleware('auth')->group(function (): void {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
+    Route::get('/help', [HelpController::class, 'index'])->name('help.index');
+    Route::get('/help/{category}/{slug}', [HelpController::class, 'show'])->where(['category' => '[a-z0-9-]+', 'slug' => '[a-z0-9-]+'])->name('help.show');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
