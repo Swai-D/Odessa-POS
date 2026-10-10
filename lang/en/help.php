@@ -14,7 +14,7 @@ return [
     'contact_title' => 'Contact Odessa Lab customer care',
     'contact_copy' => 'Need help beyond these guides? Reach our team directly.',
     'contact_whatsapp' => 'Chat on WhatsApp',
-    'contact_call' => 'Call +255 761 304 341',
+    'contact_call' => 'Call 0761 595 780',
     'contact_email' => 'Email hello@odessalab.tech',
     'contact_hours' => 'Working hours: Monday to Friday, 8:00am–6:00pm',
     'categories' => [

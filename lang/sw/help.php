@@ -14,7 +14,7 @@ return [
     'contact_title' => 'Wasiliana na huduma kwa wateja ya Odessa Lab',
     'contact_copy' => 'Bado unahitaji msaada? Wasiliana moja kwa moja na timu yetu.',
     'contact_whatsapp' => 'Tuma ujumbe WhatsApp',
-    'contact_call' => 'Piga simu +255 761 304 341',
+    'contact_call' => 'Piga simu 0761 595 780',
     'contact_email' => 'Tuma barua pepe hello@odessalab.tech',
     'contact_hours' => 'Saa za kazi: Jumatatu hadi Ijumaa, 08:00–18:00',
     'categories' => [

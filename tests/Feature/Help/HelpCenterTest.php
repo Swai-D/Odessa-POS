@@ -137,8 +137,8 @@ it('shows the help home with every category to a signed-in user', function (): v
         $response->assertSee(__('help.categories.'.$category.'.title'));
     }
 
-    $response->assertSee('https://wa.me/255761304341')
-        ->assertSee('tel:+255761304341')
+    $response->assertSee('https://wa.me/255761595780')
+        ->assertSee('tel:+255761595780')
         ->assertSee('mailto:hello@odessalab.tech')
         ->assertSee(__('help.contact_hours'));
 });
@@ -160,7 +160,7 @@ it('opens an article with its contents list, and 404s for one that does not exis
 
     $this->actingAs($user)->withHeader('X-Tenant', 'help-c')->get('/help/selling/make-a-sale')
         ->assertOk()->assertSee('Make a sale at the till')->assertSee(__('help.on_this_page'))
-        ->assertSee('https://wa.me/255761304341')
+        ->assertSee('https://wa.me/255761595780')
         ->assertSee('mailto:hello@odessalab.tech');
 });
 
