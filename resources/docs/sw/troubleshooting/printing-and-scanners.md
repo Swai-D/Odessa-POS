@@ -11,7 +11,7 @@ Matatizo mengi ya kuchapisha yanatokana na browser au mipangilio ya printa, si m
 - Fungua **Mauzo**, bonyeza mauzo, chagua **Stakabadhi ya 80mm** au **Ankara ya A4**, kisha **Chapisha**. Hii inatumia dirisha la kawaida la kuchapisha la browser na inafanya kazi na printa yoyote.
 - **Pakua PDF** inafanya kazi kila wakati printa isipofanya kazi.
 
-## Printa ya thermal (mpango wa Medium)
+## Printa ya thermal
 
 Kuchapisha moja kwa moja kwenye printa ya thermal (ESC/POS) kunawekwa kwenye **Mipangilio > Miunganisho**. Soma [Miunganisho](help:settings/integrations).
 

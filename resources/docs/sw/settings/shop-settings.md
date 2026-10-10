@@ -29,6 +29,6 @@ Baada ya kuwasha huduma na kuhifadhi, fungua bidhaa (tazama [Ongeza bidhaa](help
 
 ## Printa, risiti za TRA na malipo ya simu
 
-Hivi havipo kwenye ukurasa huu. Printa huwekwa kwenye **Miunganisho**, ambayo inahitaji plan ya Medium. Soma [Miunganisho](help:settings/integrations).
+Hivi havipo kwenye ukurasa huu. Printa huwekwa kwenye **Miunganisho**. Soma [Miunganisho](help:settings/integrations).
 
 > **Kidokezo:** Kama huoni **Mipangilio** kwenye menyu ya pembeni, jukumu lako halina ruhusa hiyo. Muulize Owner, au soma [Watumiaji na majukumu](help:settings/users-and-roles).

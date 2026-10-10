@@ -61,6 +61,19 @@
 					</div>
 				</div>
 			@endforeach
+			@if (! empty($data['net_profit_plan']))
+				<div class="col-xl-3 col-sm-6 col-12 d-flex" data-locked-metric="net_profit">
+					<div class="card bg-light sale-widget flex-fill">
+						<div class="card-body d-flex align-items-center">
+							<span class="sale-icon bg-white text-muted"><i class="ti ti-lock fs-24"></i></span>
+							<div class="ms-2">
+								<p class="text-muted mb-1">{{ __('dashboard.net_profit') }}</p>
+								<h6 class="text-muted mb-0">{{ __('plans.available_from', ['plan' => ucfirst($data['net_profit_plan'])]) }}</h6>
+							</div>
+						</div>
+					</div>
+				</div>
+			@endif
 		</div>
 
 		<div class="row">

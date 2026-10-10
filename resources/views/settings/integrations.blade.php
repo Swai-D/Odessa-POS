@@ -25,7 +25,9 @@
 				<small class="text-muted">{{ __('integrations.channels.'.$channel.'.hint') }}</small>
 			</div>
 			<div class="card-body">
-				@if ($info['drivers'] === [])
+				@if ($info['locked'])
+					<p class="text-muted mb-0"><i class="ti ti-lock me-1"></i>{{ __('plans.locked') }}@if ($info['needed']) · {{ __('plans.available_from', ['plan' => __('platform.plans.'.$info['needed'])]) }}@endif</p>
+				@elseif ($info['drivers'] === [])
 					<p class="text-muted mb-0">{{ __('integrations.no_providers') }}</p>
 				@else
 					<form method="POST" action="{{ route('settings.integrations.update', $channel) }}" class="js-integration">

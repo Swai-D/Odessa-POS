@@ -29,6 +29,6 @@ After switching a feature on and saving, open a product (see [Add a product](hel
 
 ## Printers, fiscal receipts and mobile money
 
-These are not on this page. Printers are set up under **Integrations**, which needs the Medium plan. Read [Integrations](help:settings/integrations).
+These are not on this page. Printers are set up under **Integrations**. Read [Integrations](help:settings/integrations).
 
 > **Tip:** If you cannot see **Settings** in the sidebar, your role does not include it. Ask the Owner, or read [Users and roles](help:settings/users-and-roles).

@@ -12,7 +12,7 @@ Odessa POS ni mfumo wa till na usimamizi wa duka. Unauza kaunta, na mfumo huohuo
 - **Stock sahihi kila wakati.** Kila mauzo yanapunguza stock, na kila marejesho yanairudisha. Soma [Viwango vya stock](help:stock/stock-levels).
 - **Kuuza kwa mkopo.** Wateja unaowaamini wanalipa baadaye, nawe unafuatilia madeni. Soma [Mauzo ya mkopo](help:selling/credit-sales).
 - **Kujua hesabu zako.** **Dashibodi** inaonyesha mauzo ya leo, marejesho, mkopo uliotolewa na kiasi ambacho wateja wanadaiwa.
-- **Kukua na kifurushi kikubwa.** Manunuzi, wasambazaji, matumizi, ripoti na printa vinapatikana kuanzia kifurushi cha Medium. Soma [Kulinganisha vifurushi](help:plans/plans-compared).
+- **Kukua na kifurushi kikubwa.** Manunuzi, wasambazaji, matumizi, ripoti na malipo ya simu vinapatikana kuanzia kifurushi cha Medium. Soma [Kulinganisha vifurushi](help:plans/plans-compared).
 
 ## Duka lako limepangwaje
 

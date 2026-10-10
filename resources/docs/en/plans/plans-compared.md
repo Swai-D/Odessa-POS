@@ -8,21 +8,9 @@ Odessa POS has three plans. All of them include the till, products, stock, sales
 
 ## Comparison
 
-| | Basic | Medium | Enterprise |
-|---|---|---|---|
-| Till (POS), products, stock, sales, customers | Yes | Yes | Yes |
-| Sale returns and refunds | Yes | Yes | Yes |
-| Credit sales | Yes | Yes | Yes |
-| Till closing | Yes | Yes | Yes |
-| Brands | No | Yes | Yes |
-| Purchasing and suppliers | No | Yes | Yes |
-| Expenses and profit and loss | No | Yes | Yes |
-| Reports | No | Yes | Yes |
-| Integrations (receipt printer) | No | Yes | Yes |
-| Users | up to 3 | up to 10 | unlimited |
-| Warehouses | 1 | up to 3 | unlimited |
+{{plans-table}}
 
-Enterprise also reserves **TRA fiscal receipts**, but that connection is not available yet. See [Integrations](help:settings/integrations).
+Prices are in the shop currency and are the ones your supplier has set. A shop on a free trial can use the Medium features until the trial ends. The receipt printer is in every plan; mobile money starts at Medium; **TRA fiscal receipts** are reserved for Enterprise, but that connection is not available yet. See [Integrations](help:settings/integrations).
 
 ## How you see what is locked
 

@@ -3,9 +3,8 @@ title: Set up receipt printing (Integrations)
 summary: Choose how receipts are printed, and see which optional connections are and are not available.
 keywords: integrations, printer, thermal printer, ESC/POS, receipt printer, browser print, paper width, USB, Bluetooth, mobile money, TRA, fiscal, EFD, VFD
 order: 3
-plan: medium
 ---
-The **Integrations** page lets you plug in optional connections. Everything here is off until you choose a provider and switch it on. It needs the Medium plan and the settings permission (the Owner by default).
+The **Integrations** page lets you plug in optional connections. Everything here is off until you choose a provider and switch it on. The receipt printer is in every plan. Mobile money needs Medium and TRA fiscal receipts need Enterprise (neither is available yet). You also need the settings permission (the Owner by default).
 
 ## What is available today
 
@@ -38,4 +37,4 @@ For **TRA fiscal receipts** and **Mobile money** the page says no providers are 
 
 A barcode scanner needs no setup here. It works like a keyboard: click the search box on the **POS** screen, scan, and the product is added. See [Printers and barcode scanners](help:troubleshooting/printing-and-scanners).
 
-> **Tip:** If you cannot see **Integrations**, your plan may be Basic or your role may not allow it. See [Plans compared](help:plans/plans-compared) and [Users and roles](help:settings/users-and-roles).
+> **Tip:** If you cannot see **Integrations**, your role may not allow it (the receipt printer is in every plan). See [Plans compared](help:plans/plans-compared) and [Users and roles](help:settings/users-and-roles).

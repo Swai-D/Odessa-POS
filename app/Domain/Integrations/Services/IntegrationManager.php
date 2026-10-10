@@ -17,7 +17,7 @@ class IntegrationManager
     /** @return array{driver: string, settings: array<string, mixed>, secrets: array<string, mixed>}|null */
     public function active(string $channel): ?array
     {
-        if (! Plans::current()->allows($channel === 'fiscal' ? 'fiscal' : 'integrations')) {
+        if (! Plans::current()->allows($this->registry->planFeature($channel))) {
             return null;
         }
 

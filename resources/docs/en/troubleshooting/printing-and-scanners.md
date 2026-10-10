@@ -11,7 +11,7 @@ Most printing problems come from the browser or the printer settings, not from t
 - Open **Sales**, click the sale, choose **80mm receipt** or **A4 invoice**, then **Print**. This uses your browser's normal print window and works with any printer.
 - **Download PDF** always works if the printer does not.
 
-## Thermal printer (Medium plan)
+## Thermal printer
 
 Direct printing to a thermal (ESC/POS) printer is set up under **Settings > Integrations**. See [Integrations](help:settings/integrations).
 

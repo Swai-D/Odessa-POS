@@ -19,6 +19,12 @@ class IntegrationRegistry
         return (string) config("integrations.channels.{$channel}.feature");
     }
 
+    /** The subscription feature a plan must include to use a channel. */
+    public function planFeature(string $channel): string
+    {
+        return (string) config("integrations.channels.{$channel}.plan_feature");
+    }
+
     /** @return array<string, class-string<Driver>> driver key => class */
     public function drivers(string $channel): array
     {

@@ -20,7 +20,7 @@ Every page has a side menu on the left and a bar along the top. What you see dep
 | Reports | **Reports** |
 | Settings | **Settings**, **Users**, **Integrations** |
 
-**Brands**, **Purchases**, **Suppliers**, **Expenses**, **Expense categories**, **Reports** and **Integrations** need the Medium plan. If you are on Basic they are hidden. See [Plans compared](help:plans/plans-compared).
+**Brands**, **Purchases**, **Suppliers**, **Expenses**, **Expense categories** and **Reports** need the Medium plan. If you are on Basic they stay in the menu, dimmed with a lock. See [Plans compared](help:plans/plans-compared).
 
 A cashier normally sees only **Dashboard**, **POS**, **Products**, **Sales** and **Customers**. If a menu you need is missing, see [I cannot see a menu](help:troubleshooting/cannot-see-a-menu).
 

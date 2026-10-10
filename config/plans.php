@@ -20,6 +20,10 @@ return [
     // Trial length for newly provisioned shops; the separate grace period starts after this deadline.
     'trial_days' => 14,
 
+    // While a shop is on trial it can use every feature of this plan, so it sees the profit and reports it would
+    // get by paying. Limits still follow the plan the shop is assigned to.
+    'trial_plan' => 'medium',
+
     // Shown on the "not in your plan" page so a shop knows who to call to upgrade. Set in .env.
     'contact' => [
         'phone' => env('PLAN_CONTACT_PHONE'),
@@ -30,16 +34,16 @@ return [
 
     // Every feature a plan can switch on. Everything not listed here (POS, products, stock, sales,
     // customers, settings...) is part of every plan.
-    'features' => ['returns', 'credit_sales', 'brands', 'purchasing', 'integrations', 'reports', 'expenses', 'fiscal'],
+    'features' => ['returns', 'credit_sales', 'brands', 'purchasing', 'printer', 'reports', 'expenses', 'mobile_money', 'fiscal', 'priority_support'],
 
     'plans' => [
         'basic' => [
-            'features' => ['returns', 'credit_sales'],
+            'features' => ['returns', 'credit_sales', 'printer'],
             'limits' => ['users' => 3, 'warehouses' => 1],
         ],
         'medium' => [
             'inherits' => 'basic',
-            'features' => ['brands', 'purchasing', 'integrations', 'reports', 'expenses'],
+            'features' => ['brands', 'purchasing', 'reports', 'expenses', 'mobile_money'],
             'limits' => ['users' => 10, 'warehouses' => 3],
         ],
         'enterprise' => [

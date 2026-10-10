@@ -7,10 +7,12 @@ use App\Domain\Integrations\Models\TenantIntegration;
 use App\Domain\Integrations\Services\IntegrationRegistry;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\IntegrationRequest;
+use App\Support\Plans;
 use App\Support\Tenancy\TenantContext;
 use App\Support\TenantSettings;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 
 class IntegrationController extends Controller
@@ -37,7 +39,12 @@ class IntegrationController extends Controller
                 ];
             }
 
+            $planFeature = $registry->planFeature($channel);
+
             $channels[$channel] = [
+                // A channel the plan does not include is listed but cannot be configured.
+                'locked' => ! Plans::current()->allows($planFeature),
+                'needed' => Plans::cheapestPlanFor($planFeature),
                 'enabled' => $settings->feature($registry->feature($channel)),
                 'driver' => $row?->driver,
                 'drivers' => $drivers,
@@ -47,9 +54,15 @@ class IntegrationController extends Controller
         return view('settings.integrations', ['channels' => $channels]);
     }
 
-    public function update(IntegrationRequest $request, SaveIntegrationAction $action): RedirectResponse
+    public function update(IntegrationRequest $request, SaveIntegrationAction $action, IntegrationRegistry $registry): RedirectResponse|Response
     {
         Gate::authorize('manage-settings');
+
+        $feature = $registry->planFeature($request->channel());
+
+        if (! Plans::current()->allows($feature)) {
+            return response()->view('errors.plan-upgrade', ['feature' => $feature], 403);
+        }
 
         $action->handle(app(TenantContext::class)->get(), $request->channel(), $request->validated());
 
