@@ -25,7 +25,10 @@ class TenantController extends Controller
 
     public function create(): View
     {
-        return view('platform.tenants.create', ['plans' => $this->planOptions()]);
+        return view('platform.tenants.create', [
+            'plans' => $this->planOptions(),
+            'trialEndsAt' => now()->addDays((int) config('plans.trial_days'))->format('Y-m-d'),
+        ]);
     }
 
     public function store(TenantRequest $request, ProvisionTenantAction $action): RedirectResponse
@@ -38,7 +41,8 @@ class TenantController extends Controller
             'domain' => $data['domain'] ?? null,
             'plan' => $data['plan'],
             'status' => $data['status'],
-            'paid_until' => $data['paid_until'] ?? null,
+            'paid_until' => $data['status'] === 'trial' ? null : ($data['paid_until'] ?? null),
+            'trial_ends_at' => $data['trial_ends_at'] ?? null,
             'owner_name' => $data['owner_name'],
             'owner_email' => $data['owner_email'],
             'owner_password' => $data['owner_password'],
@@ -75,12 +79,24 @@ class TenantController extends Controller
             'domain' => $data['domain'] ?? null,
             'status' => $data['status'],
             'plan' => $data['plan'],
-            'paid_until' => $data['paid_until'] ?? null,
+            'paid_until' => $data['status'] === 'trial' ? null : ($data['paid_until'] ?? null),
+            'trial_ends_at' => $data['status'] === 'trial'
+                ? ($data['trial_ends_at'] ?? ($tenant->status === 'trial' && $tenant->trial_ends_at !== null
+                    ? $tenant->trial_ends_at
+                    : now()->addDays((int) config('plans.trial_days'))))
+                : null,
         ]);
 
         $this->saveOverrides($tenant, $data);
 
         return redirect()->route('platform.tenants.index')->with('status', __('platform.saved'));
+    }
+
+    public function destroy(Tenant $tenant): RedirectResponse
+    {
+        $tenant->delete();
+
+        return redirect()->route('platform.tenants.index')->with('status', __('platform.deleted'));
     }
 
     /** @param  array<string, mixed>  $data */

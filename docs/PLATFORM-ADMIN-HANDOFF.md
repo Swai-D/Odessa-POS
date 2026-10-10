@@ -11,6 +11,9 @@
 - Added a one-time migration for the configured initial TZS prices: Basic 50,000/month and 590,000/year; Medium 70,000/month and 820,000/year; Enterprise 90,000/month and 1,050,000/year.
 - Renewal now offers only monthly (1 month) and annual (12 months), calculates the charge server-side, ignores client-submitted amounts, and applies edited prices only when the next renewal is recorded. Discounts require a reason and cannot exceed the selected price.
 - Payment records snapshot plan code/name, list price, discount, reason, final amount, and TZS currency. Existing payment history stays readable; old rows without a snapshot use their recorded amount as the display fallback.
+- New shops now default to a configurable 14-day trial with `trial_ends_at` set automatically. The existing 7-day grace period starts after the trial deadline, then access becomes read-only; creating the trial does not create a payment record.
+- New active shops require an explicit `paid_until`, and trial/suspended shops need a paid deadline before being switched to active. Trial deadlines are shown in the shop list and platform overview as “Access until”.
+- Super admins can delete a shop from the shop list. This uses `SoftDeletes`, removes the shop from active tenant resolution and shop listings, retains its tenant data and reserved slug, and keeps its payment history visible through a `withTrashed` tenant relation.
 - Added English/Swahili translations and `tests/Feature/Platform/PlatformDashboardTest.php` coverage for authorization, aggregates, renewals, and currency-specific revenue.
 - Added `tests/Feature/Platform/PlatformPaymentTest.php` coverage for report filtering, CSV content, date validation, and access control.
 - Added `tests/Feature/Plans/SubscriptionPlanAdminTest.php` coverage for plan CRUD, assignment, feature/limit behavior, deletion guards, and authorization; `RenewalTest.php` covers pricing, discounts, idempotency, and renewal dates.
@@ -28,7 +31,7 @@ The template's other super-admin areas are not implemented as new workflows. Con
 - Coupons or promotional billing: no platform coupon model/workflow exists.
 - Cross-shop operational reporting: keep tenant data isolated and design any reviewed super-admin access explicitly.
 
-The platform overview is at `/platform`, plans at `/platform/plans`, and payment review at `/platform/payments`. Focused verification passed: 63 tests / 329 assertions, Pint, and Larastan level 5. Re-run the plan/payment bundle with `vendor/bin/pest tests/Feature/Plans tests/Feature/Platform tests/Feature/Sales/CheckoutTest.php tests/Feature/SidebarTest.php`.
+The platform overview is at `/platform`, plans at `/platform/plans`, and payment review at `/platform/payments`. New shops start on a 14-day trial; admins record the first payment from the shop's Edit/Renew section when ready. Focused verification passed for the billing work; re-run with `vendor/bin/pest tests/Feature/Plans tests/Feature/Platform tests/Feature/Sales/CheckoutTest.php tests/Feature/SidebarTest.php`.
 
 ## Worktree Caution
 

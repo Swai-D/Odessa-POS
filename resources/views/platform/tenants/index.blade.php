@@ -28,7 +28,7 @@
 							<th>{{ __('platform.slug') }}</th>
 							<th>{{ __('platform.plan') }}</th>
 							<th>{{ __('platform.status') }}</th>
-							<th>{{ __('platform.paid_until') }}</th>
+							<th>{{ __('platform.deadline') }}</th>
 							<th></th>
 						</tr>
 					</thead>
@@ -39,8 +39,19 @@
 								<td>{{ $tenant->slug }}</td>
 								<td>{{ __('platform.plans.'.($tenant->plan ?? config('plans.default'))) }}</td>
 								<td>{{ __('platform.statuses.'.$tenant->status) }}@if (($state = (new \App\Support\Subscription($tenant))->state()) !== 'active' && $tenant->status !== 'suspended') <span class="badge bg-warning ms-1">{{ __('subscription.states.'.$state) }}</span>@endif</td>
-								<td>{{ $tenant->paid_until?->format('Y-m-d') ?? '—' }}</td>
-								<td class="text-end"><a href="{{ route('platform.tenants.edit', $tenant) }}#renew" class="btn btn-sm btn-white me-1" title="{{ __('platform.renew') }}"><i class="ti ti-cash"></i></a><a href="{{ route('platform.tenants.edit', $tenant) }}" class="btn btn-sm btn-white"><i class="ti ti-edit"></i></a></td>
+								<td>{{ ($tenant->paid_until ?? $tenant->trial_ends_at)?->format('Y-m-d') ?? '—' }}</td>
+								<td class="text-end text-nowrap">
+									<div class="action-icon d-inline-flex align-items-center">
+										<a href="{{ route('platform.tenants.edit', $tenant) }}#renew" class="p-2 d-flex align-items-center border rounded me-2" title="{{ __('platform.renew') }}"><i class="ti ti-cash"></i></a>
+										<a href="{{ route('platform.tenants.edit', $tenant) }}" class="p-2 d-flex align-items-center border rounded me-2" title="{{ __('platform.edit') }}"><i class="ti ti-edit"></i></a>
+										<a href="javascript:void(0);" class="p-2 d-flex align-items-center border rounded text-danger" title="{{ __('platform.delete_shop') }}"
+											data-bs-toggle="modal" data-bs-target="#delete-modal"
+											data-delete-action="{{ route('platform.tenants.destroy', $tenant) }}"
+											data-delete-message="{{ __('platform.confirm_delete_shop') }}">
+											<i class="ti ti-trash"></i>
+										</a>
+									</div>
+								</td>
 							</tr>
 						@empty
 							<tr><td colspan="6" class="text-center text-muted py-4">{{ __('platform.empty') }}</td></tr>
@@ -52,3 +63,7 @@
 	</div>
 </div>
 @endsection
+
+@push('modals')
+@include('partials.delete-modal')
+@endpush

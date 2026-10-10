@@ -50,7 +50,7 @@
 				<div class="card-body p-0">
 					<div class="table-responsive">
 						<table class="table mb-0">
-							<thead><tr><th>{{ __('platform.name') }}</th><th>{{ __('platform.paid_until') }}</th><th></th></tr></thead>
+							<thead><tr><th>{{ __('platform.name') }}</th><th>{{ __('platform.deadline') }}</th><th></th></tr></thead>
 							<tbody>
 								@forelse ($overview['renewals'] as $shop)
 									@php($deadline = $shop->paid_until ?? $shop->trial_ends_at)

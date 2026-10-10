@@ -1,9 +1,13 @@
 <?php
 
 use App\Models\Tenant;
+use App\Models\TenantPayment;
 use App\Models\User;
 use App\Support\Plans;
+use App\Support\Subscription;
 use App\Support\Tenancy\TenantContext;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 function platformAdmin(): User
 {
@@ -39,6 +43,10 @@ it('lets a super admin list shops and only shows the platform menu', function ()
     $html = $this->actingAs(platformAdmin())->get('/platform/tenants')->assertOk()->assertSee('Shop-a')->getContent();
 
     expect($html)->toContain(route('platform.tenants.index'))
+        ->and($html)->toContain('data-bs-target="#delete-modal"')
+        ->and($html)->toContain('data-delete-message="'.e(__('platform.confirm_delete_shop')).'"')
+        ->and($html)->toContain('class="action-icon d-inline-flex align-items-center"')
+        ->and($html)->not->toContain('onsubmit="return confirm(')
         ->and($html)->not->toContain(route('products.index'));
 });
 
@@ -59,6 +67,70 @@ it('creates a shop with an owner who can sign in to it', function () {
     $this->actingAs($owner)->withHeader('X-Tenant', 'mama-lishe')->get('/suppliers')->assertOk();
 });
 
+it('creates new shops on a dated trial and grants grace only after the trial ends', function (): void {
+    Carbon::setTestNow('2026-10-10 12:00:00');
+    $admin = platformAdmin();
+
+    $this->actingAs($admin)->get('/platform/tenants/create')
+        ->assertOk()
+        ->assertSee('value="trial" selected', false)
+        ->assertSee('name="trial_ends_at"', false)
+        ->assertSee('value="2026-10-24"', false)
+        ->assertSee('14 days to try the system; the 7-day grace period starts after this date.');
+
+    $this->actingAs($admin)->post('/platform/tenants', newShopPayload([
+        'name' => 'Trial Shop',
+        'slug' => 'trial-shop',
+        'status' => 'trial',
+        'paid_until' => null,
+        'owner_email' => 'trial@example.com',
+    ]))->assertRedirect(route('platform.tenants.index'));
+
+    $tenant = Tenant::query()->where('slug', 'trial-shop')->firstOrFail();
+    expect($tenant->status)->toBe('trial')
+        ->and($tenant->paid_until)->toBeNull()
+        ->and($tenant->trial_ends_at?->format('Y-m-d'))->toBe('2026-10-24')
+        ->and((new Subscription($tenant, Carbon::parse('2026-10-24 23:59:59')))->state())->toBe(Subscription::ACTIVE)
+        ->and((new Subscription($tenant, Carbon::parse('2026-10-25 00:00:00')))->state())->toBe(Subscription::GRACE)
+        ->and((new Subscription($tenant, Carbon::parse('2026-11-01 00:00:00')))->state())->toBe(Subscription::READONLY);
+
+    Carbon::setTestNow();
+});
+
+it('soft deletes a shop, disables its access, and keeps its subscription payment history', function (): void {
+    $tenant = createTenant('removed-shop');
+    $tenant->update(['name' => 'Removed Shop']);
+    $owner = createTenantUser($tenant, ['dashboard.view']);
+    $today = Carbon::today();
+
+    TenantPayment::query()->create([
+        'tenant_id' => $tenant->getKey(),
+        'idempotency_key' => (string) Str::uuid(),
+        'plan' => 'basic',
+        'plan_name' => 'Basic',
+        'amount' => 5_000_000,
+        'currency' => 'TZS',
+        'method' => 'cash',
+        'reference' => 'KEEP-LEDGER',
+        'months' => 1,
+        'paid_on' => $today->toDateString(),
+        'period_start' => $today->toDateString(),
+        'period_end' => $today->copy()->addMonth()->toDateString(),
+    ]);
+
+    $this->actingAs(platformAdmin())->delete(route('platform.tenants.destroy', $tenant))
+        ->assertRedirect(route('platform.tenants.index'))
+        ->assertSessionHas('status', __('platform.deleted'));
+
+    expect(Tenant::withTrashed()->findOrFail($tenant->getKey())->trashed())->toBeTrue()
+        ->and(TenantPayment::query()->where('reference', 'KEEP-LEDGER')->exists())->toBeTrue();
+
+    $this->actingAs(platformAdmin())->get(route('platform.tenants.index'))->assertDontSee('Removed Shop');
+    $this->actingAs(platformAdmin())->get(route('platform.payments.index'))->assertOk()
+        ->assertSee('Removed Shop')->assertSee('KEEP-LEDGER');
+    $this->actingAs($owner)->withHeader('X-Tenant', 'removed-shop')->get('/dashboard')->assertNotFound();
+});
+
 it('validates a new shop', function () {
     createTenant('taken');
 
@@ -69,6 +141,11 @@ it('validates a new shop', function () {
     $this->actingAs(platformAdmin())
         ->post('/platform/tenants', newShopPayload(['slug' => 'taken']))
         ->assertSessionHasErrors('slug');
+
+    $this->actingAs(platformAdmin())
+        ->post('/platform/tenants', newShopPayload([
+            'slug' => 'active-without-payment', 'status' => 'active', 'paid_until' => null,
+        ]))->assertSessionHasErrors('paid_until');
 });
 
 it('changes plan, status and overrides of a shop', function () {

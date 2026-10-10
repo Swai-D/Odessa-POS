@@ -48,9 +48,7 @@ class ProvisionTenantAction
         ];
     }
 
-    /**
-     * @param  array{name: string, slug: string, domain?: string|null, plan?: string|null, status?: string, paid_until?: mixed, owner_name: string, owner_email: string, owner_password?: string|null}  $data
-     */
+    /** @param  array{name: string, slug: string, domain?: string|null, plan?: string|null, status?: string, paid_until?: mixed, trial_ends_at?: mixed, owner_name: string, owner_email: string, owner_password?: string|null}  $data */
     public function handle(array $data): Tenant
     {
         return DB::transaction(function () use ($data): Tenant {
@@ -66,6 +64,8 @@ class ProvisionTenantAction
                     'status' => $data['status'] ?? 'active',
                     'plan' => $data['plan'] ?? config('plans.default'),
                     'paid_until' => $data['paid_until'] ?? null,
+                    'trial_ends_at' => $data['trial_ends_at']
+                        ?? (($data['status'] ?? null) === 'trial' ? now()->addDays((int) config('plans.trial_days')) : null),
                     'settings' => ['currency' => config('pos.default_currency'), 'locale' => 'en', 'features' => []],
                 ],
             );

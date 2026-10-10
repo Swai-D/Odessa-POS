@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use App\Models\SubscriptionPlan;
-use App\Models\Tenant;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -19,14 +18,16 @@ class TenantRequest extends FormRequest
     public function rules(): array
     {
         $tenant = $this->route('tenant');
-        $id = $tenant instanceof Tenant ? $tenant->getKey() : null;
+        $id = $this->route()->hasParameter('tenant') ? $tenant->getKey() : null;
+        $requiresPaidUntilOnActivation = $id === null
+            || ($tenant->status !== 'active' && $tenant->paid_until === null);
         $availablePlans = SubscriptionPlan::query()->where('is_active', true)->pluck('code')->all();
         foreach ((array) config('plans.aliases') as $alias => $code) {
             if (in_array($code, $availablePlans, true)) {
                 $availablePlans[] = $alias;
             }
         }
-        if ($tenant instanceof Tenant && $tenant->plan !== null) {
+        if ($id !== null && $tenant->plan !== null) {
             $availablePlans[] = $tenant->plan;
         }
 
@@ -35,7 +36,11 @@ class TenantRequest extends FormRequest
             'domain' => ['nullable', 'string', 'max:190', Rule::unique('tenants', 'domain')->ignore($id)],
             'status' => ['required', Rule::in(['active', 'trial', 'suspended'])],
             'plan' => ['required', Rule::in(array_unique($availablePlans))],
-            'paid_until' => ['nullable', 'date'],
+            'paid_until' => [
+                'nullable', 'date',
+                Rule::requiredIf(fn (): bool => $this->input('status') === 'active' && $requiresPaidUntilOnActivation),
+            ],
+            'trial_ends_at' => ['nullable', 'date', 'after_or_equal:today'],
             'override_features' => ['nullable', 'array'],
             'override_features.*' => [Rule::in(config('plans.features'))],
             'limit_users' => ['nullable', 'integer', 'min:1', 'max:100000'],

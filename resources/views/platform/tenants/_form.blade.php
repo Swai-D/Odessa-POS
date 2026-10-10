@@ -33,19 +33,41 @@
 			</div>
 			<div class="col-md-2 mb-3">
 				<label class="form-label">{{ __('platform.status') }}</label>
-				<select name="status" class="form-select">
+				<select id="shop-status" name="status" class="form-select" data-require-paid-until="{{ ! ($tenant ?? null) || (($tenant->status ?? null) !== 'active' && ($tenant->paid_until ?? null) === null) ? '1' : '0' }}">
 					@foreach (['active', 'trial', 'suspended'] as $status)
-						<option value="{{ $status }}" @selected($value('status', $tenant->status ?? 'active') === $status)>{{ __('platform.statuses.'.$status) }}</option>
+						<option value="{{ $status }}" @selected($value('status', $tenant->status ?? 'trial') === $status)>{{ __('platform.statuses.'.$status) }}</option>
 					@endforeach
 				</select>
 			</div>
 			<div class="col-md-2 mb-3">
+				<label class="form-label">{{ __('platform.trial_ends_at') }}</label>
+				<input type="date" name="trial_ends_at" class="form-control" min="{{ now()->format('Y-m-d') }}" value="{{ $value('trial_ends_at', ($tenant ?? null)?->trial_ends_at?->format('Y-m-d') ?? ($trialEndsAt ?? '')) }}">
+				<small class="text-muted">{{ __('platform.trial_hint', ['days' => config('plans.trial_days'), 'grace_days' => config('plans.grace_days')]) }}</small>
+			</div>
+			<div class="col-md-2 mb-3">
 				<label class="form-label">{{ __('platform.paid_until') }}</label>
-				<input type="date" name="paid_until" class="form-control" value="{{ $value('paid_until', ($tenant ?? null)?->paid_until?->format('Y-m-d') ?? '') }}">
+				<input id="shop-paid-until" type="date" name="paid_until" class="form-control" value="{{ $value('paid_until', ($tenant ?? null)?->paid_until?->format('Y-m-d') ?? '') }}">
 			</div>
 		</div>
 	</div>
 </div>
+
+@push('extra-js')
+<script>
+	(function () {
+		var status = document.getElementById('shop-status');
+		var paidUntil = document.getElementById('shop-paid-until');
+		if (!status || !paidUntil) { return; }
+
+		function updatePaidUntilRequirement() {
+			paidUntil.required = status.dataset.requirePaidUntil === '1' && status.value === 'active';
+		}
+
+		status.addEventListener('change', updatePaidUntilRequirement);
+		updatePaidUntilRequirement();
+	})();
+</script>
+@endpush
 
 @unless ($tenant ?? null)
 	<div class="card">

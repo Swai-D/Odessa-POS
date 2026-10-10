@@ -63,7 +63,7 @@ Route::middleware(['auth', 'can:platform'])->prefix('platform')->name('platform.
     Route::resource('plans', SubscriptionPlanController::class)->except(['show']);
     Route::get('payments/export', [PlatformPaymentController::class, 'export'])->name('payments.export');
     Route::get('payments', [PlatformPaymentController::class, 'index'])->name('payments.index');
-    Route::resource('tenants', TenantController::class)->only(['index', 'create', 'store', 'edit', 'update']);
+    Route::resource('tenants', TenantController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
     Route::post('tenants/{tenant}/renewals', [TenantRenewalController::class, 'store'])->name('tenants.renewals.store');
 });
 

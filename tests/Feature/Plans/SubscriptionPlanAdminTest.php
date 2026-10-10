@@ -39,6 +39,13 @@ it('lets super admins create and edit a priced plan with features and limits', f
         ->assertRedirect(route('platform.plans.index'));
 
     $plan = SubscriptionPlan::query()->where('code', 'starter_plus')->firstOrFail();
+    $this->actingAs($admin)->get(route('platform.plans.index'))
+        ->assertOk()
+        ->assertSee('class="action-icon d-inline-flex align-items-center"', false)
+        ->assertSee('data-bs-target="#delete-modal"', false)
+        ->assertSee('data-delete-message="'.e(__('platform.confirm_delete_plan')).'"', false)
+        ->assertDontSee('onsubmit="return confirm(', false);
+
     expect($plan->monthly_price)->toBe(6_500_000)
         ->and($plan->annual_price)->toBe(65_000_000)
         ->and($plan->features)->toBe(['returns', 'reports'])
@@ -77,7 +84,7 @@ it('uses active database plans for new shops and refuses to delete plans in use'
     $plan = SubscriptionPlan::query()->where('code', 'starter_plus')->firstOrFail();
 
     $tenantPayload = [
-        'name' => 'Starter Shop', 'slug' => 'starter-shop', 'plan' => 'starter_plus', 'status' => 'active',
+        'name' => 'Starter Shop', 'slug' => 'starter-shop', 'plan' => 'starter_plus', 'status' => 'trial',
         'owner_name' => 'Starter Owner', 'owner_email' => 'starter@example.com', 'owner_password' => 'secret-pass-1',
     ];
     $this->actingAs($admin)->post(route('platform.tenants.store'), $tenantPayload)

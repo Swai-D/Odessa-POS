@@ -24,11 +24,15 @@
 								<td>{{ collect($plan->features)->map(fn ($feature) => $feature === '*' ? __('platform.all_features') : __('plans.features.'.$feature))->join(', ') ?: '—' }}</td>
 								<td><span class="badge {{ $plan->is_active ? 'bg-success' : 'bg-secondary' }}">{{ $plan->is_active ? __('platform.statuses.active') : __('platform.inactive') }}</span></td>
 								<td class="text-end text-nowrap">
-									<a href="{{ route('platform.plans.edit', $plan) }}" class="btn btn-sm btn-white" title="{{ __('platform.edit') }}"><i class="ti ti-edit"></i></a>
-									<form method="POST" action="{{ route('platform.plans.destroy', $plan) }}" class="d-inline" onsubmit="return confirm('{{ __('platform.confirm_delete_plan') }}')">
-										@csrf @method('DELETE')
-										<button type="submit" class="btn btn-sm btn-white text-danger" title="{{ __('platform.delete') }}"><i class="ti ti-trash"></i></button>
-									</form>
+									<div class="action-icon d-inline-flex align-items-center">
+										<a href="{{ route('platform.plans.edit', $plan) }}" class="p-2 d-flex align-items-center border rounded me-2" title="{{ __('platform.edit') }}"><i class="ti ti-edit"></i></a>
+										<a href="javascript:void(0);" class="p-2 d-flex align-items-center border rounded text-danger" title="{{ __('app.delete') }}"
+											data-bs-toggle="modal" data-bs-target="#delete-modal"
+											data-delete-action="{{ route('platform.plans.destroy', $plan) }}"
+											data-delete-message="{{ __('platform.confirm_delete_plan') }}">
+											<i class="ti ti-trash"></i>
+										</a>
+									</div>
 								</td>
 							</tr>
 						@empty
@@ -41,3 +45,7 @@
 	</div>
 </div>
 @endsection
+
+@push('modals')
+@include('partials.delete-modal')
+@endpush

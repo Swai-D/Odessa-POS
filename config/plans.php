@@ -17,6 +17,9 @@ return [
     // Days before the paid-until date from which the renewal reminder is shown.
     'warn_days' => 7,
 
+    // Trial length for newly provisioned shops; the separate grace period starts after this deadline.
+    'trial_days' => 14,
+
     // Shown on the "not in your plan" page so a shop knows who to call to upgrade. Set in .env.
     'contact' => [
         'phone' => env('PLAN_CONTACT_PHONE'),
