@@ -38,6 +38,7 @@ return [
         'suppliers' => 'Suppliers',
         'people' => 'People',
         'reports' => 'Reports',
+        'support' => 'Support',
         'products' => 'Products',
         'categories' => 'Categories',
         'brands' => 'Brands',

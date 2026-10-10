@@ -47,3 +47,14 @@ it('highlights the section the user is in, also on detail pages', function (): v
         ->and($active('/settings'))->toBe([route('settings.index')])
         ->and($active('/settings/integrations'))->toBe([route('settings.integrations')]);
 });
+
+it('shows the help center in the sidebar for every shop user', function (): void {
+    $tenant = createTenant('help-sidebar');
+    $user = createTenantUser($tenant, []);
+
+    $html = $this->actingAs($user)->withHeader('X-Tenant', 'help-sidebar')->get('/help')->assertOk()->getContent();
+
+    expect($html)->toContain('<h6 class="submenu-hdr">'.__('app.menu.support').'</h6>')
+        ->toContain('<span>'.__('help.title').'</span>')
+        ->and(activeSidebarLinks($html))->toBe([route('help.index')]);
+});

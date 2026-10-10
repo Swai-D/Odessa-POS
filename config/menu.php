@@ -74,6 +74,12 @@ return [
         ],
     ],
     [
+        'label' => 'app.menu.support',
+        'items' => [
+            ['label' => 'help.title', 'icon' => 'ti ti-book-2', 'route' => 'help.index', 'permission' => null, 'match' => ['help.*']],
+        ],
+    ],
+    [
         'label' => 'app.menu.settings',
         'items' => [
             ['label' => 'app.menu.settings', 'icon' => 'ti ti-settings', 'route' => 'settings.index', 'permission' => 'settings.manage', 'match' => ['settings.index', 'settings.update']],

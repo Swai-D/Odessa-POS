@@ -74,7 +74,9 @@
             }
 
             return $hasShop
-                && ($menuUser->is_super_admin || collect((array) $item['permission'])->contains(fn (string $permission): bool => $menuUser->can($permission)));
+				&& ($menuUser->is_super_admin
+				    || ($item['permission'] === null)
+				    || collect((array) $item['permission'])->contains(fn (string $permission): bool => $menuUser->can($permission)));
         };
         // Visible but not in the shop's plan: shown dimmed with a lock; opening it explains how to upgrade.
         $isLocked = fn (array $item): bool => isset($item['feature']) && ! $plan->allows($item['feature']);

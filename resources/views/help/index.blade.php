@@ -74,5 +74,7 @@
 			@endforeach
 		</div>
 	@endif
+
+	@include('help.partials.contact')
 </div>
 @endsection

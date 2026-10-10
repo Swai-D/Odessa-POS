@@ -86,6 +86,8 @@
 					<a href="{{ route('help.show', [$next->category, $next->slug]) }}" class="btn btn-white">{{ $next->title }}<i class="ti ti-arrow-right ms-1"></i></a>
 				@endif
 			</div>
+
+			@include('help.partials.contact')
 		</div>
 	</div>
 </div>

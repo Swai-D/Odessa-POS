@@ -38,6 +38,7 @@ return [
         'suppliers' => 'Wasambazaji',
         'people' => 'Watu',
         'reports' => 'Ripoti',
+        'support' => 'Msaada',
         'products' => 'Bidhaa',
         'categories' => 'Kategoria',
         'brands' => 'Chapa',
