@@ -12,7 +12,7 @@
 			</div>
 		</div>
 		<div class="page-btn">
-			@if (\App\Support\Plans::current()->allows('integrations'))
+			@if (\App\Support\Plans::current()->allowsAny('printer', 'mobile_money', 'fiscal'))
 			<a href="{{ route('settings.integrations') }}" class="btn btn-white"><i class="ti ti-plug-connected me-1"></i>{{ __('integrations.title') }}</a>
 			@endif
 		</div>

@@ -14,9 +14,11 @@ return [
         'credit_sales' => 'Mauzo ya mkopo',
         'brands' => 'Brand',
         'purchasing' => 'Manunuzi na wasambazaji',
-        'integrations' => 'Miunganisho',
+        'printer' => 'Printa ya stakabadhi',
         'reports' => 'Ripoti',
         'expenses' => 'Matumizi na faida/hasara',
+        'mobile_money' => 'Pesa za simu',
         'fiscal' => 'Risiti za TRA',
+        'priority_support' => 'Msaada wa kipaumbele na mafunzo',
     ],
 ];

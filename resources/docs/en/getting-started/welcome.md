@@ -12,7 +12,7 @@ Odessa POS is a till and shop-management system. You sell at the counter, and th
 - **Keep stock correct.** Every sale reduces stock, and every return puts it back. See [Stock levels](help:stock/stock-levels).
 - **Sell on credit.** Let trusted customers pay later and track what they owe. See [Credit sales](help:selling/credit-sales).
 - **Know your numbers.** The **Dashboard** shows today's sales, returns, credit given and how much customers owe.
-- **Grow with a bigger plan.** Purchasing, suppliers, expenses, reports and printer integrations come with the Medium plan and above. See [Plans compared](help:plans/plans-compared).
+- **Grow with a bigger plan.** Purchasing, suppliers, expenses, reports and mobile money come with the Medium plan and above. See [Plans compared](help:plans/plans-compared).
 
 ## How your shop is organised
 

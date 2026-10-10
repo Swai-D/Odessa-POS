@@ -43,7 +43,35 @@ class Plans
             return true;
         }
 
+        if ($this->trialGrants($feature)) {
+            return true;
+        }
+
         return in_array($feature, (array) data_get($this->tenant->settings, 'plan_overrides.features', []), true);
+    }
+
+    /** True when at least one of the features is allowed. */
+    public function allowsAny(string ...$features): bool
+    {
+        foreach ($features as $feature) {
+            if ($this->allows($feature)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /** A shop on trial gets the features of the trial plan (Medium) whatever plan it is assigned to. */
+    private function trialGrants(string $feature): bool
+    {
+        if ($this->tenant === null || $this->tenant->status !== 'trial') {
+            return false;
+        }
+
+        $granted = (array) $this->catalog()->get((string) config('plans.trial_plan'))?->features;
+
+        return in_array('*', $granted, true) || in_array($feature, $granted, true);
     }
 
     /** The smallest plan whose own features include `$feature` (ignores per-shop overrides); null when none does. */

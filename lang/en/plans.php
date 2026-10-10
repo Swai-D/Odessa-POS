@@ -14,9 +14,11 @@ return [
         'credit_sales' => 'Credit sales',
         'brands' => 'Brands',
         'purchasing' => 'Purchasing and suppliers',
-        'integrations' => 'Integrations',
+        'printer' => 'Receipt printer',
         'reports' => 'Reports',
         'expenses' => 'Expenses and profit & loss',
+        'mobile_money' => 'Mobile money',
         'fiscal' => 'TRA fiscal receipts',
+        'priority_support' => 'Priority support and training',
     ],
 ];

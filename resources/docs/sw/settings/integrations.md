@@ -3,9 +3,8 @@ title: Weka uchapishaji wa risiti (Miunganisho)
 summary: Chagua jinsi risiti zinavyochapishwa, na ujue ni miunganisho ipi ya hiari inapatikana na ipi bado.
 keywords: miunganisho, integrations, printa, printer, thermal, ESC/POS, risiti, chapa, upana wa karatasi, USB, Bluetooth, malipo ya simu, mobile money, TRA, fiscal, EFD
 order: 3
-plan: medium
 ---
-Ukurasa wa **Miunganisho** hukuruhusu kuunganisha huduma za hiari. Kila kitu hapa kimezimwa hadi uchague mtoa huduma na kukiwasha. Unahitaji plan ya Medium na ruhusa ya mipangilio (kwa kawaida Owner).
+Ukurasa wa **Miunganisho** hukuruhusu kuunganisha huduma za hiari. Kila kitu hapa kimezimwa hadi uchague mtoa huduma na kukiwasha. Printa ya risiti ipo kwenye kila mpango. Malipo ya simu yanahitaji Medium na Risiti za TRA zinahitaji Enterprise (hakuna kilichopatikana bado). Pia unahitaji ruhusa ya mipangilio (kwa kawaida Owner).
 
 ## Kipi kinapatikana sasa
 
@@ -38,4 +37,4 @@ Kwa **Risiti za TRA** na **Malipo ya simu**, ukurasa unasema bado hakuna watoa h
 
 Kisoma barcode hakihitaji mpangilio wowote hapa. Kinafanya kazi kama kibodi: bonyeza kisanduku cha kutafuta kwenye skrini ya till, soma barcode, na bidhaa inaongezwa. Tazama [Printa na visoma barcode](help:troubleshooting/printing-and-scanners).
 
-> **Kidokezo:** Kama huoni **Miunganisho**, labda plan yako ni Basic au jukumu lako halina ruhusa. Tazama [Mipango kwa kulinganisha](help:plans/plans-compared) na [Watumiaji na majukumu](help:settings/users-and-roles).
+> **Kidokezo:** Kama huoni **Miunganisho**, labda jukumu lako halina ruhusa (printa ya risiti ipo kwenye kila mpango). Tazama [Mipango kwa kulinganisha](help:plans/plans-compared) na [Watumiaji na majukumu](help:settings/users-and-roles).

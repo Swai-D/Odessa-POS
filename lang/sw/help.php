@@ -29,4 +29,12 @@ return [
         'plans' => ['title' => 'Mipango na usajili', 'description' => 'Kila mpango una nini na jinsi kuhuisha kunavyofanya kazi'],
         'troubleshooting' => ['title' => 'Matatizo na majibu', 'description' => 'Suluhisho za haraka na maswali ya kawaida'],
     ],
+    'plan_table' => [
+        'core' => 'Till, bidhaa, stock, mauzo, wateja, marejesho, mkopo na kufunga till',
+        'users' => 'Watumiaji',
+        'warehouses' => 'Maghala',
+        'unlimited' => 'bila kikomo',
+        'monthly' => 'Bei kwa mwezi',
+        'annual' => 'Bei kwa mwaka',
+    ],
 ];

@@ -179,3 +179,16 @@ it('shows the Swahili article to a user whose language is Swahili', function ():
     $this->actingAs($user)->withHeader('X-Tenant', 'help-e')->get('/help/selling/make-a-sale')
         ->assertOk()->assertSee('Fanya mauzo kwenye till');
 });
+
+it('builds the plans comparison from the plans in the database', function (): void {
+    App\Models\SubscriptionPlan::query()->where('code', 'basic')->update(['monthly_price' => 4_200_000]);
+
+    $tenant = createTenant('help-f', 'basic');
+    $user = createTenantUser($tenant, ['dashboard.view']);
+
+    $page = $this->actingAs($user)->withHeader('X-Tenant', 'help-f')->get('/help/plans/plans-compared')->assertOk();
+
+    expect($page->getContent())->not->toContain('{{plans-table}}')
+        ->and($page->getContent())->toContain('42,000.00')
+        ->and($page->getContent())->toContain('<table');
+});

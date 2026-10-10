@@ -29,4 +29,12 @@ return [
         'plans' => ['title' => 'Plans and subscription', 'description' => 'What each plan includes and how renewal works'],
         'troubleshooting' => ['title' => 'Problems and answers', 'description' => 'Quick fixes and common questions'],
     ],
+    'plan_table' => [
+        'core' => 'Till, products, stock, sales, customers, returns, credit and till closing',
+        'users' => 'Users',
+        'warehouses' => 'Warehouses',
+        'unlimited' => 'unlimited',
+        'monthly' => 'Price per month',
+        'annual' => 'Price per year',
+    ],
 ];

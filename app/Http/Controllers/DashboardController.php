@@ -27,6 +27,10 @@ class DashboardController extends Controller
         $profit = (new ReportService($now->copy()->startOfMonth(), $now->copy()->endOfMonth()))->salesProfitSummary();
         $canSeeExpenses = Plans::current()->allows('expenses') && $user->can('expenses.view');
         $expenses = $canSeeExpenses ? $summary->expensesThisMonth() : null;
+        // Basic shops see the net-profit card locked, as a reason to move up; users without the permission see nothing.
+        $netProfitPlan = ! Plans::current()->allows('expenses') && $user->can('expenses.view')
+            ? Plans::cheapestPlanFor('expenses')
+            : null;
 
         return view('dashboard', [
             'currency' => (string) (new TenantSettings)->get('currency', config('pos.default_currency')),
@@ -44,6 +48,7 @@ class DashboardController extends Controller
                 // Only shops whose plan has expenses, and users who may see them.
                 'expenses' => $expenses,
                 'net_profit' => $expenses === null ? null : $profit['gross_profit'] - $expenses,
+                'net_profit_plan' => $netProfitPlan,
             ],
         ]);
     }

@@ -7,14 +7,16 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/** Route middleware `plan:<feature>`: refuses the request when the shop's plan does not include the feature. */
+/** Route middleware `plan:<feature>[,<feature>...]`: refuses the request unless the shop's plan includes at least one of them. */
 class RequirePlanFeature
 {
-    public function handle(Request $request, Closure $next, string $feature): Response
+    public function handle(Request $request, Closure $next, string ...$features): Response
     {
-        if (Plans::current()->allows($feature)) {
+        if (Plans::current()->allowsAny(...$features)) {
             return $next($request);
         }
+
+        $feature = $features[0];
 
         if ($request->expectsJson()) {
             return response()->json(['message' => __('plans.upgrade_message', ['feature' => __('plans.features.'.$feature)])], 403);

@@ -8,21 +8,9 @@ Odessa POS ina mipango mitatu. Yote ina till, bidhaa, stock, mauzo, wateja, mipa
 
 ## Ulinganisho
 
-| | Basic | Medium | Enterprise |
-|---|---|---|---|
-| Till (POS), bidhaa, stock, mauzo, wateja | Ndiyo | Ndiyo | Ndiyo |
-| Marejesho ya mauzo | Ndiyo | Ndiyo | Ndiyo |
-| Mauzo ya mkopo | Ndiyo | Ndiyo | Ndiyo |
-| Kufunga till | Ndiyo | Ndiyo | Ndiyo |
-| Chapa (Brand) | Hapana | Ndiyo | Ndiyo |
-| Manunuzi na wasambazaji | Hapana | Ndiyo | Ndiyo |
-| Matumizi na faida/hasara | Hapana | Ndiyo | Ndiyo |
-| Ripoti | Hapana | Ndiyo | Ndiyo |
-| Miunganisho (printa ya stakabadhi) | Hapana | Ndiyo | Ndiyo |
-| Watumiaji | hadi 3 | hadi 10 | bila kikomo |
-| Maghala | 1 | hadi 3 | bila kikomo |
+{{plans-table}}
 
-Enterprise pia imetengewa **Risiti za TRA**, lakini muunganisho huo bado haupatikani. Soma [Miunganisho](help:settings/integrations).
+Bei ni za sarafu ya duka na ndizo alizoweka msambazaji wako. Duka lililo kwenye majaribio ya bure linaweza kutumia huduma za Medium hadi majaribio yaishe. Printa ya risiti ipo kwenye kila mpango; malipo ya simu yanaanza Medium; **Risiti za TRA** zimetengewa Enterprise, lakini muunganisho huo bado haupatikani. Soma [Miunganisho](help:settings/integrations).
 
 ## Unaonaje kipi kimefungwa
 

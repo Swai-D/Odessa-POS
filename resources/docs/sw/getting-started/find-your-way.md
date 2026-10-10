@@ -22,7 +22,7 @@ Kila ukurasa una menyu upande wa kushoto na upau juu. Unachokiona kinategemea na
 
 Kumbuka: **Mauzo** ipo mara mbili. Ile ya chini ya **Kuu** ni till ya kuuzia; ile ya chini ya kundi la **Mauzo** ni orodha ya mauzo yaliyokwisha kufanyika.
 
-**Chapa**, **Manunuzi**, **Wasambazaji**, **Matumizi**, **Aina za matumizi**, **Ripoti** na **Miunganisho** zinahitaji kifurushi cha Medium. Ukiwa kwenye Basic hazionekani. Soma [Kulinganisha vifurushi](help:plans/plans-compared).
+**Chapa**, **Manunuzi**, **Wasambazaji**, **Matumizi**, **Aina za matumizi**, na **Ripoti** zinahitaji kifurushi cha Medium. Ukiwa kwenye Basic zinabaki kwenye menyu, zimefifia na kufuli. Soma [Kulinganisha vifurushi](help:plans/plans-compared).
 
 Muuzaji (Cashier) kwa kawaida huona **Dashibodi**, **Mauzo** (till), **Bidhaa**, **Mauzo** (orodha) na **Wateja** tu. Ukikosa menyu unayohitaji, soma [Siioni menyu](help:troubleshooting/cannot-see-a-menu).
 

@@ -102,7 +102,7 @@ Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (
     Route::get('/stock-transfers/{stockTransfer}', [StockTransferController::class, 'show'])->name('stock-transfers.show');
     Route::get('/sales', [SaleController::class, 'index'])->name('sales.index');
     Route::get('/sales/{sale}', [SaleController::class, 'show'])->name('sales.show');
-    Route::get('/sales/{sale}/escpos', [SaleController::class, 'escpos'])->name('sales.escpos')->middleware('plan:integrations');
+    Route::get('/sales/{sale}/escpos', [SaleController::class, 'escpos'])->name('sales.escpos')->middleware('plan:printer');
     Route::get('/sales/{sale}/receipt.pdf', [SaleController::class, 'pdf'])->name('sales.pdf');
     Route::post('/sales/{sale}/payments', [SaleController::class, 'storePayment'])->name('sales.payments.store');
     Route::post('/sales/{sale}/returns', [SaleReturnController::class, 'store'])->name('sales.returns.store')->middleware('plan:returns');
@@ -127,6 +127,6 @@ Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (
     Route::get('/settings', [SettingsController::class, 'edit'])->name('settings.index');
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
     Route::resource('users', UserController::class)->only(['index', 'store', 'update', 'destroy']);
-    Route::get('/settings/integrations', [IntegrationController::class, 'index'])->name('settings.integrations')->middleware('plan:integrations');
-    Route::put('/settings/integrations/{channel}', [IntegrationController::class, 'update'])->name('settings.integrations.update')->middleware('plan:integrations');
+    Route::get('/settings/integrations', [IntegrationController::class, 'index'])->name('settings.integrations')->middleware('plan:printer,mobile_money,fiscal');
+    Route::put('/settings/integrations/{channel}', [IntegrationController::class, 'update'])->name('settings.integrations.update')->middleware('plan:printer,mobile_money,fiscal');
 });

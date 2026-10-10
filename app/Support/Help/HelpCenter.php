@@ -116,7 +116,10 @@ class HelpCenter
     /** @return array{html: string, toc: list<array{id: string, title: string}>} */
     public function render(Article $article): array
     {
-        $html = Str::markdown($article->body, ['html_input' => 'strip', 'allow_unsafe_links' => false]);
+        $body = str_contains($article->body, PlanTable::PLACEHOLDER)
+            ? str_replace(PlanTable::PLACEHOLDER, (new PlanTable)->markdown(), $article->body)
+            : $article->body;
+        $html = Str::markdown($body, ['html_input' => 'strip', 'allow_unsafe_links' => false]);
         $toc = [];
 
         $html = (string) preg_replace_callback('/<h2>(.*?)<\/h2>/s', function (array $m) use (&$toc): string {
