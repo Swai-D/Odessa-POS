@@ -49,6 +49,26 @@ class ReportService
         ];
     }
 
+    /** @return array{revenue: int, cost: int, gross_profit: int} */
+    public function salesProfitSummary(): array
+    {
+        [$revenueSql, $costSql] = self::lineExpressions();
+
+        $row = SaleItem::query()
+            ->join('sales', 'sales.id', '=', 'sale_items.sale_id')
+            ->whereBetween('sales.sold_at', [$this->from, $this->to])
+            ->selectRaw("COALESCE(SUM({$revenueSql}), 0) as revenue")
+            ->selectRaw("COALESCE(SUM({$costSql}), 0) as cost")
+            ->selectRaw("COALESCE(SUM({$revenueSql} - {$costSql}), 0) as profit")
+            ->first();
+
+        return [
+            'revenue' => (int) round((float) $row?->getAttribute('revenue')),
+            'cost' => (int) round((float) $row?->getAttribute('cost')),
+            'gross_profit' => (int) round((float) $row?->getAttribute('profit')),
+        ];
+    }
+
     /** @return list<array{date: string, count: int, total: int}> */
     public function salesByDay(): array
     {

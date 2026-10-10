@@ -205,12 +205,16 @@ it('shows profit and loss on the reports page only when expenses are in the plan
     $tenant = createTenant('shop-ef', 'medium');
     $user = createTenantUser($tenant, ['reports.view', 'expenses.view']);
 
-    $this->actingAs($user)->withHeader('X-Tenant', 'shop-ef')->get('/reports')->assertOk()->assertSee('Profit and loss');
+    $this->actingAs($user)->withHeader('X-Tenant', 'shop-ef')->get('/reports')->assertOk()
+        ->assertSee('Profit and loss')
+        ->assertSee('report-profit-chart', false);
 });
 
 it('hides profit and loss from users who cannot see expenses', function (): void {
     $tenant = createTenant('shop-eg', 'medium');
     $user = createTenantUser($tenant, ['reports.view']);
 
-    $this->actingAs($user)->withHeader('X-Tenant', 'shop-eg')->get('/reports')->assertOk()->assertDontSee('Profit and loss');
+    $this->actingAs($user)->withHeader('X-Tenant', 'shop-eg')->get('/reports')->assertOk()
+        ->assertDontSee('Profit and loss')
+        ->assertDontSee('report-profit-chart', false);
 });

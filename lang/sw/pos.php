@@ -31,6 +31,8 @@ return [
     ],
     'screen' => [
         'search_customer' => 'Tafuta mteja kwa jina au simu',
+        'searching_customers' => 'Inatafuta wateja...',
+        'no_customers_found' => 'Hakuna wateja waliopatikana.',
         'session_expired' => 'Kipindi chako kimeisha. Tafadhali ingia tena.',
         'welcome' => 'Karibu, :name',
         'search' => 'Tafuta kwa jina, SKU au barcode',
@@ -77,6 +79,8 @@ return [
         'percent' => 'Asilimia (%)',
         'fixed' => 'Kiasi maalum',
         'discount_title' => 'Punguzo la oda',
+        'discount_invalid' => 'Weka namba halali ya punguzo.',
+        'discount_percent_limit' => 'Punguzo la asilimia haliwezi kuzidi 100%.',
         'out_of_stock' => 'Imeisha',
         'in_stock' => 'zilizopo',
         'cart_empty' => 'Ongeza angalau bidhaa moja kwanza.',

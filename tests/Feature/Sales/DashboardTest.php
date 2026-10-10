@@ -45,6 +45,12 @@ it('summarises only the shop\'s own sales, credit and low stock', function (): v
         ->assertSee('Welcome, '.$user->name)
         ->assertSee('SL-000001')
         ->assertSee('Soap')
+        ->assertSee(__('dashboard.gross_profit'))
+        ->assertSee(__('dashboard.sales_month'))
+        ->assertSee('dashboard-sales-chart', false)
+        ->assertSee(__('dashboard.low_stock_count'))
+        ->assertSee(__('dashboard.products_count'))
+        ->assertSee(__('dashboard.cogs'))
         ->assertDontSee('Apple Iphone');
 });
 

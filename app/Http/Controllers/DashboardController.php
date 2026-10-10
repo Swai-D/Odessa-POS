@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Finance\Services\ReportService;
 use App\Domain\Sales\Services\DashboardSummary;
 use App\Support\Plans;
 use App\Support\Tenancy\TenantContext;
 use App\Support\TenantSettings;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class DashboardController extends Controller
 {
@@ -21,16 +23,27 @@ class DashboardController extends Controller
             return view('dashboard', ['data' => null, 'currency' => config('pos.default_currency')]);
         }
 
+        $now = Carbon::now();
+        $profit = (new ReportService($now->copy()->startOfMonth(), $now->copy()->endOfMonth()))->salesProfitSummary();
+        $canSeeExpenses = Plans::current()->allows('expenses') && $user->can('expenses.view');
+        $expenses = $canSeeExpenses ? $summary->expensesThisMonth() : null;
+
         return view('dashboard', [
             'currency' => (string) (new TenantSettings)->get('currency', config('pos.default_currency')),
             'data' => [
                 'today' => $summary->today(),
+                'sales_month' => $summary->salesThisMonth(),
+                'gross_profit' => $profit['gross_profit'],
+                'cogs' => $profit['cost'],
                 'credit' => $summary->outstandingCredit(),
                 'days' => $summary->lastDays(),
                 'recent' => $summary->recentSales(),
                 'low' => $summary->lowStock(),
+                'low_count' => $summary->lowStockCount(),
+                'products_count' => $summary->activeProductCount(),
                 // Only shops whose plan has expenses, and users who may see them.
-                'expenses' => Plans::current()->allows('expenses') && $user->can('expenses.view') ? $summary->expensesThisMonth() : null,
+                'expenses' => $expenses,
+                'net_profit' => $expenses === null ? null : $profit['gross_profit'] - $expenses,
             ],
         ]);
     }

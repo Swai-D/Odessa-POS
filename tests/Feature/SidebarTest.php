@@ -4,7 +4,7 @@
 function activeSidebarLinks(string $html): array
 {
     preg_match('/id="sidebar-menu".*?<\/div>/s', $html, $menu);
-    preg_match_all('/<a href="([^"]+)" class="active">/', $menu[0] ?? '', $links);
+    preg_match_all('/<li class="active">\s*<a href="([^"]+)" class="active">/', $menu[0] ?? '', $links);
 
     return $links[1];
 }

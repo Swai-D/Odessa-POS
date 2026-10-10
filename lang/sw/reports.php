@@ -1,6 +1,16 @@
 <?php
 
 return [
+    'tab_summary' => 'Muhtasari',
+    'tab_products' => 'Bidhaa na malipo',
+    'tab_customers_stock' => 'Wateja na stoo',
+    'tab_profit' => 'Faida na hasara',
+    'tab_purchases' => 'Manunuzi',
+    'tab_daily' => 'Mauzo kwa siku',
+    'sales_chart' => 'Mauzo kwa siku na idadi ya miamala',
+    'sales_amount' => 'Kiasi cha mauzo',
+    'transactions' => 'Miamala',
+    'payment_mix' => 'Malipo kwa njia',
     'profit_loss' => 'Faida na hasara',
     'profit_loss_hint' => 'Mauzo bila kodi ukitoa gharama ya bidhaa zilizouzwa ni faida ghafi; kisha matumizi yanatolewa. Manunuzi huhesabiwa tu bidhaa zikiuzwa.',
     'cost_of_goods' => 'Gharama ya bidhaa zilizouzwa',

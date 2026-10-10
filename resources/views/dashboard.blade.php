@@ -20,7 +20,7 @@
 			<div class="alert bg-orange-transparent alert-dismissible fade show mb-4">
 				<div>
 					<i class="ti ti-info-circle fs-14 text-orange me-2"></i>
-					<span class="text-orange fw-semibold">{{ trans_choice('dashboard.low_stock_alert', $data['low']->count(), ['count' => $data['low']->count()]) }}</span>
+					<span class="text-orange fw-semibold">{{ trans_choice('dashboard.low_stock_alert', $data['low_count'], ['count' => $data['low_count']]) }}</span>
 					{{ $data['low']->pluck('name')->take(3)->join(', ') }}@if ($data['low']->count() > 3)…@endif
 					@can('inventory.view')
 						<a href="{{ route('stock.index') }}" class="link-orange text-decoration-underline fw-semibold ms-1">{{ __('dashboard.view_stock') }}</a>
@@ -31,26 +31,53 @@
 		@endif
 
 		<div class="row">
-			@foreach ([
-				['bg-primary', 'text-primary', 'ti ti-file-text', 'dashboard.sales_today', $data['today']['sales_total']],
-				['bg-secondary', 'text-secondary', 'ti ti-repeat', 'dashboard.returns_today', $data['today']['returns_total']],
-				['bg-teal', 'text-teal', 'ti ti-receipt', 'dashboard.credit_today', $data['today']['credit_given']],
-				['bg-info', 'text-info', 'ti ti-wallet', 'dashboard.credit_outstanding', $data['credit']],
-				...($data['expenses'] !== null ? [['bg-danger', 'text-danger', 'ti ti-receipt-2', 'dashboard.expenses_month', $data['expenses']]] : []),
-			] as [$bg, $text, $icon, $label, $amount])
+			@php
+				$metrics = [
+					...($data['net_profit'] !== null ? [['bg-success', 'text-success', 'ti ti-chart-infographic', 'dashboard.net_profit', $data['net_profit'], 'money']] : []),
+					['bg-teal', 'text-teal', 'ti ti-chart-line', 'dashboard.gross_profit', $data['gross_profit'], 'money'],
+					['bg-primary', 'text-primary', 'ti ti-file-text', 'dashboard.sales_today', $data['today']['sales_total'], 'money'],
+					['bg-info', 'text-info', 'ti ti-chart-bar', 'dashboard.sales_month', $data['sales_month'], 'money'],
+					['bg-orange', 'text-orange', 'ti ti-alert-triangle', 'dashboard.low_stock_count', $data['low_count'], 'count'],
+					['bg-secondary', 'text-secondary', 'ti ti-package', 'dashboard.products_count', $data['products_count'], 'count'],
+					['bg-danger', 'text-danger', 'ti ti-shopping-cart', 'dashboard.cogs', $data['cogs'], 'money'],
+					...($data['expenses'] !== null ? [['bg-dark', 'text-dark', 'ti ti-receipt-2', 'dashboard.expenses_month', $data['expenses'], 'money']] : []),
+				];
+				$chartConfig = [
+					'currency' => $currency,
+					'locale' => app()->getLocale() === 'sw' ? 'sw-TZ' : 'en-TZ',
+					'labels' => ['sales' => __('dashboard.sales_trend'), 'no_data' => __('reports.no_data')],
+				];
+			@endphp
+			@foreach ($metrics as [$bg, $text, $icon, $label, $amount, $format])
 				<div class="col-xl-3 col-sm-6 col-12 d-flex">
 					<div class="card {{ $bg }} sale-widget flex-fill">
 						<div class="card-body d-flex align-items-center">
 							<span class="sale-icon bg-white {{ $text }}"><i class="{{ $icon }} fs-24"></i></span>
 							<div class="ms-2">
 								<p class="text-white mb-1">{{ __($label) }}</p>
-								<h4 class="text-white">{{ \App\Support\Money::format($amount, $currency) }}</h4>
+								<h4 class="text-white">{{ $format === 'money' ? \App\Support\Money::format($amount, $currency) : number_format($amount) }}</h4>
 							</div>
 						</div>
 					</div>
 				</div>
 			@endforeach
 		</div>
+
+		<div class="row">
+			<div class="col-12 d-flex">
+				<div class="card flex-fill">
+					<div class="card-header d-flex align-items-center justify-content-between">
+						<h5 class="mb-0">{{ __('dashboard.sales_trend') }}</h5>
+						<span class="text-muted fs-13">{{ __('dashboard.last_7_days') }}</span>
+					</div>
+					<div class="card-body">
+						<div id="dashboard-sales-chart" role="img" aria-label="{{ __('dashboard.sales_trend') }}" style="min-height:320px"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script type="application/json" id="analytics-chart-config">@json($chartConfig)</script>
+		<script type="application/json" id="dashboard-chart-data">@json($data['days'])</script>
 
 		<div class="row">
 			<div class="col-xl-6 d-flex">
@@ -116,3 +143,7 @@
 	@endif
 </div>
 @endsection
+
+@push('extra-js')
+	<script src="{{ asset('js/analytics-charts.js') }}?v={{ filemtime(public_path('js/analytics-charts.js')) }}"></script>
+@endpush

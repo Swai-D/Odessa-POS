@@ -40,6 +40,7 @@ it('reports sales, best sellers, payments, balances and stock from the shop\'s o
 
     $result = reportsFor($tenant, callback: fn (ReportService $r) => [
         'summary' => $r->salesSummary(),
+        'profit' => $r->salesProfitSummary(),
         'top' => $r->topProducts()[0],
         'methods' => $r->paymentsByMethod(),
         'balances' => $r->customerBalances(),
@@ -48,6 +49,7 @@ it('reports sales, best sellers, payments, balances and stock from the shop\'s o
     ]);
 
     expect($result['summary'])->toBe(['count' => 2, 'gross' => 300000, 'discounts' => 0, 'tax' => 0, 'returns' => 0, 'net' => 300000, 'paid' => 200000, 'credit' => 100000])
+        ->and($result['profit'])->toBe(['revenue' => 300000, 'cost' => 150000, 'gross_profit' => 150000])
         ->and($result['top']['name'])->toBe('Soap')
         ->and($result['top']['quantity'])->toBe(3.0)
         ->and($result['top']['revenue'])->toBe(300000)
@@ -105,7 +107,14 @@ it('shows the reports page only to users with the permission', function (): void
     $viewer = createTenantUser($tenant, ['reports.view', 'dashboard.view']);
     $other = createTenantUser($tenant, ['dashboard.view']);
 
-    $this->actingAs($viewer)->withHeader('X-Tenant', 'shop-v')->get('/reports')->assertOk()->assertSee(__('reports.net_sales'));
+    $page = $this->actingAs($viewer)->withHeader('X-Tenant', 'shop-v')->get('/reports')->assertOk()
+        ->assertSee(__('reports.net_sales'))
+        ->assertSee(__('reports.tab_summary'))
+        ->assertSee(__('reports.tab_products'))
+        ->assertSee(__('reports.tab_customers_stock'))
+        ->assertSee('report-sales-chart', false);
+    $html = $page->getContent();
+    expect(strpos($html, '</form>'))->toBeLessThan(strpos($html, 'id="report-sales-chart"'));
     $this->actingAs($other)->withHeader('X-Tenant', 'shop-v')->get('/reports')->assertForbidden();
     $this->actingAs($viewer)->withHeader('X-Tenant', 'shop-v')->get('/reports?from=2026-10-05&to=2026-10-01')->assertSessionHasErrors('to');
 });

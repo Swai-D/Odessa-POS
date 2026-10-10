@@ -21,6 +21,7 @@
 	};
 	var cache = {};
 	var searchTimer = null;
+	var productSearchId = 0;
 
 	function $(selector, root) { return (root || document).querySelector(selector); }
 	function $all(selector, root) { return Array.prototype.slice.call((root || document).querySelectorAll(selector)); }
@@ -147,7 +148,7 @@
 		var empty = state.items.length === 0;
 
 		$('#pos-empty').style.display = empty ? 'flex' : 'none';
-		$('#pos-list').style.display = empty ? 'none' : '';
+		$('#pos-list').style.display = empty ? 'none' : 'block';
 		$('#pos-items-count').textContent = state.items.length;
 
 		$('#pos-cart-body').innerHTML = state.items.map(function (item, i) {
@@ -165,7 +166,7 @@
 		}).join('');
 
 		$('#pos-subtotal').textContent = fmt(result.subtotal);
-		$('#pos-discount').textContent = result.discount_total > 0 ? '-' + fmt(result.discount_total) : fmt(0);
+		$('#pos-discount-total').textContent = result.discount_total > 0 ? '-' + fmt(result.discount_total) : fmt(0);
 		$('#pos-tax').textContent = fmt(result.tax_total);
 		$('#pos-total').textContent = fmt(result.total);
 		$('#pos-pay-total').textContent = fmt(result.total);
@@ -206,13 +207,23 @@
 	}
 
 	function loadProducts(done) {
+		var searchId = ++productSearchId;
 		var params = new URLSearchParams();
 		var term = $('#pos-search').value.trim();
 		if (term) { params.set('q', term); }
 		if (state.category) { params.set('category', state.category); }
 		params.set('warehouse', currentWarehouse());
 		return request('GET', CFG.routes.products + '?' + params.toString()).then(function (result) {
-			if (result.ok) { renderProducts(result.data.data); if (done) { done(result.data.data); } }
+			if (searchId !== productSearchId) { return; }
+			if (result.ok) {
+				alertMessage(null);
+				renderProducts(result.data.data || []);
+				if (done) { done(result.data.data || []); }
+			} else {
+				alertMessage(errorMessages(result));
+			}
+		}).catch(function () {
+			if (searchId === productSearchId) { alertMessage(T.network_error); }
 		});
 	}
 
@@ -249,9 +260,42 @@
 	}
 
 	var customerTimer = null;
+	var customerSearchId = 0;
+	function renderCustomerResults(list, term) {
+		var results = $('#pos-customer-results');
+		if (!term) { results.classList.remove('show'); results.innerHTML = ''; return; }
+		if (!list.length) {
+			results.innerHTML = '<span class="dropdown-item-text text-muted">' + esc(T.no_customers_found) + '</span>';
+		} else {
+			results.innerHTML = list.map(function (customer) {
+				cache['customer:'+customer.id] = customer;
+				return '<button type="button" class="dropdown-item text-wrap text-start" role="option" data-pos-customer-result="' + customer.id + '">' + esc(customerLabel(customer)) + '</button>';
+			}).join('');
+		}
+		results.classList.add('show');
+	}
+
 	function searchCustomers(term) {
+		var searchId = ++customerSearchId;
+		if (term) {
+			var results = $('#pos-customer-results');
+			results.innerHTML = '<span class="dropdown-item-text text-muted">' + esc(T.searching_customers) + '</span>';
+			results.classList.add('show');
+		}
 		request('GET', CFG.routes.customerSearch + '?q=' + encodeURIComponent(term)).then(function (result) {
-			if (result.ok) { fillCustomers(result.data.data || []); }
+			if (searchId !== customerSearchId) { return; }
+			if (result.ok) {
+				fillCustomers(result.data.data || []);
+				renderCustomerResults(result.data.data || [], term);
+			} else {
+				renderCustomerResults([], term);
+				if (term) { $('#pos-customer-results').innerHTML = '<span class="dropdown-item-text text-danger">' + esc(T.network_error) + '</span>'; }
+			}
+		}).catch(function () {
+			if (searchId !== customerSearchId || !term) { return; }
+			var results = $('#pos-customer-results');
+			results.innerHTML = '<span class="dropdown-item-text text-danger">' + esc(T.network_error) + '</span>';
+			results.classList.add('show');
 		});
 	}
 
@@ -454,16 +498,18 @@
 	/* ---------- events ---------- */
 
 	document.addEventListener('click', function (event) {
+		var tile = event.target.closest ? event.target.closest('#pos-grid .product-info') : null;
+		if (!tile) { return; }
+
+		event.preventDefault();
+		event.stopPropagation();
+		var product = cache[parseInt(tile.getAttribute('data-id'), 10)];
+		if (product) { addProduct(product, 1); }
+	}, true);
+
+	document.addEventListener('click', function (event) {
 		var target = event.target;
 		var closest = function (selector) { return target.closest ? target.closest(selector) : null; };
-
-		var tile = closest('#pos-grid .product-info');
-		if (tile) {
-			var product = cache[parseInt(tile.getAttribute('data-id'), 10)];
-			if (product) { addProduct(product, 1); }
-			render();
-			return;
-		}
 
 		var category = closest('[data-pos-category]');
 		if (category) {
@@ -571,10 +617,26 @@
 
 	function applyDiscount() {
 		var type = $('#pos-discount-type').value;
-		var raw = parseFloat($('#pos-discount-value').value);
-		if (isNaN(raw) || raw <= 0) { state.discount = { type: 'none', value: 0 }; }
-		else if (type === 'percent') { state.discount = { type: 'percent', value: Math.min(raw, 100) }; }
-		else { state.discount = { type: 'fixed', value: Math.round(raw * 100) }; }
+		var input = $('#pos-discount-value').value.trim().replace(/,/g, '');
+		var error = $('#pos-discount-error');
+		var value = Number(input);
+
+		if (!input || !/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(input) || !Number.isFinite(value)) {
+			error.textContent = T.discount_invalid;
+			error.style.display = '';
+			return;
+		}
+		if (type === 'percent' && value > 100) {
+			error.textContent = T.discount_percent_limit;
+			error.style.display = '';
+			return;
+		}
+
+		error.textContent = '';
+		error.style.display = 'none';
+		if (value === 0) { state.discount = { type: 'none', value: 0 }; }
+		else if (type === 'percent') { state.discount = { type: 'percent', value: value }; }
+		else { state.discount = { type: 'fixed', value: Math.round(value * 100) }; }
 		modal('pos-discount').hide();
 		render();
 	}
@@ -598,6 +660,19 @@
 		});
 	}
 
+	document.addEventListener('show.bs.modal', function (event) {
+		if (event.target.id !== 'pos-discount') { return; }
+		var isFixed = state.discount.type === 'fixed';
+		$('#pos-discount-type').value = isFixed ? 'fixed' : 'percent';
+		$('#pos-discount-value').value = state.discount.type === 'none'
+			? ''
+			: isFixed
+				? (state.discount.value / 100).toFixed(2).replace(/\.?0+$/, '')
+				: String(state.discount.value);
+		$('#pos-discount-error').textContent = '';
+		$('#pos-discount-error').style.display = 'none';
+	});
+
 	document.addEventListener('shown.bs.modal', function (event) {
 		if (event.target.id === 'pos-pay') { var amount = $('#pos-pay-rows [data-pay-field="amount"]'); if (amount) { amount.focus(); amount.select(); } }
 		if (event.target.id === 'pos-discount') { $('#pos-discount-value').focus(); }
@@ -608,7 +683,35 @@
 	$('#pos-customer-search').addEventListener('input', function () {
 		var term = this.value.trim();
 		clearTimeout(customerTimer);
-		customerTimer = setTimeout(function () { searchCustomers(term); }, 250);
+		customerSearchId++;
+		var results = $('#pos-customer-results');
+		if (term) {
+			results.innerHTML = '<span class="dropdown-item-text text-muted">' + esc(T.searching_customers) + '</span>';
+			results.classList.add('show');
+		} else {
+			results.innerHTML = '';
+			results.classList.remove('show');
+		}
+		customerTimer = setTimeout(function () { searchCustomers(term); }, 180);
+	});
+	document.addEventListener('click', function (event) {
+		if (event.target.closest('#pos-customer-search, #pos-customer-results')) { return; }
+		$('#pos-customer-results').classList.remove('show');
+	});
+	$('#pos-customer-results').addEventListener('click', function (event) {
+		var option = event.target.closest('[data-pos-customer-result]');
+		if (!option) { return; }
+		var id = option.getAttribute('data-pos-customer-result');
+		var select = $('#pos-customer');
+		if (!select.querySelector('option[value="' + id + '"]')) {
+			var customer = cache['customer:'+id];
+			if (customer) { appendCustomer(select, customer.id, customerLabel(customer)); }
+		}
+		select.value = id;
+		select.dispatchEvent(new Event('change', { bubbles: true }));
+		$('#pos-customer-search').value = '';
+		$('#pos-customer-results').classList.remove('show');
+		$('#pos-customer-results').innerHTML = '';
 	});
 
 	render();

@@ -195,8 +195,9 @@
 									<div class="customer-info block-section">
 										<h5 class="mb-2">{{ __('pos.screen.customer_info') }}</h5>
 										<div class="d-flex align-items-center gap-2">
-											<div class="flex-grow-1">
+											<div class="flex-grow-1 position-relative">
 												<input type="search" class="form-control mb-1" id="pos-customer-search" placeholder="{{ __('pos.screen.search_customer') }}" autocomplete="off">
+												<div class="dropdown-menu w-100" id="pos-customer-results" role="listbox" style="max-height:200px;overflow-y:auto;"></div>
 												<select class="form-select" id="pos-customer">
 													<option value="">{{ __('pos.screen.walk_in') }}</option>
 													@foreach ($customers as $customer)
@@ -261,7 +262,7 @@
 											</tr>
 											<tr>
 												<td><span class="text-danger">{{ __('pos.screen.discount') }}</span><a href="javascript:void(0);" class="ms-3 link-default" data-bs-toggle="modal" data-bs-target="#pos-discount"><i class="ti ti-edit"></i></a></td>
-												<td class="text-danger text-end" id="pos-discount">0.00</td>
+												<td class="text-danger text-end" id="pos-discount-total">0.00</td>
 											</tr>
 											<tr>
 												<td>{{ __('pos.screen.subtotal') }}</td>
@@ -412,7 +413,8 @@
 							<option value="fixed">{{ __('pos.screen.fixed') }}</option>
 						</select>
 					</div>
-					<input type="text" inputmode="decimal" class="form-control" id="pos-discount-value" placeholder="0">
+					<input type="text" inputmode="decimal" class="form-control" id="pos-discount-value" placeholder="0" aria-describedby="pos-discount-error">
+					<p class="text-danger small mt-2 mb-0" id="pos-discount-error" role="alert" style="display:none;"></p>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-white" data-bs-dismiss="modal">{{ __('pos.screen.cancel') }}</button>
@@ -519,5 +521,5 @@
 	};
 </script>
 <script src="{{ asset('js/pos-calc.js') }}"></script>
-<script src="{{ asset('js/pos.js') }}"></script>
+<script src="{{ asset('js/pos.js') }}?v={{ filemtime(public_path('js/pos.js')) }}"></script>
 @endpush

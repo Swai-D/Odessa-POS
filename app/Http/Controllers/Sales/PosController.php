@@ -43,16 +43,26 @@ class PosController extends Controller
 
         $warehouseId = $request->integer('warehouse');
         $term = trim((string) $request->query('q', ''));
-        $like = '%'.addcslashes($term, '\\%_').'%';
+        $normalizedTerm = mb_strtolower($term);
+        $escapedTerm = addcslashes($normalizedTerm, '\\%_');
+        $like = '%'.$escapedTerm.'%';
+        $prefix = $escapedTerm.'%';
 
         $products = Product::query()
             ->with(['category:id,name', 'unit:id,short_name,allow_decimal'])
             ->withSum(['stocks as stock_quantity' => fn ($q) => $q->where('warehouse_id', $warehouseId)], 'quantity')
             ->where('is_active', true)
             ->when($request->integer('category'), fn ($q, $id) => $q->where('category_id', $id))
-            ->when($term !== '', fn ($q) => $q->where(function ($q) use ($like, $term): void {
-                $q->where('name', 'like', $like)->orWhere('sku', 'like', $like)->orWhere('barcode', $term);
-            }))
+            ->when($term !== '', function ($q) use ($like, $normalizedTerm, $prefix): void {
+                $q->where(function ($q) use ($like): void {
+                    $q->whereRaw('LOWER(name) LIKE ?', [$like])
+                        ->orWhereRaw('LOWER(sku) LIKE ?', [$like])
+                        ->orWhereRaw('LOWER(barcode) LIKE ?', [$like]);
+                })->orderByRaw(
+                    'CASE WHEN LOWER(barcode) = ? THEN 0 WHEN LOWER(sku) = ? THEN 1 WHEN LOWER(name) = ? THEN 2 WHEN LOWER(barcode) LIKE ? THEN 3 WHEN LOWER(sku) LIKE ? THEN 4 ELSE 5 END',
+                    [$normalizedTerm, $normalizedTerm, $normalizedTerm, $prefix, $prefix],
+                );
+            })
             ->when($request->input('ids'), fn ($q, $ids) => $q->whereIn('id', array_map('intval', (array) $ids)))
             ->orderBy('name')
             ->limit($request->has('ids') ? 200 : 60)

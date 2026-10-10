@@ -41,6 +41,21 @@ class DashboardSummary
             ->sum('amount');
     }
 
+    /** Net sales for the current calendar month, after returns. */
+    public function salesThisMonth(): int
+    {
+        $now = $this->now ?? Carbon::now();
+        $range = [$now->copy()->startOfMonth()->startOfDay(), $now->copy()->endOfMonth()->endOfDay()];
+
+        return (int) Sale::query()->whereBetween('sold_at', $range)->sum('total')
+            - (int) SaleReturn::query()->whereBetween('returned_at', $range)->sum('total');
+    }
+
+    public function activeProductCount(): int
+    {
+        return Product::query()->where('is_active', true)->where('type', Product::TYPE_STANDARD)->count();
+    }
+
     /** Unpaid customer balances across all sales. */
     public function outstandingCredit(): int
     {

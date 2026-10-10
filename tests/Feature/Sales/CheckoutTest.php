@@ -192,11 +192,37 @@ it('renders the till, the held orders list, receipts and the PDF', function (): 
 
     $get = fn (string $url) => $this->actingAs($user)->withHeader('X-Tenant', 'shop-a')->get($url);
 
-    $get('/pos')->assertOk()->assertSee('pos-grid', false);
+    $get('/pos')->assertOk()
+        ->assertSee('pos-grid', false)
+        ->assertSee('id="pos-customer-results"', false)
+        ->assertSee('id="pos-list" style="display:none;"', false)
+        ->assertSee('id="pos-discount-total"', false)
+        ->assertSee('id="pos-discount" tabindex="-1"', false)
+        ->assertSee('js/pos.js?v=', false);
     $get('/pos/products')->assertOk()->assertJsonFragment(['name' => 'Soap']);
     $get('/pos/held')->assertOk();
     $get('/sales')->assertOk()->assertSee('SL-000001');
     $get("/sales/{$id}")->assertOk();
     $get("/sales/{$id}?format=thermal")->assertOk();
     $get("/sales/{$id}/receipt.pdf")->assertOk()->assertHeader('content-type', 'application/pdf');
+});
+
+it('searches products by partial case-insensitive barcode and ranks exact barcode matches first', function (): void {
+    $tenant = createTenant('shop-search');
+    $user = createTenantUser($tenant, posPermissions());
+    [$product, $warehouse] = posFixture($tenant);
+
+    app(TenantContext::class)->run($tenant, function () use ($product): void {
+        $product->update(['barcode' => '123456789']);
+        Product::create([
+            'name' => 'Apple', 'sku' => 'APL', 'barcode' => '1234567890', 'type' => 'standard',
+            'cost_price' => 50000, 'selling_price' => 100000, 'tax_rate' => 0, 'tax_inclusive' => true,
+        ]);
+    });
+
+    $search = fn (string $term) => $this->actingAs($user)->withHeader('X-Tenant', 'shop-search')
+        ->getJson('/pos/products?q='.urlencode($term).'&warehouse='.$warehouse->id);
+
+    $search('123456789')->assertOk()->assertJsonPath('data.0.name', 'Soap')->assertJsonPath('data.1.name', 'Apple');
+    $search('soap')->assertOk()->assertJsonPath('data.0.name', 'Soap');
 });

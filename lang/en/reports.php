@@ -1,6 +1,16 @@
 <?php
 
 return [
+    'tab_summary' => 'Summary',
+    'tab_products' => 'Products and payments',
+    'tab_customers_stock' => 'Customers and stock',
+    'tab_profit' => 'Profit and loss',
+    'tab_purchases' => 'Purchases',
+    'tab_daily' => 'Sales by day',
+    'sales_chart' => 'Sales and transactions by day',
+    'sales_amount' => 'Sales amount',
+    'transactions' => 'Transactions',
+    'payment_mix' => 'Payments by method',
     'profit_loss' => 'Profit and loss',
     'profit_loss_hint' => 'Revenue less cost of goods sold is gross profit; expenses are then taken off. Purchases only count once the stock is sold.',
     'cost_of_goods' => 'Cost of goods sold',

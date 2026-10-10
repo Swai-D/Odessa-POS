@@ -87,7 +87,8 @@
                     <h6 class="submenu-hdr">{{ __($section['label']) }}</h6>
                     <ul>
                         @foreach ($items as $item)
-                            <li>
+							@php($isActive = ! $isLocked($item) && request()->routeIs(...$item['match']))
+							<li @class(['active' => $isActive])>
                                 @if ($isLocked($item))
                                     <a href="{{ route($item['route']) }}" class="text-muted" data-locked="1" title="{{ __('plans.locked') }}">
                                         <i class="{{ $item['icon'] }} fs-16 me-2"></i>
@@ -95,7 +96,7 @@
                                         <i class="ti ti-lock fs-14 ms-auto"></i>
                                     </a>
                                 @else
-                                    <a href="{{ route($item['route']) }}" @class(['active' => request()->routeIs(...$item['match'])])>
+									<a href="{{ route($item['route']) }}" @class(['active' => $isActive])>
                                         <i class="{{ $item['icon'] }} fs-16 me-2"></i>
                                         <span>{{ __($item['label']) }}</span>
                                     </a>

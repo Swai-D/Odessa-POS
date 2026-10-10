@@ -31,6 +31,8 @@ return [
     ],
     'screen' => [
         'search_customer' => 'Search customer by name or phone',
+        'searching_customers' => 'Searching customers...',
+        'no_customers_found' => 'No customers found.',
         'session_expired' => 'Your session has expired. Please sign in again.',
         'welcome' => 'Welcome, :name',
         'search' => 'Search by name, SKU or barcode',
@@ -77,6 +79,8 @@ return [
         'percent' => 'Percent (%)',
         'fixed' => 'Fixed amount',
         'discount_title' => 'Order discount',
+        'discount_invalid' => 'Enter a valid discount amount.',
+        'discount_percent_limit' => 'Percentage discount cannot exceed 100%.',
         'out_of_stock' => 'Out of stock',
         'in_stock' => 'in stock',
         'cart_empty' => 'Add at least one product first.',
