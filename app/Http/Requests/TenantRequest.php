@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Domain\Settings\Services\TenantOwnerService;
 use App\Models\SubscriptionPlan;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -52,6 +53,21 @@ class TenantRequest extends FormRequest
             $rules['owner_name'] = ['required', 'string', 'max:120'];
             $rules['owner_email'] = ['required', 'email', 'max:190', Rule::unique('users', 'email')];
             $rules['owner_password'] = ['required', 'string', 'min:8', 'max:100'];
+        } elseif ($this->filled('owner_name') || $this->filled('owner_email') || $this->filled('owner_password')) {
+            $owner = app(TenantOwnerService::class)->find($tenant);
+            $emailRule = Rule::unique('users', 'email');
+
+            if ($owner !== null) {
+                $emailRule->ignore($owner->getKey());
+            }
+
+            $rules['owner_name'] = ['required', 'string', 'max:120'];
+            $rules['owner_email'] = ['required', 'email', 'max:190', $emailRule];
+            $rules['owner_password'] = [
+                'nullable',
+                Rule::requiredIf($owner === null),
+                'string', 'min:8', 'max:100',
+            ];
         }
 
         return $rules;

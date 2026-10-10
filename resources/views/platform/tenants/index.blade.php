@@ -42,6 +42,7 @@
 								<td>{{ ($tenant->paid_until ?? $tenant->trial_ends_at)?->format('Y-m-d') ?? '—' }}</td>
 								<td class="text-end text-nowrap">
 									<div class="action-icon d-inline-flex align-items-center">
+										<a href="{{ route('platform.tenants.show', $tenant) }}" class="p-2 d-flex align-items-center border rounded me-2" title="{{ __('platform.view') }}"><i class="ti ti-eye"></i></a>
 										<a href="{{ route('platform.tenants.edit', $tenant) }}#renew" class="p-2 d-flex align-items-center border rounded me-2" title="{{ __('platform.renew') }}"><i class="ti ti-cash"></i></a>
 										<a href="{{ route('platform.tenants.edit', $tenant) }}" class="p-2 d-flex align-items-center border rounded me-2" title="{{ __('platform.edit') }}"><i class="ti ti-edit"></i></a>
 										<a href="javascript:void(0);" class="p-2 d-flex align-items-center border rounded text-danger" title="{{ __('platform.delete_shop') }}"

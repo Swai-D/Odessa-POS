@@ -7,6 +7,7 @@ use App\Support\Plans;
 use App\Support\Subscription;
 use App\Support\Tenancy\TenantContext;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 function platformAdmin(): User
@@ -48,6 +49,77 @@ it('lets a super admin list shops and only shows the platform menu', function ()
         ->and($html)->toContain('class="action-icon d-inline-flex align-items-center"')
         ->and($html)->not->toContain('onsubmit="return confirm(')
         ->and($html)->not->toContain(route('products.index'));
+});
+
+it('lets a super admin view a shop from the shops list', function () {
+    $tenant = createTenant('shop-a');
+
+    $this->actingAs(platformAdmin())
+        ->get(route('platform.tenants.index'))
+        ->assertOk()
+        ->assertSee(route('platform.tenants.show', $tenant));
+
+    $this->get(route('platform.tenants.show', $tenant))
+        ->assertOk()
+        ->assertSee($tenant->name)
+        ->assertSee($tenant->slug)
+        ->assertSee(__('platform.details'))
+        ->assertSee(route('platform.tenants.edit', $tenant));
+});
+
+it('shows and updates a shop owner from the platform', function () {
+    $admin = platformAdmin();
+
+    $this->actingAs($admin)->post(route('platform.tenants.store'), newShopPayload())
+        ->assertRedirect(route('platform.tenants.index'));
+
+    $tenant = Tenant::query()->where('slug', 'mama-lishe')->firstOrFail();
+
+    $this->get(route('platform.tenants.show', $tenant))
+        ->assertOk()
+        ->assertSee('mama@example.com');
+    $this->get(route('platform.tenants.edit', $tenant))
+        ->assertOk()
+        ->assertSee('value="mama@example.com"', false);
+
+    $this->put(route('platform.tenants.update', $tenant), [
+        'name' => 'Mama Lishe',
+        'status' => 'active',
+        'plan' => 'medium',
+        'paid_until' => '2026-12-31',
+        'owner_name' => 'Updated Owner',
+        'owner_email' => 'updated-owner@example.com',
+        'owner_password' => 'updated-owner-pass',
+    ])->assertRedirect(route('platform.tenants.index'));
+
+    $owner = User::query()->withoutGlobalScope('tenant')->where('email', 'updated-owner@example.com')->firstOrFail();
+
+    expect($owner->name)->toBe('Updated Owner')
+        ->and($owner->tenant_id)->toBe($tenant->getKey())
+        ->and(Hash::check('updated-owner-pass', $owner->password))->toBeTrue();
+
+    $this->get(route('platform.tenants.show', $tenant))
+        ->assertOk()
+        ->assertSee('updated-owner@example.com')
+        ->assertDontSee('mama@example.com');
+});
+
+it('can add an owner to an existing shop that has none', function () {
+    $tenant = createTenant('ownerless-shop');
+
+    $this->actingAs(platformAdmin())->put(route('platform.tenants.update', $tenant), [
+        'name' => $tenant->name,
+        'status' => 'active',
+        'plan' => 'enterprise',
+        'owner_name' => 'New Owner',
+        'owner_email' => 'new-owner@example.com',
+        'owner_password' => 'new-owner-pass',
+    ])->assertRedirect(route('platform.tenants.index'));
+
+    $owner = User::query()->withoutGlobalScope('tenant')->where('email', 'new-owner@example.com')->firstOrFail();
+
+    expect($owner->name)->toBe('New Owner')
+        ->and($owner->tenant_id)->toBe($tenant->getKey());
 });
 
 it('creates a shop with an owner who can sign in to it', function () {

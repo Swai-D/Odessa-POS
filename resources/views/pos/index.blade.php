@@ -64,14 +64,14 @@
 					<a href="javascript:void(0);" class="nav-link userset" data-bs-toggle="dropdown">
 						<span class="user-info p-0">
 							<span class="user-letter">
-								<img src="{{ asset('assets/img/profiles/avator1.jpg') }}" alt="Img" class="img-fluid">
+								<img src="{{ asset('user.png') }}" alt="User profile" class="img-fluid">
 							</span>
 						</span>
 					</a>
 					<div class="dropdown-menu menu-drop-user">
 						<div class="profilename">
 							<div class="profileset">
-								<span class="user-img"><img src="{{ asset('assets/img/profiles/avator1.jpg') }}" alt="Img">
+								<span class="user-img"><img src="{{ asset('user.png') }}" alt="User profile">
 									<span class="status online"></span></span>
 								<div class="profilesets">
 									<h6>{{ auth()->user()?->name }}</h6>

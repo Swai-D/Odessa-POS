@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Platform;
 
 use App\Domain\Sales\Models\Payment;
 use App\Domain\Settings\Actions\ProvisionTenantAction;
+use App\Domain\Settings\Services\TenantOwnerService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TenantRequest;
 use App\Models\SubscriptionPlan;
@@ -11,6 +12,7 @@ use App\Models\Tenant;
 use App\Models\TenantPayment;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /** Platform-level shop management; reachable by super admins only (route middleware `can:platform`). */
@@ -20,6 +22,14 @@ class TenantController extends Controller
     {
         return view('platform.tenants.index', [
             'tenants' => Tenant::query()->orderBy('name')->get(),
+        ]);
+    }
+
+    public function show(Tenant $tenant, TenantOwnerService $owners): View
+    {
+        return view('platform.tenants.show', [
+            'tenant' => $tenant,
+            'owner' => $owners->find($tenant),
         ]);
     }
 
@@ -53,13 +63,14 @@ class TenantController extends Controller
         return redirect()->route('platform.tenants.index')->with('status', __('platform.created'));
     }
 
-    public function edit(Tenant $tenant): View
+    public function edit(Tenant $tenant, TenantOwnerService $owners): View
     {
         /** @var array<string, mixed> $settings */
         $settings = $tenant->settings ?? [];
 
         return view('platform.tenants.edit', [
             'tenant' => $tenant,
+            'owner' => $owners->find($tenant),
             'plans' => $this->planOptions($tenant),
             'billingPlan' => SubscriptionPlan::query()->where('code', config("plans.aliases.{$tenant->plan}", $tenant->plan))->first(),
             'overrides' => (array) ($settings['plan_overrides'] ?? []),
@@ -70,24 +81,34 @@ class TenantController extends Controller
         ]);
     }
 
-    public function update(TenantRequest $request, Tenant $tenant): RedirectResponse
+    public function update(TenantRequest $request, Tenant $tenant, TenantOwnerService $owners): RedirectResponse
     {
         $data = $request->validated();
 
-        $tenant->update([
-            'name' => $data['name'],
-            'domain' => $data['domain'] ?? null,
-            'status' => $data['status'],
-            'plan' => $data['plan'],
-            'paid_until' => $data['status'] === 'trial' ? null : ($data['paid_until'] ?? null),
-            'trial_ends_at' => $data['status'] === 'trial'
-                ? ($data['trial_ends_at'] ?? ($tenant->status === 'trial' && $tenant->trial_ends_at !== null
-                    ? $tenant->trial_ends_at
-                    : now()->addDays((int) config('plans.trial_days'))))
-                : null,
-        ]);
+        DB::transaction(function () use ($data, $tenant, $owners): void {
+            $tenant->update([
+                'name' => $data['name'],
+                'domain' => $data['domain'] ?? null,
+                'status' => $data['status'],
+                'plan' => $data['plan'],
+                'paid_until' => $data['status'] === 'trial' ? null : ($data['paid_until'] ?? null),
+                'trial_ends_at' => $data['status'] === 'trial'
+                    ? ($data['trial_ends_at'] ?? ($tenant->status === 'trial' && $tenant->trial_ends_at !== null
+                        ? $tenant->trial_ends_at
+                        : now()->addDays((int) config('plans.trial_days'))))
+                    : null,
+            ]);
 
-        $this->saveOverrides($tenant, $data);
+            $this->saveOverrides($tenant, $data);
+
+            if (isset($data['owner_name'], $data['owner_email'])) {
+                $owners->update($tenant, [
+                    'name' => $data['owner_name'],
+                    'email' => $data['owner_email'],
+                    'password' => $data['owner_password'] ?? null,
+                ]);
+            }
+        });
 
         return redirect()->route('platform.tenants.index')->with('status', __('platform.saved'));
     }

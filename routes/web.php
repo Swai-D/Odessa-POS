@@ -9,6 +9,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Finance\ExpenseCategoryController;
 use App\Http\Controllers\Finance\ExpenseController;
 use App\Http\Controllers\Finance\TillClosingController;
+use App\Http\Controllers\HelpController;
 use App\Http\Controllers\Inventory\StockAdjustmentController;
 use App\Http\Controllers\Inventory\StockController;
 use App\Http\Controllers\Inventory\StockTransferController;
@@ -19,7 +20,6 @@ use App\Http\Controllers\Platform\PlatformPaymentController;
 use App\Http\Controllers\Platform\SubscriptionPlanController;
 use App\Http\Controllers\Platform\TenantController;
 use App\Http\Controllers\Platform\TenantRenewalController;
-use App\Http\Controllers\HelpController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Purchasing\PurchaseController;
 use App\Http\Controllers\Purchasing\SupplierController;
@@ -66,7 +66,7 @@ Route::middleware(['auth', 'can:platform'])->prefix('platform')->name('platform.
     Route::resource('plans', SubscriptionPlanController::class)->except(['show']);
     Route::get('payments/export', [PlatformPaymentController::class, 'export'])->name('payments.export');
     Route::get('payments', [PlatformPaymentController::class, 'index'])->name('payments.index');
-    Route::resource('tenants', TenantController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    Route::resource('tenants', TenantController::class)->only(['index', 'show', 'create', 'store', 'edit', 'update', 'destroy']);
     Route::post('tenants/{tenant}/renewals', [TenantRenewalController::class, 'store'])->name('tenants.renewals.store');
 });
 

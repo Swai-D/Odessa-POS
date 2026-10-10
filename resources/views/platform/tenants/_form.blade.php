@@ -2,6 +2,7 @@
 	$value = fn (string $key, $default = '') => old($key, $default);
 	$overrides = $overrides ?? [];
 	$extra = old('override_features', $overrides['features'] ?? []);
+	$owner = $owner ?? null;
 @endphp
 <div class="card">
 	<div class="card-body">
@@ -69,27 +70,33 @@
 </script>
 @endpush
 
-@unless ($tenant ?? null)
-	<div class="card">
-		<div class="card-header"><h5 class="mb-0">{{ __('platform.owner') }}</h5></div>
+<div class="card">
+	<div class="card-header">
+		<h5 class="mb-0">{{ __('platform.owner') }}</h5>
+		@if (($tenant ?? null) && ! $owner)
+			<small class="text-muted">{{ __('platform.owner_missing') }}</small>
+		@endif
+	</div>
 		<div class="card-body">
 			<div class="row">
 				<div class="col-md-4 mb-3">
 					<label class="form-label">{{ __('platform.owner_name') }}</label>
-					<input type="text" name="owner_name" class="form-control" value="{{ $value('owner_name') }}" required>
+					<input type="text" name="owner_name" class="form-control" value="{{ $value('owner_name', $owner?->name ?? '') }}" @required(! ($tenant ?? null) || $owner)>
 				</div>
 				<div class="col-md-4 mb-3">
 					<label class="form-label">{{ __('platform.owner_email') }}</label>
-					<input type="email" name="owner_email" class="form-control" value="{{ $value('owner_email') }}" required>
+					<input type="email" name="owner_email" class="form-control" value="{{ $value('owner_email', $owner?->email ?? '') }}" @required(! ($tenant ?? null) || $owner)>
 				</div>
 				<div class="col-md-4 mb-3">
 					<label class="form-label">{{ __('platform.owner_password') }}</label>
-					<input type="password" name="owner_password" class="form-control" minlength="8" required autocomplete="new-password">
+					<input type="password" name="owner_password" class="form-control" minlength="8" @required(! ($tenant ?? null)) autocomplete="new-password">
+					@if ($tenant ?? null)
+						<small class="text-muted">{{ __('platform.owner_password_hint') }}</small>
+					@endif
 				</div>
 			</div>
 		</div>
-	</div>
-@endunless
+</div>
 
 <div class="card">
 	<div class="card-header">
