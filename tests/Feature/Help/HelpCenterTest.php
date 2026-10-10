@@ -35,8 +35,8 @@ it('keeps the order, plan and category of the two languages identical', function
     $sw = collect((new HelpCenter('sw'))->all())->keyBy(fn (Article $a): string => $a->category.'/'.$a->slug);
 
     foreach ($en as $key => $article) {
-        expect($sw[$key]->order)->toBe($article->order, $key)
-            ->and($sw[$key]->plan)->toBe($article->plan, $key);
+        expect($sw[$key]->order)->toBe($article->order)
+            ->and($sw[$key]->plan)->toBe($article->plan);
     }
 });
 
@@ -65,7 +65,7 @@ it('only links to articles that exist', function (): void {
             preg_match_all('/\]\(help:([a-z0-9-]+\/[a-z0-9-]+)\)/', (string) file_get_contents($file), $found);
 
             foreach ($found[1] as $target) {
-                expect($slugs)->toContain($target, $locale.'/'.basename($file).' links to '.$target);
+                expect(in_array($target, $slugs, true))->toBeTrue($locale.'/'.basename($file).' links to a missing article '.$target);
             }
         }
     }
