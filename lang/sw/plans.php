@@ -20,5 +20,6 @@ return [
         'mobile_money' => 'Pesa za simu',
         'fiscal' => 'Risiti za TRA',
         'priority_support' => 'Msaada wa kipaumbele na mafunzo',
+        'custom_roles' => 'Majukumu maalum',
     ],
 ];

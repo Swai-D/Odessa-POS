@@ -31,6 +31,7 @@ use App\Http\Controllers\Sales\SaleController;
 use App\Http\Controllers\Sales\SaleReturnController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\Settings\IntegrationController;
+use App\Http\Controllers\Settings\RoleController;
 use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\Settings\UserController;
 use Illuminate\Http\Request;
@@ -127,6 +128,9 @@ Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (
     Route::get('/settings', [SettingsController::class, 'edit'])->name('settings.index');
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
     Route::resource('users', UserController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::middleware('plan:custom_roles')->group(function (): void {
+        Route::resource('roles', RoleController::class)->only(['index', 'store', 'update', 'destroy']);
+    });
     Route::get('/settings/integrations', [IntegrationController::class, 'index'])->name('settings.integrations')->middleware('plan:printer,mobile_money,fiscal');
     Route::put('/settings/integrations/{channel}', [IntegrationController::class, 'update'])->name('settings.integrations.update')->middleware('plan:printer,mobile_money,fiscal');
 });
