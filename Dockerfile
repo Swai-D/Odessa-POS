@@ -22,7 +22,10 @@ RUN apt-get update \
         unzip \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j"$(nproc)" bcmath exif gd mbstring pdo_pgsql xml zip opcache \
-    && a2enmod rewrite headers \
+    && a2dismod mpm_event mpm_worker \
+    && a2enmod mpm_prefork rewrite headers \
+    && apache2ctl -M | grep -q 'mpm_prefork_module' \
+    && ! apache2ctl -M | grep -Eq 'mpm_(event|worker)_module' \
     && sed -ri 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/000-default.conf \
     && sed -ri 's/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf \
     && rm -rf /var/lib/apt/lists/*
