@@ -75,4 +75,4 @@ Filesystem ya container ya Railway ni ya muda; picha na files zilizohifadhiwa kw
 
 `QUEUE_CONNECTION=database` huhifadhi queued jobs kwenye PostgreSQL. App ikianza kutuma background jobs, ongeza Railway service ya pili kutoka repository na Dockerfile hiyohiyo, mpe app/database variables zilezile, kisha weka start command `php artisan queue:work --tries=3 --timeout=90`. Web service ibaki na Docker start command yake ya kawaida. Usiendeshe `db:seed` kila deploy.
 
-Fanya PostgreSQL backups kivyake na ujaribu kurejesha backup. Angalia logs za Railway; container inaandika logs kwenda stderr. Health check ya `/up` inathibitisha Laravel inajibu, lakini haithibitishi business workflows, email provider, custom domains, au uploads persistence vimesanidiwa.
+Fanya PostgreSQL backups kivyake na ujaribu kurejesha backup: soma `docs/BACKUPS.md`. Weka uptime monitor kwenye `/health`, ambayo pia inakagua database. Angalia logs za Railway; container inaandika logs kwenda stderr. Health check ya `/up` inathibitisha Laravel inajibu, lakini haithibitishi business workflows, email provider, custom domains, au uploads persistence vimesanidiwa.

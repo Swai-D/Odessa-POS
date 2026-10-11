@@ -1,14 +1,17 @@
 <?php
 
+use App\Http\Controllers\HealthController;
 use App\Http\Middleware\EnforceSubscription;
 use App\Http\Middleware\RequirePlanFeature;
 use App\Http\Middleware\RequireTenant;
 use App\Http\Middleware\ResolveTenant;
+use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -16,6 +19,10 @@ return Application::configure(basePath: dirname(__DIR__))
         web: __DIR__.'/../routes/web.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
+        // Outside the web group on purpose: no session, shop or database work before the check itself.
+        then: function (): void {
+            Route::get('/health', HealthController::class)->name('health');
+        },
     )
     ->withMiddleware(function (Middleware $middleware) {
         // Railway's proxy is the only way in, so trust it for the client address, port and scheme (HTTPS asset URLs).
@@ -26,6 +33,7 @@ return Application::configure(basePath: dirname(__DIR__))
         );
 
         $middleware->web(append: [
+            SecurityHeaders::class,
             ResolveTenant::class,
             SetLocale::class,
         ]);
