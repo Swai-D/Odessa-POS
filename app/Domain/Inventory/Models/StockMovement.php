@@ -48,9 +48,10 @@ class StockMovement extends Model
 
     public function auditLabel(): string
     {
-        return (string) ($this->product?->name ?? '#'.$this->getKey());
+        return (string) $this->product->name;
     }
 
+    /** @return BelongsTo<Product, $this> */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class)->withTrashed();

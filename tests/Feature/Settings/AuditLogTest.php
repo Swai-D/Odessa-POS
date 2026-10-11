@@ -8,13 +8,14 @@ use App\Domain\People\Models\Customer;
 use App\Domain\Settings\Actions\ProvisionTenantAction;
 use App\Domain\Settings\Models\AuditLog;
 use App\Domain\Settings\Services\AuditRecorder;
+use App\Models\Tenant;
 use App\Models\User;
 use App\Support\Tenancy\TenantContext;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 
-/** @return array{0: App\Models\Tenant, 1: User} */
+/** @return array{0: Tenant, 1: User} */
 function auditShop(string $slug, string $plan = 'enterprise', array $permissions = ['audit.view', 'settings.manage']): array
 {
     $tenant = createTenant($slug, $plan);
@@ -153,7 +154,7 @@ it('keeps the name of a person who is later removed', function () {
 
     DB::table('users')->where('id', $user->getKey())->delete();
 
-    $entry = DB::table('audit_logs')->first();
+    $entry = DB::table('audit_logs')->where('subject_type', 'Product')->first();
     expect($entry->user_id)->toBeNull()->and($entry->user_name)->toBe($name);
 });
 
