@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'title' => 'Ripoti ya matawi',
+    'hint' => 'Linganisha matawi yako (maghala) kando kwa kando',
+    'branch' => 'Tawi',
+    'code' => 'Msimbo',
+    'sales_count' => 'Mauzo',
+    'gross' => 'Kiasi cha mauzo',
+    'returns' => 'Marejesho',
+    'net' => 'Mauzo halisi',
+    'average' => 'Wastani wa mauzo',
+    'gross_profit' => 'Faida ghafi',
+    'purchases' => 'Manunuzi',
+    'stock_value' => 'Thamani ya stock (gharama)',
+    'stock_units' => 'Vipimo vilivyopo',
+    'share' => 'Sehemu ya mauzo halisi',
+    'total' => 'Matawi yote',
+    'inactive' => 'halitumiki',
+    'none' => 'Hakuna matawi bado.',
+    'note' => 'Mauzo ni ya tawi lililofanyia mauzo. Matumizi hayafungamani na tawi, kwa hiyo faida inaonyeshwa kabla ya matumizi. Thamani ya stock ni ya sasa.',
+    'export' => 'Pakua CSV',
+    'apply' => 'Onyesha',
+    'from' => 'Kuanzia',
+    'to' => 'Hadi',
+];
