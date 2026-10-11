@@ -18,6 +18,8 @@ Follow this checklist the first time you use Odessa POS. It takes about 15 minut
 
 > **Note:** A test sale is a real sale. It reduces stock and shows in your totals. Use a returned item to undo it: [Returns and refunds](help:selling/returns-and-refunds).
 
+> **Tip:** On the Owner's dashboard, a **Get your shop ready** card tracks steps 2, 4, 5 and 7 for you and ticks them off as you go. Click **Hide** to remove it at any time; it disappears by itself when everything is done.
+
 ## Settings you can leave for later
 
 - The **Optional features** switches in **Settings** (printer, barcode scanner, cash drawer and so on) are off until you turn them on. Most shops do not need them on day one.

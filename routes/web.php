@@ -34,6 +34,7 @@ use App\Http\Controllers\Sales\SaleReturnController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\Settings\AuditLogController;
 use App\Http\Controllers\Settings\IntegrationController;
+use App\Http\Controllers\Settings\OnboardingController;
 use App\Http\Controllers\Settings\RoleController;
 use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\Settings\UserController;
@@ -150,6 +151,7 @@ Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (
     Route::get('/till-closings/{tillClosing}', [TillClosingController::class, 'show'])->name('till-closings.show');
     Route::get('/settings', [SettingsController::class, 'edit'])->name('settings.index');
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
+    Route::post('/onboarding/dismiss', [OnboardingController::class, 'dismiss'])->name('onboarding.dismiss');
     Route::resource('users', UserController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::get('/audit-log', [AuditLogController::class, 'index'])->name('audit.index')->middleware('plan:audit_log');
     Route::middleware('plan:custom_roles')->group(function (): void {

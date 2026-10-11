@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Domain\Finance\Services\ReportService;
 use App\Domain\Sales\Services\DashboardSummary;
+use App\Domain\Settings\Services\OnboardingChecklist;
 use App\Support\Plans;
 use App\Support\Tenancy\TenantContext;
 use App\Support\TenantSettings;
@@ -18,9 +19,14 @@ class DashboardController extends Controller
         $tenant = app(TenantContext::class)->get();
         $user = $request->user();
 
+        // Only the Owner (who can change settings) sees the set-up checklist.
+        $onboarding = $tenant !== null && $user !== null && $user->can('manage-settings')
+            ? app(OnboardingChecklist::class)->card()
+            : null;
+
         // A platform super admin has no shop, and a user without the sales permission only gets the greeting.
         if ($tenant === null || $user === null || ! $user->can('sales.view')) {
-            return view('dashboard', ['data' => null, 'currency' => config('pos.default_currency')]);
+            return view('dashboard', ['data' => null, 'currency' => config('pos.default_currency'), 'onboarding' => $onboarding]);
         }
 
         $now = Carbon::now();
@@ -33,6 +39,7 @@ class DashboardController extends Controller
             : null;
 
         return view('dashboard', [
+            'onboarding' => $onboarding,
             'currency' => (string) (new TenantSettings)->get('currency', config('pos.default_currency')),
             'data' => [
                 'today' => $summary->today(),

@@ -15,6 +15,10 @@
 		</div>
 	</div>
 
+	@if (! empty($onboarding))
+		@include('dashboard._onboarding', ['card' => $onboarding])
+	@endif
+
 	@if ($data)
 		@if ($data['low']->isNotEmpty())
 			<div class="alert bg-orange-transparent alert-dismissible fade show mb-4">
