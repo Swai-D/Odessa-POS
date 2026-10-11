@@ -12,12 +12,17 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Single entry point for changing stock. Every change writes an immutable ledger row
- * (StockMovement) and updates the running balance in ProductStock inside one transaction.
+ * (StockMovement), updates the running balance in ProductStock and keeps the cost batches in step, all inside
+ * one transaction.
  */
 class StockService
 {
+    public function __construct(private readonly StockBatchService $batches) {}
+
     /**
      * @param  float|int|string  $delta  signed quantity: positive adds stock, negative removes it
+     * @param  int|null  $unitCost  cost per unit (minor units) of incoming stock; becomes the cost of its batch
+     * @param  StockMovement|null  $origin  the sale movement a return undoes, or the transfer-out a transfer-in completes
      *
      * @throws InsufficientStockException when the result would be below zero
      */
@@ -29,10 +34,12 @@ class StockService
         ?string $reason = null,
         ?User $user = null,
         ?Model $reference = null,
+        ?int $unitCost = null,
+        ?StockMovement $origin = null,
     ): StockMovement {
         $delta = round((float) $delta, 3);
 
-        return DB::transaction(function () use ($product, $warehouse, $delta, $type, $reason, $user, $reference): StockMovement {
+        return DB::transaction(function () use ($product, $warehouse, $delta, $type, $reason, $user, $reference, $unitCost, $origin): StockMovement {
             $stock = ProductStock::query()
                 ->where('product_id', $product->getKey())
                 ->where('warehouse_id', $warehouse->getKey())
@@ -57,7 +64,7 @@ class StockService
 
             $stock->update(['quantity' => $balance]);
 
-            return StockMovement::create([
+            $movement = StockMovement::create([
                 'product_id' => $product->getKey(),
                 'warehouse_id' => $warehouse->getKey(),
                 'user_id' => $user?->getKey(),
@@ -68,6 +75,10 @@ class StockService
                 'reference_type' => $reference?->getMorphClass(),
                 'reference_id' => $reference?->getKey(),
             ]);
+
+            $this->batches->apply($movement, $product, $warehouse, $unitCost, $origin);
+
+            return $movement;
         });
     }
 

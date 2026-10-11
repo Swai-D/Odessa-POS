@@ -16,6 +16,17 @@ Spatie Permission Teams is enabled with `tenant_id` as its ULID team key. Activi
 
 The sidebar menu is defined once in `config/menu.php`; each entry names its translation key, icon class, route, and permission. The Blade partial filters entries with the current user's permission.
 
+## Inventory costing (FIFO batches)
+
+Stock quantity lives in `product_stocks` and every change goes through `StockService::move()`, which writes the `stock_movements` ledger row. The same call keeps the **cost batches** in step (`StockBatchService`, `stock_batches`, `stock_batch_allocations`), inside the same transaction:
+
+- Stock coming in (purchase, opening stock, adjustment, return, transfer in) creates a batch with its own `unit_cost`. Pass `unitCost:` to `move()`; without it the latest batch cost in that warehouse, then `products.cost_price`, is used.
+- Stock going out (sale, write-off, transfer out) is taken from the oldest batch first. The batches used are stored as allocations on the movement; `StockMovement::averageUnitCost()` gives the weighted cost, which `CheckoutAction` snapshots into `sale_items.cost_price`, so profit reports use the real cost.
+- A sale return puts units back into the batches the sale took them from; a transfer recreates the batches (cost and age) in the destination warehouse.
+- Stock valuation (reports and branch report) sums `quantity_remaining x unit_cost` over batches. `products.cost_price` is only the latest/reference cost: editing it or restocking at a new price never changes the cost of stock already bought.
+
+Always change stock through `StockService::move()`; writing `ProductStock` directly would leave the batches out of step.
+
 ## Conventions
 
 - Keep controllers thin; put domain behavior in Actions and Services.

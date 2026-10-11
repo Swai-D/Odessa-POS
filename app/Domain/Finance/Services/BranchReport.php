@@ -3,6 +3,7 @@
 namespace App\Domain\Finance\Services;
 
 use App\Domain\Inventory\Models\ProductStock;
+use App\Domain\Inventory\Models\StockBatch;
 use App\Domain\Inventory\Models\Warehouse;
 use App\Domain\Purchasing\Models\Purchase;
 use App\Domain\Sales\Models\Sale;
@@ -65,8 +66,16 @@ class BranchReport
             ->join('products', 'products.id', '=', 'product_stocks.product_id')
             ->where('products.track_stock', true)
             ->groupBy('product_stocks.warehouse_id')
-            ->selectRaw('product_stocks.warehouse_id as branch, COALESCE(SUM(product_stocks.quantity * products.cost_price), 0) as value, COALESCE(SUM(product_stocks.quantity), 0) as units')
+            ->selectRaw('product_stocks.warehouse_id as branch, COALESCE(SUM(product_stocks.quantity), 0) as units')
             ->get()->keyBy(fn (ProductStock $row): int => (int) $row->getAttribute('branch'));
+
+        // Stock is valued at what each batch cost, not at the product's current cost price.
+        $stockValue = StockBatch::query()
+            ->join('products', 'products.id', '=', 'stock_batches.product_id')
+            ->where('products.track_stock', true)
+            ->groupBy('stock_batches.warehouse_id')
+            ->selectRaw('stock_batches.warehouse_id as branch, COALESCE(SUM(stock_batches.quantity_remaining * stock_batches.unit_cost), 0) as value')
+            ->get()->keyBy(fn (StockBatch $row): int => (int) $row->getAttribute('branch'));
 
         $rows = [];
         foreach (Warehouse::query()->orderBy('name')->get() as $warehouse) {
@@ -92,7 +101,7 @@ class BranchReport
                 'average' => $count > 0 ? intdiv($gross, $count) : 0,
                 'gross_profit' => (int) round((float) ($profit->get($id)?->getAttribute('profit') ?? 0)),
                 'purchases' => (int) ($purchases->get($id)?->getAttribute('amount') ?? 0),
-                'stock_value' => (int) round((float) ($stock->get($id)?->getAttribute('value') ?? 0)),
+                'stock_value' => (int) round((float) ($stockValue->get($id)?->getAttribute('value') ?? 0)),
                 'stock_units' => (float) ($stock->get($id)?->getAttribute('units') ?? 0),
                 'share' => 0.0,
             ];

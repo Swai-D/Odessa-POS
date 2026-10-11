@@ -87,7 +87,7 @@ return [
             'category' => 'Jina la aina; huundwa kama haipo.',
             'brand' => 'Jina la chapa; huundwa kama haipo (mpango wa Medium na zaidi).',
             'unit' => 'Jina la kipimo, mfano Piece au Kilogram; huundwa kama hakipo.',
-            'cost_price' => 'Unacholipa, mfano 1500 au 1500.50.',
+            'cost_price' => 'Bei ya mwisho ya kununulia, mfano 1500 au 1500.50. Stoo iliyokwisha nunuliwa inabaki na bei yake ya awali.',
             'selling_price' => 'Unachouzia.',
             'tax_rate' => 'Asilimia ya kodi, 0 hadi 100.',
             'tax_inclusive' => 'yes kama bei ya kuuzia tayari ina kodi.',

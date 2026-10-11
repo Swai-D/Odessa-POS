@@ -8,6 +8,7 @@ use App\Models\Concerns\BelongsToTenant;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class StockMovement extends Model
@@ -70,5 +71,25 @@ class StockMovement extends Model
     public function reference(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    /** @return HasMany<StockBatchAllocation, $this> */
+    public function allocations(): HasMany
+    {
+        return $this->hasMany(StockBatchAllocation::class);
+    }
+
+    /** Weighted average unit cost (minor units) of the batches this outgoing movement took its units from. */
+    public function averageUnitCost(): int
+    {
+        $quantity = 0.0;
+        $cost = 0.0;
+
+        foreach ($this->allocations()->get() as $allocation) {
+            $quantity += (float) $allocation->quantity;
+            $cost += (float) $allocation->quantity * $allocation->unit_cost;
+        }
+
+        return $quantity > 0 ? (int) round($cost / $quantity) : 0;
     }
 }

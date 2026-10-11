@@ -130,7 +130,7 @@ class CheckoutAction
             /** @var Product $product */
             $product = $line['product'];
 
-            $sale->items()->create([
+            $item = $sale->items()->create([
                 'product_id' => $product->getKey(),
                 'product_name' => $product->name,
                 'sku' => $product->sku,
@@ -147,7 +147,7 @@ class CheckoutAction
 
             if ($product->track_stock) {
                 try {
-                    $this->stock->move(
+                    $movement = $this->stock->move(
                         $product,
                         $warehouse,
                         -$line['quantity'],
@@ -159,6 +159,9 @@ class CheckoutAction
                 } catch (InsufficientStockException $e) {
                     throw ValidationException::withMessages(['items' => $e->getMessage()]);
                 }
+
+                // The line's cost is what the units really cost: the batches (FIFO) they were taken from.
+                $item->update(['cost_price' => $movement->averageUnitCost()]);
             }
         }
 

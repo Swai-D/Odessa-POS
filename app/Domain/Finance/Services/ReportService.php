@@ -5,6 +5,7 @@ namespace App\Domain\Finance\Services;
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Finance\Models\Expense;
 use App\Domain\Inventory\Models\ProductStock;
+use App\Domain\Inventory\Models\StockBatch;
 use App\Domain\Purchasing\Models\Purchase;
 use App\Domain\Sales\Models\Payment;
 use App\Domain\Sales\Models\Sale;
@@ -147,19 +148,24 @@ class ReportService
             ->all();
     }
 
-    /** Stock on hand valued at cost price, right now. @return array{value: int, units: float, products: int} */
+    /** Stock on hand valued at what each batch cost, right now. @return array{value: int, units: float, products: int} */
     public function stockValuation(): array
     {
+        $value = StockBatch::query()
+            ->join('products', 'products.id', '=', 'stock_batches.product_id')
+            ->where('products.track_stock', true)
+            ->selectRaw('COALESCE(SUM(stock_batches.quantity_remaining * stock_batches.unit_cost), 0) as value')
+            ->first()?->getAttribute('value');
+
         $row = ProductStock::query()
             ->join('products', 'products.id', '=', 'product_stocks.product_id')
             ->where('products.track_stock', true)
-            ->selectRaw('COALESCE(SUM(product_stocks.quantity * products.cost_price), 0) as value')
             ->selectRaw('COALESCE(SUM(product_stocks.quantity), 0) as units')
             ->selectRaw('COUNT(DISTINCT products.id) as products')
             ->first();
 
         return [
-            'value' => (int) round((float) $row?->getAttribute('value')),
+            'value' => (int) round((float) $value),
             'units' => (float) $row?->getAttribute('units'),
             'products' => (int) $row?->getAttribute('products'),
         ];
