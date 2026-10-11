@@ -22,7 +22,7 @@ RUN apt-get update \
         unzip \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j"$(nproc)" bcmath exif gd mbstring pdo_pgsql xml zip opcache \
-    && a2dismod mpm_event mpm_worker \
+    && rm -f /etc/apache2/mods-enabled/mpm_*.load /etc/apache2/mods-enabled/mpm_*.conf \
     && a2enmod mpm_prefork rewrite headers \
     && apache2ctl -M | grep -q 'mpm_prefork_module' \
     && ! apache2ctl -M | grep -Eq 'mpm_(event|worker)_module' \
