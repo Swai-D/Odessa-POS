@@ -2,13 +2,14 @@
 
 namespace App\Domain\Inventory\Models;
 
+use App\Models\Concerns\Auditable;
 use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Warehouse extends Model
 {
-    use BelongsToTenant;
+    use Auditable, BelongsToTenant;
 
     protected $fillable = ['name', 'code', 'address', 'phone', 'is_default', 'is_active'];
 

@@ -27,7 +27,7 @@ The top of the page shows how many users you have, for example "3 of 10 users". 
 | **Storekeeper** | Products, stock, warehouses, purchases and suppliers. Cannot use the **POS**. |
 | **Accountant** | Sales, customers, reports, expenses, and can view stock, purchases and suppliers. An Accountant can view every till closing. |
 
-On the Enterprise plan you can also make your own roles. See [Create your own roles](help:settings/custom-roles).
+On the Enterprise plan you can also make your own roles, and see who did what in the [audit log](help:settings/audit-log). See [Create your own roles](help:settings/custom-roles).
 
 Menus that need the Medium plan, such as **Reports** or **Purchases**, only show if your plan includes them.
 

@@ -34,6 +34,7 @@ return [
         'suppliers' => 'Wasambazaji',
         'expenses' => 'Matumizi',
         'till' => 'Kufunga till',
+        'audit' => 'Kumbukumbu za shughuli',
     ],
     'actions' => [
         'view' => 'Kuona',

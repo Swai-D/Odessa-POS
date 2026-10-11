@@ -21,5 +21,6 @@ return [
         'fiscal' => 'TRA fiscal receipts',
         'priority_support' => 'Priority support and training',
         'custom_roles' => 'Custom roles',
+        'audit_log' => 'Audit log',
     ],
 ];

@@ -2,13 +2,14 @@
 
 namespace App\Domain\Purchasing\Models;
 
+use App\Models\Concerns\Auditable;
 use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Supplier extends Model
 {
-    use BelongsToTenant;
+    use Auditable, BelongsToTenant;
 
     protected $fillable = ['name', 'phone', 'email', 'address', 'is_active'];
 

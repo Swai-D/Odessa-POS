@@ -18,6 +18,7 @@ return [
     'menu' => [
         'users' => 'Users',
         'roles' => 'Roles',
+        'audit' => 'Audit log',
         'platform' => 'Platform',
         'tenants' => 'Shops',
         'platform_transactions' => 'Subscription payments',

@@ -3,6 +3,7 @@
 namespace App\Domain\People\Models;
 
 use App\Domain\Sales\Models\Sale;
+use App\Models\Concerns\Auditable;
 use App\Models\Concerns\BelongsToTenant;
 use App\Support\Money;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Customer extends Model
 {
-    use BelongsToTenant;
+    use Auditable, BelongsToTenant;
 
     protected $fillable = ['name', 'phone', 'email', 'address', 'credit_limit', 'is_active'];
 

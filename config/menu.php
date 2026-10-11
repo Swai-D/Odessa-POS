@@ -85,6 +85,7 @@ return [
             ['label' => 'app.menu.settings', 'icon' => 'ti ti-settings', 'route' => 'settings.index', 'permission' => 'settings.manage', 'match' => ['settings.index', 'settings.update']],
             ['label' => 'app.menu.users', 'icon' => 'ti ti-users-group', 'route' => 'users.index', 'permission' => 'settings.manage', 'match' => ['users.*']],
             ['label' => 'app.menu.roles', 'icon' => 'ti ti-shield-lock', 'route' => 'roles.index', 'feature' => 'custom_roles', 'permission' => 'settings.manage', 'match' => ['roles.*']],
+            ['label' => 'app.menu.audit', 'icon' => 'ti ti-history', 'route' => 'audit.index', 'feature' => 'audit_log', 'permission' => 'audit.view', 'match' => ['audit.*']],
             ['label' => 'app.menu.integrations', 'icon' => 'ti ti-plug-connected', 'route' => 'settings.integrations', 'feature' => ['printer', 'mobile_money', 'fiscal'], 'permission' => 'settings.manage', 'match' => ['settings.integrations*']],
         ],
     ],

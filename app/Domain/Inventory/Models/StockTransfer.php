@@ -2,6 +2,7 @@
 
 namespace App\Domain\Inventory\Models;
 
+use App\Models\Concerns\Auditable;
 use App\Models\Concerns\BelongsToTenant;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
@@ -17,7 +18,7 @@ use Illuminate\Support\Carbon;
  */
 class StockTransfer extends Model
 {
-    use BelongsToTenant;
+    use Auditable, BelongsToTenant;
 
     protected $fillable = ['number', 'idempotency_key', 'from_warehouse_id', 'to_warehouse_id', 'user_id', 'note', 'transferred_at'];
 

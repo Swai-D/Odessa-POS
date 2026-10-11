@@ -34,6 +34,7 @@ return [
         'suppliers' => 'Suppliers',
         'expenses' => 'Expenses',
         'till' => 'Till closing',
+        'audit' => 'Audit log',
     ],
     'actions' => [
         'view' => 'View',

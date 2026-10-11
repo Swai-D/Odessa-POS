@@ -2,6 +2,7 @@
 
 namespace App\Domain\Settings\Actions;
 
+use App\Domain\Settings\Services\AuditRecorder;
 use App\Support\Tenancy\TenantContext;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
@@ -13,6 +14,9 @@ class SaveRoleAction
     public function handle(?Role $role, array $data): Role
     {
         return DB::transaction(function () use ($role, $data): Role {
+            $before = $role?->permissions->pluck('name')->sort()->values()->all();
+            $event = $role === null ? 'created' : 'updated';
+
             $role ??= Role::query()->create([
                 'name' => $data['name'],
                 'guard_name' => 'web',
@@ -21,6 +25,11 @@ class SaveRoleAction
 
             $role->forceFill(['name' => $data['name']])->save();
             $role->syncPermissions($data['permissions']);
+
+            $after = collect($data['permissions'])->sort()->values()->all();
+            app(AuditRecorder::class)->note($event, 'Role', $role->getKey(), $role->name, [
+                'permissions' => ['old' => $before === null ? null : implode(', ', $before), 'new' => implode(', ', $after)],
+            ]);
 
             return $role;
         });

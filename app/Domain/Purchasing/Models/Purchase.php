@@ -3,6 +3,7 @@
 namespace App\Domain\Purchasing\Models;
 
 use App\Domain\Inventory\Models\Warehouse;
+use App\Models\Concerns\Auditable;
 use App\Models\Concerns\BelongsToTenant;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Purchase extends Model
 {
-    use BelongsToTenant;
+    use Auditable, BelongsToTenant;
 
     public const PAID = 'paid';
 

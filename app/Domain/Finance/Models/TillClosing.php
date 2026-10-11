@@ -2,6 +2,7 @@
 
 namespace App\Domain\Finance\Models;
 
+use App\Models\Concerns\Auditable;
 use App\Models\Concerns\BelongsToTenant;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
@@ -18,7 +19,7 @@ use Illuminate\Support\Carbon;
  */
 class TillClosing extends Model
 {
-    use BelongsToTenant;
+    use Auditable, BelongsToTenant;
 
     protected $fillable = [
         'user_id', 'idempotency_key', 'currency', 'period_start', 'period_end', 'opening_float', 'cash_sales',
