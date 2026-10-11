@@ -21,5 +21,6 @@ return [
         'fiscal' => 'Risiti za TRA',
         'priority_support' => 'Msaada wa kipaumbele na mafunzo',
         'custom_roles' => 'Majukumu maalum',
+        'audit_log' => 'Kumbukumbu za shughuli',
     ],
 ];

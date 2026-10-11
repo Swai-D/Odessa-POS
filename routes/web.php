@@ -30,6 +30,7 @@ use App\Http\Controllers\Sales\PosCustomerController;
 use App\Http\Controllers\Sales\SaleController;
 use App\Http\Controllers\Sales\SaleReturnController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\Settings\AuditLogController;
 use App\Http\Controllers\Settings\IntegrationController;
 use App\Http\Controllers\Settings\RoleController;
 use App\Http\Controllers\Settings\SettingsController;
@@ -128,6 +129,7 @@ Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (
     Route::get('/settings', [SettingsController::class, 'edit'])->name('settings.index');
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
     Route::resource('users', UserController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::get('/audit-log', [AuditLogController::class, 'index'])->name('audit.index')->middleware('plan:audit_log');
     Route::middleware('plan:custom_roles')->group(function (): void {
         Route::resource('roles', RoleController::class)->only(['index', 'store', 'update', 'destroy']);
     });

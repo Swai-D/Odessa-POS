@@ -27,7 +27,7 @@ Juu ya ukurasa utaona idadi ya watumiaji ulionao, mfano "Watumiaji 3 kati ya 10"
 | **Storekeeper** | Bidhaa, stock, maghala, manunuzi na wasambazaji. Hawezi kutumia till ya **Mauzo**. |
 | **Accountant** | Mauzo, wateja, ripoti, matumizi, na anaweza kuona stock, manunuzi na wasambazaji. Accountant anaweza kuona kufungwa kwa till zote. |
 
-Kwenye mpango wa Enterprise unaweza pia kutengeneza majukumu yako. Soma [Tengeneza majukumu yako mwenyewe](help:settings/custom-roles).
+Kwenye mpango wa Enterprise unaweza pia kutengeneza majukumu yako. Soma [Tengeneza majukumu yako mwenyewe](help:settings/custom-roles); pia unaweza kuona nani alifanya nini kwenye [kumbukumbu za shughuli](help:settings/audit-log).
 
 Menyu zinazohitaji plan ya Medium, kama **Ripoti** au **Manunuzi**, zinaonekana tu kama plan yako inazijumuisha.
 

@@ -3,6 +3,7 @@
 namespace App\Domain\Inventory\Models;
 
 use App\Domain\Catalog\Models\Product;
+use App\Models\Concerns\Auditable;
 use App\Models\Concerns\BelongsToTenant;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class StockMovement extends Model
 {
-    use BelongsToTenant;
+    use Auditable, BelongsToTenant;
 
     public const OPENING = 'opening';
 
@@ -37,6 +38,17 @@ class StockMovement extends Model
     protected function casts(): array
     {
         return ['quantity' => 'decimal:3', 'balance_after' => 'decimal:3'];
+    }
+
+    /** Only manual adjustments are in the audit trail; sales, purchases and transfers have their own records. */
+    public function shouldAudit(string $event): bool
+    {
+        return $event === 'created' && in_array($this->type, [self::ADJUSTMENT_IN, self::ADJUSTMENT_OUT], true);
+    }
+
+    public function auditLabel(): string
+    {
+        return (string) ($this->product?->name ?? '#'.$this->getKey());
     }
 
     public function product(): BelongsTo

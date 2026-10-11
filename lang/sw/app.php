@@ -18,6 +18,7 @@ return [
     'menu' => [
         'users' => 'Watumiaji',
         'roles' => 'Majukumu',
+        'audit' => 'Kumbukumbu za shughuli',
         'platform' => 'Jukwaa',
         'tenants' => 'Maduka',
         'platform_transactions' => 'Malipo ya usajili',

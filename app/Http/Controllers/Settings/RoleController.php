@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Settings;
 
 use App\Domain\Settings\Actions\ProvisionTenantAction;
 use App\Domain\Settings\Actions\SaveRoleAction;
+use App\Domain\Settings\Services\AuditRecorder;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RoleRequest;
 use App\Support\Tenancy\TenantContext;
@@ -57,7 +58,7 @@ class RoleController extends Controller
         return redirect()->route('roles.index')->with('status', __('app.saved'));
     }
 
-    public function destroy(string $role): RedirectResponse
+    public function destroy(string $role, AuditRecorder $audit): RedirectResponse
     {
         Gate::authorize('manage-settings');
 
@@ -67,7 +68,9 @@ class RoleController extends Controller
             return redirect()->route('roles.index')->withErrors(['delete' => __('roles.in_use')]);
         }
 
+        $name = $record->name;
         $record->delete();
+        $audit->note('deleted', 'Role', $role, $name);
 
         return redirect()->route('roles.index')->with('status', __('app.deleted'));
     }

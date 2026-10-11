@@ -2,6 +2,7 @@
 
 namespace App\Domain\Finance\Models;
 
+use App\Models\Concerns\Auditable;
 use App\Models\Concerns\BelongsToTenant;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
@@ -15,13 +16,18 @@ use Illuminate\Support\Carbon;
  */
 class Expense extends Model
 {
-    use BelongsToTenant;
+    use Auditable, BelongsToTenant;
 
     protected $fillable = ['expense_category_id', 'user_id', 'amount', 'currency', 'method', 'reference', 'note', 'spent_on'];
 
     protected function casts(): array
     {
         return ['amount' => 'integer', 'spent_on' => 'date:Y-m-d'];
+    }
+
+    public function auditLabel(): string
+    {
+        return (string) ($this->reference ?: ($this->note ?: '#'.$this->getKey()));
     }
 
     /** @return BelongsTo<ExpenseCategory, $this> */

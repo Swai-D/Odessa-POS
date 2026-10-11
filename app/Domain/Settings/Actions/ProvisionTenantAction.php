@@ -27,7 +27,7 @@ class ProvisionTenantAction
         'warehouses.view', 'warehouses.manage', 'inventory.manage',
         'sales.manage', 'customers.view', 'customers.manage',
         'purchases.manage', 'suppliers.view', 'suppliers.manage',
-        'expenses.view', 'expenses.manage', 'till.close', 'till.view',
+        'expenses.view', 'expenses.manage', 'till.close', 'till.view', 'audit.view',
     ];
 
     /** @return array<string, list<string>> */
@@ -37,7 +37,7 @@ class ProvisionTenantAction
 
         return [
             'Owner' => $all,
-            'Manager' => array_values(array_diff($all, ['settings.manage'])),
+            'Manager' => array_values(array_diff($all, ['settings.manage', 'audit.view'])),
             'Cashier' => ['dashboard.view', 'pos.access', 'sales.view', 'products.view', 'customers.view', 'customers.manage', 'till.close'],
             'Storekeeper' => [
                 'dashboard.view', 'inventory.view', 'inventory.manage', 'products.view', 'products.manage',

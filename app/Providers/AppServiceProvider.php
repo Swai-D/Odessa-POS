@@ -17,8 +17,10 @@ use App\Domain\Purchasing\Models\Purchase;
 use App\Domain\Purchasing\Models\Supplier;
 use App\Domain\Sales\Models\Sale;
 use App\Domain\Sales\Services\DashboardSummary;
+use App\Domain\Settings\Models\AuditLog;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Policies\AuditLogPolicy;
 use App\Policies\BrandPolicy;
 use App\Policies\CategoryPolicy;
 use App\Policies\CustomerPolicy;
@@ -94,6 +96,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Expense::class, ExpensePolicy::class);
         Gate::policy(ExpenseCategory::class, ExpenseCategoryPolicy::class);
         Gate::policy(TillClosing::class, TillClosingPolicy::class);
+        Gate::policy(AuditLog::class, AuditLogPolicy::class);
 
         Queue::createPayloadUsing(function (): array {
             $tenant = app(TenantContext::class)->get();

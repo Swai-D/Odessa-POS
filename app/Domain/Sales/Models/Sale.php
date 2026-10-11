@@ -4,6 +4,7 @@ namespace App\Domain\Sales\Models;
 
 use App\Domain\Inventory\Models\Warehouse;
 use App\Domain\People\Models\Customer;
+use App\Models\Concerns\Auditable;
 use App\Models\Concerns\BelongsToTenant;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
@@ -16,7 +17,7 @@ use Illuminate\Support\Carbon;
  */
 class Sale extends Model
 {
-    use BelongsToTenant;
+    use Auditable, BelongsToTenant;
 
     public const PAID = 'paid';
 

@@ -2,6 +2,7 @@
 
 namespace App\Domain\People\Actions;
 
+use App\Domain\Settings\Services\AuditRecorder;
 use App\Models\User;
 use App\Support\Plans;
 use Illuminate\Support\Facades\DB;
@@ -26,6 +27,8 @@ class SaveUserAction
                 throw ValidationException::withMessages(['role' => __('users.last_owner')]);
             }
 
+            $previousRole = $user->exists ? $user->roles->pluck('name')->first() : null;
+
             $user->fill(['name' => $data['name'], 'email' => $data['email']]);
 
             if (! empty($data['password'])) {
@@ -34,6 +37,10 @@ class SaveUserAction
 
             $user->save();
             $user->syncRoles([$data['role']]);
+
+            if ($previousRole !== $data['role']) {
+                app(AuditRecorder::class)->note('role_changed', 'User', $user->getKey(), $user->name, ['role' => ['old' => $previousRole, 'new' => $data['role']]]);
+            }
 
             return $user;
         });
