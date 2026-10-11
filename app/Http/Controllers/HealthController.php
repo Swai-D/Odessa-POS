@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Database\ConnectionInterface;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
 use Throwable;
 
 /**
@@ -13,10 +13,10 @@ use Throwable;
  */
 class HealthController extends Controller
 {
-    public function __invoke(): JsonResponse
+    public function __invoke(ConnectionInterface $db): JsonResponse
     {
         try {
-            DB::select('select 1');
+            $db->select('select 1');
             $database = true;
         } catch (Throwable) {
             $database = false;

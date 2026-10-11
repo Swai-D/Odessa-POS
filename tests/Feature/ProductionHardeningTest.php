@@ -1,6 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\HealthController;
+use Illuminate\Database\ConnectionInterface;
 use Illuminate\Support\Facades\Route;
 
 beforeEach(function (): void {
@@ -39,13 +40,13 @@ it('answers the health check with the database status and no session', function 
 });
 
 it('reports a degraded status when the database cannot be reached', function (): void {
-    config([
-        'database.connections.unreachable' => ['driver' => 'sqlite', 'database' => '/nonexistent-dir/odessa.sqlite', 'prefix' => '', 'foreign_key_constraints' => false],
-        'database.default' => 'unreachable',
-    ]);
-    DB::purge();
+    $database = Mockery::mock(ConnectionInterface::class);
+    $database->shouldReceive('select')->once()->andThrow(new RuntimeException('connection refused'));
 
-    $this->get('/health')->assertStatus(503)->assertExactJson(['status' => 'degraded', 'database' => 'down']);
+    $response = (new HealthController)($database);
+
+    expect($response->getStatusCode())->toBe(503)
+        ->and($response->getData(true))->toBe(['status' => 'degraded', 'database' => 'down']);
 });
 
 it('sends safe browser headers on pages', function (): void {
