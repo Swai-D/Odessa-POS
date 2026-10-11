@@ -7,10 +7,10 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="description" content="Dreams POS is a powerful Bootstrap based Inventory Management Admin Template designed for businesses, offering seamless invoicing, project tracking, and estimates.">
-	<meta name="keywords" content="inventory management, admin dashboard, bootstrap template, invoicing, estimates, business management, responsive admin, POS system">
-	<meta name="author" content="Dreams Technologies">
-	<meta name="robots" content="index, follow">
+	<meta name="description" content="Odessa POS: sales, stock, purchases and reports for your shop.">
+	<meta name="keywords" content="POS, inventory, sales, shop management">
+	<meta name="author" content="Odessa Lab Technologies">
+	<meta name="robots" content="noindex, nofollow">
 	<title>@yield('title', 'Odessa POS')</title>
 
 	<script src="{{ asset('assets/js/theme-script.js') }}"></script>	
@@ -49,7 +49,7 @@
     @stack('extra-css')
 </head>
 
-<body><a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/content?id=gYazYY2Zd4QA7kNSXGGmb3dOHUCBmcqmhmGTl9cWHsQ-1791050840.7479062-1.2.1.1-JCB5gTf.j9sO348XzeAVt6bgRVXq1Nt_jLGJDS3jUowZEkjrFQ6NU5IzRMdY7JuZ" aria-hidden="true" rel="nofollow noopener" style="display: none !important; visibility: hidden !important"></a>
+<body>
 	<div id="global-loader">
 		<div class="whirly-loader"> </div>
 	</div>

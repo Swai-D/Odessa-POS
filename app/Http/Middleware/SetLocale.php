@@ -12,8 +12,8 @@ class SetLocale
     public function handle(Request $request, Closure $next): Response
     {
         $locale = $request->user()?->locale
-            ?: data_get(app(TenantContext::class)->get()?->settings, 'locale')
             ?: $request->session()->get('locale')
+            ?: data_get(app(TenantContext::class)->get()?->settings, 'locale')
             ?: 'en';
 
         app()->setLocale(in_array($locale, ['en', 'sw'], true) ? $locale : 'en');
