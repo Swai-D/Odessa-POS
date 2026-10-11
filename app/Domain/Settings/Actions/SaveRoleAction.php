@@ -5,6 +5,7 @@ namespace App\Domain\Settings\Actions;
 use App\Domain\Settings\Services\AuditRecorder;
 use App\Support\Tenancy\TenantContext;
 use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 /** Creates or updates a custom role of the current shop. The five default roles are never touched here. */
@@ -24,6 +25,10 @@ class SaveRoleAction
             ]);
 
             $role->forceFill(['name' => $data['name']])->save();
+            foreach ($data['permissions'] as $permission) {
+                Permission::findOrCreate($permission, 'web');
+            }
+
             $role->syncPermissions($data['permissions']);
 
             $after = collect($data['permissions'])->sort()->values()->all();
