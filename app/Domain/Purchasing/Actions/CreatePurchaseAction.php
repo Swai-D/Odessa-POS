@@ -136,9 +136,10 @@ class CreatePurchaseAction
             ]);
 
             if ($product->track_stock) {
-                $this->stock->move($product, $warehouse, $line['quantity'], StockMovement::PURCHASE, $purchase->number, $user, $purchase);
+                $this->stock->move($product, $warehouse, $line['quantity'], StockMovement::PURCHASE, $purchase->number, $user, $purchase, unitCost: $line['unit_cost']);
             }
 
+            // Only the reference cost shown on the product; stock already on the shelf keeps the cost it was bought at.
             if (! empty($data['update_cost'])) {
                 $product->update(['cost_price' => $line['unit_cost']]);
             }

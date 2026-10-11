@@ -22,7 +22,7 @@ return [
     'unit_cost' => 'Unit cost',
     'line_total' => 'Line total',
     'add_line' => 'Add product',
-    'update_cost' => 'Update product cost prices to these costs',
+    'update_cost' => 'Also set the product\'s reference cost price to these costs (stock already on the shelf keeps its own cost)',
     'pay_now' => 'Paid now',
     'method' => 'Method',
     'amount' => 'Amount',

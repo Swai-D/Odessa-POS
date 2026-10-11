@@ -60,6 +60,7 @@ class SaveProductAction
                     StockMovement::OPENING,
                     __('inventory.opening_stock'),
                     $user,
+                    unitCost: $product->cost_price,
                 );
             }
 

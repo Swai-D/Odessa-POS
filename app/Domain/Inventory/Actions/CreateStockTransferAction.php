@@ -110,12 +110,12 @@ class CreateStockTransferAction
             ]);
 
             try {
-                $this->stock->move($product, $from, -$quantity, StockMovement::TRANSFER_OUT, $transfer->number, $user, $transfer);
+                $out = $this->stock->move($product, $from, -$quantity, StockMovement::TRANSFER_OUT, $transfer->number, $user, $transfer);
             } catch (InsufficientStockException $e) {
                 throw ValidationException::withMessages(['items' => __('transfers.errors.not_enough', ['product' => $product->name, 'warehouse' => $from->name])]);
             }
 
-            $this->stock->move($product, $to, $quantity, StockMovement::TRANSFER_IN, $transfer->number, $user, $transfer);
+            $this->stock->move($product, $to, $quantity, StockMovement::TRANSFER_IN, $transfer->number, $user, $transfer, origin: $out);
         }
 
         return $transfer->load(['items', 'fromWarehouse', 'toWarehouse']);

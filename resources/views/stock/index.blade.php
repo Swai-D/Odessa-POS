@@ -12,6 +12,9 @@
 				<h6>{{ __('inventory.stock_levels_hint') }}</h6>
 			</div>
 		</div>
+		<div class="page-btn">
+			<a href="{{ route('stock.batches') }}" class="btn btn-primary"><i class="ti ti-stack-2 me-1"></i>{{ __('inventory.batches') }}</a>
+		</div>
 		<ul class="table-top-head">
 			<li><a data-bs-toggle="tooltip" data-bs-placement="top" title="Refresh" href="{{ route('stock.index') }}"><i class="ti ti-refresh"></i></a></li>
 			<li><a data-bs-toggle="tooltip" data-bs-placement="top" title="Collapse" id="collapse-header"><i class="ti ti-chevron-up"></i></a></li>

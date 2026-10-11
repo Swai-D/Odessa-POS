@@ -12,6 +12,7 @@ use App\Http\Controllers\Finance\ExpenseController;
 use App\Http\Controllers\Finance\TillClosingController;
 use App\Http\Controllers\HelpController;
 use App\Http\Controllers\Inventory\StockAdjustmentController;
+use App\Http\Controllers\Inventory\StockBatchController;
 use App\Http\Controllers\Inventory\StockController;
 use App\Http\Controllers\Inventory\StockTransferController;
 use App\Http\Controllers\Inventory\WarehouseController;
@@ -114,6 +115,7 @@ Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (
     Route::resource('units', UnitController::class)->only($lookup);
     Route::resource('warehouses', WarehouseController::class)->only($lookup);
     Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
+    Route::get('/stock/batches', [StockBatchController::class, 'index'])->name('stock.batches');
     Route::get('/stock-adjustments', [StockAdjustmentController::class, 'index'])->name('stock-adjustments.index');
     Route::post('/stock-adjustments', [StockAdjustmentController::class, 'store'])->name('stock-adjustments.store');
     Route::get('/stock-transfers', [StockTransferController::class, 'index'])->name('stock-transfers.index');

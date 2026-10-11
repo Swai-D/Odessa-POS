@@ -158,6 +158,24 @@ class ReturnItemsAction
             return;
         }
 
-        $this->stock->move($product, $sale->warehouse, $quantity, StockMovement::SALE_RETURN, $return->number, $user, $return);
+        // The sale's own movement knows which batches the units came from; sales made before batches existed have none.
+        $origin = StockMovement::query()
+            ->where('type', StockMovement::SALE)
+            ->where('reference_type', $sale->getMorphClass())
+            ->where('reference_id', $sale->getKey())
+            ->where('product_id', $product->getKey())
+            ->first();
+
+        $this->stock->move(
+            $product,
+            $sale->warehouse,
+            $quantity,
+            StockMovement::SALE_RETURN,
+            $return->number,
+            $user,
+            $return,
+            unitCost: $item->cost_price,
+            origin: $origin,
+        );
     }
 }

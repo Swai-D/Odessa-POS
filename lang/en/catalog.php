@@ -87,7 +87,7 @@ return [
             'category' => 'Category name; created if it does not exist.',
             'brand' => 'Brand name; created if missing (Medium plan and up).',
             'unit' => 'Unit name, for example Piece or Kilogram; created if missing.',
-            'cost_price' => 'What you pay, for example 1500 or 1500.50.',
+            'cost_price' => 'Latest buying price, for example 1500 or 1500.50. Stock already bought keeps the price it was bought at.',
             'selling_price' => 'What you sell for.',
             'tax_rate' => 'Tax percentage, 0 to 100.',
             'tax_inclusive' => 'yes if the selling price already includes tax.',

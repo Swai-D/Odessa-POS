@@ -22,7 +22,7 @@ return [
     'unit_cost' => 'Gharama ya kimoja',
     'line_total' => 'Jumla ya mstari',
     'add_line' => 'Ongeza bidhaa',
-    'update_cost' => 'Sasisha bei za gharama za bidhaa kuwa hizi',
+    'update_cost' => 'Pia weka bei ya gharama ya bidhaa kuwa hizi (stoo iliyopo inabaki na gharama yake ya awali)',
     'pay_now' => 'Kilicholipwa sasa',
     'method' => 'Njia',
     'amount' => 'Kiasi',
