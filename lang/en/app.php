@@ -19,6 +19,7 @@ return [
         'users' => 'Users',
         'roles' => 'Roles',
         'audit' => 'Audit log',
+        'branch_report' => 'Branch report',
         'platform' => 'Platform',
         'tenants' => 'Shops',
         'platform_transactions' => 'Subscription payments',

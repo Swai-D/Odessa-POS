@@ -197,7 +197,7 @@ class ReportService
      *
      * @return array{0: string, 1: string}
      */
-    private static function lineExpressions(): array
+    public static function lineExpressions(): array
     {
         $net = '(sale_items.total - sale_items.returned_amount)';
 

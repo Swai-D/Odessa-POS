@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'title' => 'Branch report',
+    'hint' => 'Compare your branches (warehouses) side by side',
+    'branch' => 'Branch',
+    'code' => 'Code',
+    'sales_count' => 'Sales',
+    'gross' => 'Sales amount',
+    'returns' => 'Returns',
+    'net' => 'Net sales',
+    'average' => 'Average sale',
+    'gross_profit' => 'Gross profit',
+    'purchases' => 'Purchases',
+    'stock_value' => 'Stock value (cost)',
+    'stock_units' => 'Units in stock',
+    'share' => 'Share of net sales',
+    'total' => 'All branches',
+    'inactive' => 'inactive',
+    'none' => 'No branches yet.',
+    'note' => 'A sale belongs to the branch it was made from. Expenses are not tied to a branch, so profit is shown before expenses. Stock value is as of now.',
+    'export' => 'Download CSV',
+    'apply' => 'Show',
+    'from' => 'From',
+    'to' => 'To',
+];

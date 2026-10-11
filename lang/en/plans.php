@@ -22,5 +22,6 @@ return [
         'priority_support' => 'Priority support and training',
         'custom_roles' => 'Custom roles',
         'audit_log' => 'Audit log',
+        'branch_reports' => 'Branch report',
     ],
 ];

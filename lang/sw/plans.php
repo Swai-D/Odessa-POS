@@ -22,5 +22,6 @@ return [
         'priority_support' => 'Msaada wa kipaumbele na mafunzo',
         'custom_roles' => 'Majukumu maalum',
         'audit_log' => 'Kumbukumbu za shughuli',
+        'branch_reports' => 'Ripoti ya matawi',
     ],
 ];

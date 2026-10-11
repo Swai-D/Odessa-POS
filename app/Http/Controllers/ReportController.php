@@ -6,6 +6,7 @@ use App\Domain\Finance\Services\ReportService;
 use App\Support\Csv;
 use App\Support\Money;
 use App\Support\Plans;
+use App\Support\ReportPeriod;
 use App\Support\TenantSettings;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
@@ -17,23 +18,7 @@ class ReportController extends Controller
     /** @return array{0: Carbon, 1: Carbon} the validated period (default: last 30 days, at most a year) */
     private function period(Request $request): array
     {
-        $user = $request->user();
-        abort_unless($user !== null && ($user->is_super_admin || $user->can('reports.view')), 403);
-
-        $data = $request->validate([
-            'from' => ['nullable', 'date'],
-            'to' => ['nullable', 'date', 'after_or_equal:from'],
-        ]);
-
-        $to = isset($data['to']) ? Carbon::parse($data['to']) : Carbon::today();
-        $from = isset($data['from']) ? Carbon::parse($data['from']) : $to->copy()->subDays(29);
-
-        // Keep the daily table readable and the queries cheap.
-        if ($from->diffInDays($to) > 365) {
-            $from = $to->copy()->subDays(365);
-        }
-
-        return [$from, $to];
+        return ReportPeriod::fromRequest($request);
     }
 
     /** Download one report as a CSV file that opens cleanly in Excel. */

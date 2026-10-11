@@ -6,6 +6,7 @@ use App\Http\Controllers\Catalog\ProductController;
 use App\Http\Controllers\Catalog\ProductTransferController;
 use App\Http\Controllers\Catalog\UnitController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Finance\BranchReportController;
 use App\Http\Controllers\Finance\ExpenseCategoryController;
 use App\Http\Controllers\Finance\ExpenseController;
 use App\Http\Controllers\Finance\TillClosingController;
@@ -116,6 +117,8 @@ Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (
     Route::post('/purchases/{purchase}/payments', [PurchaseController::class, 'storePayment'])->name('purchases.payments.store')->middleware('plan:purchasing');
     Route::resource('suppliers', SupplierController::class)->only($lookup)->middleware('plan:purchasing');
     Route::view('/people', 'modules.placeholder', ['title' => 'app.menu.people'])->name('people.index');
+    Route::get('/reports/branches', [BranchReportController::class, 'index'])->name('reports.branches')->middleware('plan:branch_reports');
+    Route::get('/reports/branches/export', [BranchReportController::class, 'export'])->name('reports.branches.export')->middleware('plan:branch_reports');
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index')->middleware('plan:reports');
     Route::get('/reports/export/{report}', [ReportController::class, 'export'])
         ->where('report', 'daily|products|payments|balances|stock')->name('reports.export')->middleware('plan:reports');

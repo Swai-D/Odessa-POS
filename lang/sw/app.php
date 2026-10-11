@@ -19,6 +19,7 @@ return [
         'users' => 'Watumiaji',
         'roles' => 'Majukumu',
         'audit' => 'Kumbukumbu za shughuli',
+        'branch_report' => 'Ripoti ya matawi',
         'platform' => 'Jukwaa',
         'tenants' => 'Maduka',
         'platform_transactions' => 'Malipo ya usajili',
