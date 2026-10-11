@@ -3,16 +3,16 @@
 			<!-- Logo -->
 			<div class="sidebar-logo active">
 				<a href="{{ route('dashboard') }}" class="logo logo-normal">
-					<img src="{{ asset('assets/img/logo.svg') }}" alt="Img">
+					<img src="{{ asset('assets/img/odessa-logo.jpeg') }}" alt="Img">
 				</a>
 				<a href="{{ route('dashboard') }}" class="logo logo-white">
-					<img src="{{ asset('assets/img/logo-white.svg') }}" alt="Img">
+					<img src="{{ asset('assets/img/odessa-logo.jpeg') }}" alt="Img">
 				</a>
 				<a href="{{ route('dashboard') }}" class="logo-small">
-					<img src="{{ asset('assets/img/logo-small.png') }}" alt="Img">
+					<img src="{{ asset('assets/img/odessa-logo.jpeg') }}" alt="Img">
 				</a>
 				<a href="{{ route('dashboard') }}" class="logo-small-white">
-					<img src="{{ asset('assets/img/logo-small-white.png') }}" alt="Img">
+					<img src="{{ asset('assets/img/odessa-logo.jpeg') }}" alt="Img">
 				</a>
 				<a id="toggle_btn" href="javascript:void(0);">
 					<i data-feather="chevrons-left" class="feather-16"></i>
