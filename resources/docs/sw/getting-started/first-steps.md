@@ -18,6 +18,8 @@ Fuata orodha hii mara ya kwanza unapotumia Odessa POS. Inachukua kama dakika 15.
 
 > **Kumbuka:** Mauzo ya majaribio ni mauzo halisi. Yanapunguza stock na yanaingia kwenye jumla zako. Ya kufuta ni kurudisha bidhaa: [Marejesho](help:selling/returns-and-refunds).
 
+> **Kidokezo:** Kwenye dashboard ya Mmiliki kuna kadi ya **Andaa duka lako** inayofuatilia hatua ya 2, 4, 5 na 7 na kuziweka alama zinapokamilika. Bonyeza **Ficha** wakati wowote; hupotea yenyewe kila kitu kikikamilika.
+
 ## Unaweza kuyaacha kwa baadaye
 
 - Swichi za **Huduma za hiari** kwenye **Mipangilio** (printa, kisoma barcode, droo ya pesa n.k.) zimezimwa hadi uziwashe. Maduka mengi hayazihitaji siku ya kwanza.
