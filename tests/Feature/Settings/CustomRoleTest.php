@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 
@@ -20,6 +21,9 @@ function customRole(int $tenantId, string $name = 'Supervisor', array $permissio
 {
     app(PermissionRegistrar::class)->setPermissionsTeamId($tenantId);
     $role = Role::query()->create(['name' => $name, 'guard_name' => 'web', 'tenant_id' => $tenantId]);
+    foreach ($permissions as $permission) {
+        Permission::findOrCreate($permission, 'web');
+    }
     $role->syncPermissions($permissions);
 
     return $role;
