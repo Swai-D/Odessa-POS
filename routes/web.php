@@ -36,10 +36,27 @@ use App\Http\Controllers\Settings\IntegrationController;
 use App\Http\Controllers\Settings\RoleController;
 use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\Settings\UserController;
+use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('dashboard'));
+
+Route::get('/t/{tenant:slug}', function (Request $request, Tenant $tenant) {
+    $configuredDomain = (string) config('app.domain');
+    $domainUrl = str_contains($configuredDomain, '://') ? $configuredDomain : 'http://'.$configuredDomain;
+    $appDomain = strtolower((string) parse_url($domainUrl, PHP_URL_HOST));
+
+    abort_unless(strtolower($request->getHost()) === $appDomain, 404);
+    abort_unless(in_array($tenant->status, ['active', 'trial'], true), 404);
+
+    $user = $request->user();
+    abort_if($user && ($user->is_super_admin || $user->tenant_id !== $tenant->getKey()), 403);
+
+    $request->session()->put('tenant_slug', $tenant->slug);
+
+    return redirect()->route($user ? 'dashboard' : 'login');
+})->name('tenant.entry');
 
 Route::post('/language/{locale}', function (Request $request, string $locale) {
     abort_unless(in_array($locale, ['en', 'sw'], true), 404);

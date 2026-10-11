@@ -32,6 +32,14 @@ class ResolveTenant
 
         $isLocal = app()->environment('local') || in_array($host, ['localhost', '127.0.0.1'], true);
 
+        if (! $tenant && ! $isLocal && $host === $appDomain) {
+            $identifier = $request->session()->get('tenant_slug');
+
+            if ($identifier) {
+                $tenant = Tenant::query()->where('slug', $identifier)->first();
+            }
+        }
+
         if (! $tenant && $isLocal) {
             $identifier = $request->header('X-Tenant') ?: $request->session()->get('tenant_slug');
 

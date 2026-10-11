@@ -54,6 +54,12 @@ Kila shop inaweza kutumia hostname iliyohifadhiwa kwenye tenant record. Kwa subd
 
 Weka `APP_URL` kuwa URL rasmi ya app. Ukibadilisha domain variables, redeploy ili Laravel ijenge upya configuration cache.
 
+## Temporary tenant access bila custom domain
+
+Kwa majaribio tu, unaweza kuanzisha tenant session kupitia `https://your-app.up.railway.app/t/{slug}`. Kwa demo tenant yenye slug `demo`, fungua `https://your-app.up.railway.app/t/demo`; app itakuelekeza login na kuweka tenant kwenye browser session. Baada ya kuingia, tumia app kama kawaida kwenye Railway hostname hiyo hiyo. Njia hii inapatikana kwenye app's primary `APP_DOMAIN` pekee na inakataa tenant switching kwa user aliyeingia kwenye tenant nyingine.
+
+Ukiwa tayari na custom domain, weka hostname kwenye tenant record na utumie custom-domain routing. Temporary `/t/{slug}` entry ni ya majaribio; usiiweke kama mbadala wa DNS/custom-domain setup kwa tenants wa production.
+
 ## Uploads zisizopotea
 
 Filesystem ya container ya Railway ni ya muda; picha na files zilizohifadhiwa kwenye local disk zinaweza kupotea wakati wa redeploy. Kabla ya kutumia uploads production, ama ambatisha Railway Volume kwenye `/var/www/html/storage/app` (bakiza replica moja tu ya web service), au sanidi object storage ya kudumu inayotumia S3 API. S3 disk ipo kwenye Laravel config, lakini project hii bado haina Flysystem S3 adapter kwenye Composer. Ongeza dependency hiyo kabla ya kuchagua `FILESYSTEM_DISK=s3`.
