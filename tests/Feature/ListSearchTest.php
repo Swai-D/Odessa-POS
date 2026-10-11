@@ -7,7 +7,7 @@ it('searches as you type on the paginated lists', function (string $path, array 
     $this->actingAs($user)->withHeader('X-Tenant', 'search-shop')->get($path)
         ->assertOk()
         ->assertSee('data-live-search', false)
-        ->assertSee('form.submit()', false);
+        ->assertSee('fetch(url', false);
 })->with([
     'products' => ['/products', ['products.view']],
     'sales' => ['/sales', ['sales.view']],
