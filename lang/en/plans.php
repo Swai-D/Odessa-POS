@@ -20,5 +20,6 @@ return [
         'mobile_money' => 'Mobile money',
         'fiscal' => 'TRA fiscal receipts',
         'priority_support' => 'Priority support and training',
+        'custom_roles' => 'Custom roles',
     ],
 ];

@@ -17,6 +17,7 @@ return [
     ],
     'menu' => [
         'users' => 'Watumiaji',
+        'roles' => 'Majukumu',
         'platform' => 'Jukwaa',
         'tenants' => 'Maduka',
         'platform_transactions' => 'Malipo ya usajili',
