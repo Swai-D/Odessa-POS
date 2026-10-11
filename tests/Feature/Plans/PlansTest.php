@@ -88,7 +88,6 @@ it('restricts nothing outside a shop', function () {
     expect(Plans::current()->allows('fiscal'))->toBeTrue();
 });
 
-
 it('lets Basic shops use the receipt printer but not mobile money or fiscal', function () {
     [$tenant, $user] = planTenant('basic');
     $plans = plansFor($tenant);
@@ -122,12 +121,12 @@ it('gives a shop on trial the Medium features whatever its plan row says', funct
     $tenant->update(['status' => 'trial', 'trial_ends_at' => now()->addDays(5)]);
     $plans = plansFor($tenant->fresh());
 
-    expect($plans->allows('purchases'))->toBeTrue()
+    expect($plans->allows('purchasing'))->toBeTrue()
         ->and($plans->allows('expenses'))->toBeTrue()
         ->and($plans->allows('fiscal'))->toBeFalse();
 
     $tenant->update(['status' => 'active']);
-    expect(plansFor($tenant->fresh())->allows('purchases'))->toBeFalse();
+    expect(plansFor($tenant->fresh())->allows('purchasing'))->toBeFalse();
 });
 
 it('shows the net profit card locked on Basic and live on Medium', function () {
