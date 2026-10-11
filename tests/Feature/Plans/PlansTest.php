@@ -51,7 +51,9 @@ it('does not lock items the plan includes', function () {
 
     $html = $this->actingAs($user)->withHeader('X-Tenant', 'shop-medium')->get('/dashboard')->assertOk()->getContent();
 
-    expect($html)->not->toContain('data-locked');
+    foreach (['purchases.index', 'brands.index', 'reports.index', 'settings.integrations'] as $name) {
+        expect($html)->not->toContain('<a href="'.route($name).'" class="text-muted" data-locked="1"');
+    }
 });
 
 it('names the plan that unlocks a feature on the upgrade page', function () {

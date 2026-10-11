@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 
@@ -16,10 +17,13 @@ function roleShop(string $slug, string $plan = 'enterprise', array $permissions 
     return [$tenant, $owner];
 }
 
-function customRole(int $tenantId, string $name = 'Supervisor', array $permissions = ['sales.view']): Role
+function customRole(int|string $tenantId, string $name = 'Supervisor', array $permissions = ['sales.view']): Role
 {
     app(PermissionRegistrar::class)->setPermissionsTeamId($tenantId);
     $role = Role::query()->create(['name' => $name, 'guard_name' => 'web', 'tenant_id' => $tenantId]);
+    foreach ($permissions as $permission) {
+        Permission::findOrCreate($permission, 'web');
+    }
     $role->syncPermissions($permissions);
 
     return $role;
