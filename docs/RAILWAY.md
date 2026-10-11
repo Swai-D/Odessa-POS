@@ -60,6 +60,13 @@ Kwa majaribio tu, unaweza kuanzisha tenant session kupitia `https://your-app.up.
 
 Ukiwa tayari na custom domain, weka hostname kwenye tenant record na utumie custom-domain routing. Temporary `/t/{slug}` entry ni ya majaribio; usiiweke kama mbadala wa DNS/custom-domain setup kwa tenants wa production.
 
+## Database haiunganishi (matatizo ya kawaida)
+
+- **`no password supplied`, `role "root" does not exist`**: ujumbe huu unatoka kwenye app yenyewe. `config/database.php` ina default `root` kwa username; `DB_URL` ikiwa tupu au ikiwa na sehemu tupu, app inarudi kwenye default hiyo. Maana yake ni kwamba reference `${{Postgres.DATABASE_URL}}` haikupata thamani zake.
+- `DATABASE_URL` ya Railway inategemea variables `PGUSER`, `POSTGRES_PASSWORD` na `PGDATABASE` za Postgres service. Zikifutwa, URL inakuwa na sehemu tupu. Kwenye Postgres service, rudisha variables hizo kwa **thamani zile zile ambazo database ilianzishwa nazo**.
+- Usiweke `POSTGRES_PASSWORD` mpya ukitegemea ibadilishe nenosiri la database iliyopo: image ya Postgres inalitumia mara ya kwanza tu (wakati data directory inaundwa). Ukipoteza nenosiri, fungua shell ya Postgres service, endesha `psql -U "$PGUSER" -d postgres -c "ALTER USER \"$PGUSER\" PASSWORD '<jipya>'"`, kisha weka `POSTGRES_PASSWORD` iwe thamani hiyo hiyo.
+- Thibitisha kwa kuendesha `php artisan migrate:status` kwenye shell ya app service.
+
 ## Uploads zisizopotea
 
 Filesystem ya container ya Railway ni ya muda; picha na files zilizohifadhiwa kwenye local disk zinaweza kupotea wakati wa redeploy. Kabla ya kutumia uploads production, ama ambatisha Railway Volume kwenye `/var/www/html/storage/app` (bakiza replica moja tu ya web service), au sanidi object storage ya kudumu inayotumia S3 API. S3 disk ipo kwenye Laravel config, lakini project hii bado haina Flysystem S3 adapter kwenye Composer. Ongeza dependency hiyo kabla ya kuchagua `FILESYSTEM_DISK=s3`.
