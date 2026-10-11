@@ -17,7 +17,7 @@ function roleShop(string $slug, string $plan = 'enterprise', array $permissions 
     return [$tenant, $owner];
 }
 
-function customRole(int $tenantId, string $name = 'Supervisor', array $permissions = ['sales.view']): Role
+function customRole(int|string $tenantId, string $name = 'Supervisor', array $permissions = ['sales.view']): Role
 {
     app(PermissionRegistrar::class)->setPermissionsTeamId($tenantId);
     $role = Role::query()->create(['name' => $name, 'guard_name' => 'web', 'tenant_id' => $tenantId]);
