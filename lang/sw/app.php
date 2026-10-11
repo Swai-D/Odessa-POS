@@ -16,6 +16,7 @@ return [
         'user' => 'Mtumiaji',
     ],
     'menu' => [
+        'billing' => 'Usajili na malipo',
         'users' => 'Watumiaji',
         'roles' => 'Majukumu',
         'audit' => 'Kumbukumbu za shughuli',

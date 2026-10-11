@@ -16,6 +16,7 @@ return [
         'user' => 'User',
     ],
     'menu' => [
+        'billing' => 'Subscription & billing',
         'users' => 'Users',
         'roles' => 'Roles',
         'audit' => 'Audit log',
