@@ -28,6 +28,7 @@ RUN apt-get update \
     && ! apache2ctl -M | grep -Eq 'mpm_(event|worker)_module' \
     && sed -ri 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/000-default.conf \
     && sed -ri 's/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf \
+    && printf '\nServerName localhost\n' >> /etc/apache2/apache2.conf \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
