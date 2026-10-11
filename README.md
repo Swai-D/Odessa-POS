@@ -43,6 +43,10 @@ composer audit
 
 Tests use SQLite in memory and do not need PostgreSQL. Queue, cache, and session use their database drivers outside the PHPUnit environment.
 
+## Deployment
+
+See [docs/RAILWAY.md](docs/RAILWAY.md) for Railway Docker deployment, PostgreSQL, production environment variables, tenant domains, uploads, and queue worker setup.
+
 ## Purchased template
 
 The supplied 265 Dreams POS HTML pages and bundled asset tree are preserved under `resources/template-original/`; the runtime asset copy in `public/assets/` is byte-for-byte identical. The dashboard, POS, sign-in, and error views use template-derived markup. The application sidebar intentionally limits navigation to the permission-filtered entries in `config/menu.php`. Never edit, rename, or reformat the reference pages or static assets.

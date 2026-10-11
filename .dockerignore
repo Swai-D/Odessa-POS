@@ -1,0 +1,12 @@
+.git
+.env
+.env.*
+!.env.example
+node_modules
+vendor
+tests
+storage
+public/build
+bootstrap/cache/*.php
+npm-debug.log
+yarn-error.log
