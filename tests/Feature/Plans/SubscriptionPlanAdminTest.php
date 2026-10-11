@@ -25,11 +25,11 @@ it('seeds the configured initial monthly and annual prices for the standard plan
     $prices = SubscriptionPlan::query()->orderBy('code')->get()->keyBy('code');
 
     expect($prices['basic']->monthly_price)->toBe(5_000_000)
-        ->and($prices['basic']->annual_price)->toBe(59_000_000)
+        ->and($prices['basic']->annual_price)->toBe(50_000_000)
         ->and($prices['medium']->monthly_price)->toBe(7_000_000)
-        ->and($prices['medium']->annual_price)->toBe(82_000_000)
+        ->and($prices['medium']->annual_price)->toBe(70_000_000)
         ->and($prices['enterprise']->monthly_price)->toBe(9_000_000)
-        ->and($prices['enterprise']->annual_price)->toBe(105_000_000);
+        ->and($prices['enterprise']->annual_price)->toBe(90_000_000);
 });
 
 it('lets super admins create and edit a priced plan with features and limits', function (): void {

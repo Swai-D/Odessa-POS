@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\SubscriptionPlan;
 use App\Support\Help\Article;
 use App\Support\Help\HelpCenter;
 
@@ -181,7 +182,7 @@ it('shows the Swahili article to a user whose language is Swahili', function ():
 });
 
 it('builds the plans comparison from the plans in the database', function (): void {
-    App\Models\SubscriptionPlan::query()->where('code', 'basic')->update(['monthly_price' => 4_200_000]);
+    SubscriptionPlan::query()->where('code', 'basic')->update(['monthly_price' => 4_200_000]);
 
     $tenant = createTenant('help-f', 'basic');
     $user = createTenantUser($tenant, ['dashboard.view']);
