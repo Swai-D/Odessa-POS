@@ -154,3 +154,16 @@ it('keeps the inbox away from shop users', function () {
 
     $this->actingAs($owner)->withHeader('X-Tenant', 'note-l')->get('/platform/notices')->assertForbidden();
 });
+
+it('words the waiting count properly in the inbox', function () {
+    $admin = User::factory()->create(['is_super_admin' => true]);
+
+    $this->actingAs($admin)->get('/platform/notices')->assertSee('Nothing waiting')->assertDontSee('{0}', false);
+
+    [, $owner] = noticeShop('note-m');
+    sendNotice($this, $owner, 'note-m', ['reference' => 'COUNT-0001']);
+    $this->actingAs($admin)->get('/platform/notices')->assertSee('1 notice waiting')->assertDontSee('{1}', false);
+
+    sendNotice($this, $owner, 'note-m', ['reference' => 'COUNT-0002']);
+    $this->actingAs($admin)->get('/platform/notices')->assertSee('2 notices waiting')->assertDontSee('[2,*]', false);
+});
