@@ -23,6 +23,7 @@ return [
         'branch_report' => 'Ripoti ya matawi',
         'platform' => 'Jukwaa',
         'tenants' => 'Maduka',
+        'platform_notices' => 'Taarifa za malipo',
         'platform_transactions' => 'Malipo ya usajili',
         'plans' => 'Mipango ya usajili',
         'finance' => 'Fedha',

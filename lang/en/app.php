@@ -23,6 +23,7 @@ return [
         'branch_report' => 'Branch report',
         'platform' => 'Platform',
         'tenants' => 'Shops',
+        'platform_notices' => 'Payment notices',
         'platform_transactions' => 'Subscription payments',
         'plans' => 'Plans',
         'finance' => 'Finance',

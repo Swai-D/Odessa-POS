@@ -183,6 +183,70 @@
 		</div>
 	</div>
 
+	{{-- Telling us a payment was made --}}
+	<div class="card" data-billing-notice>
+		<div class="card-header">
+			<h5 class="mb-0">{{ __('billing.notice.title') }}</h5>
+			<p class="text-muted mb-0">{{ __('billing.notice.hint') }}</p>
+		</div>
+		<div class="card-body">
+			@include('partials.flash')
+			<form method="POST" action="{{ route('billing.notices.store') }}" class="row g-3">
+				@csrf
+				<input type="hidden" name="idempotency_key" value="{{ \Illuminate\Support\Str::random(32) }}">
+				<div class="col-md-4">
+					<label class="form-label" for="notice-method">{{ __('billing.notice.method') }}</label>
+					<select id="notice-method" name="method" class="form-select" required>
+						@foreach ($notice_methods as $key)
+							<option value="{{ $key }}" @selected(old('method') === $key)>{{ __('billing.notice.methods.'.$key) }}</option>
+						@endforeach
+					</select>
+				</div>
+				<div class="col-md-4">
+					<label class="form-label" for="notice-months">{{ __('billing.notice.period') }}</label>
+					<select id="notice-months" name="months" class="form-select" required>
+						<option value="1" @selected((int) old('months', 1) === 1)>{{ trans_choice('billing.months', 1, ['count' => 1]) }}</option>
+						<option value="12" @selected((int) old('months') === 12)>{{ trans_choice('billing.months', 12, ['count' => 12]) }}</option>
+					</select>
+				</div>
+				<div class="col-md-4">
+					<label class="form-label" for="notice-amount">{{ __('billing.notice.amount') }} ({{ $currency }})</label>
+					<input id="notice-amount" type="number" name="amount" class="form-control" min="1" step="0.01" value="{{ old('amount') }}" required>
+				</div>
+				<div class="col-md-4">
+					<label class="form-label" for="notice-reference">{{ __('billing.notice.reference') }}</label>
+					<input id="notice-reference" type="text" name="reference" class="form-control" maxlength="100" value="{{ old('reference') }}" required>
+					<div class="form-text">{{ __('billing.notice.reference_hint') }}</div>
+				</div>
+				<div class="col-md-4">
+					<label class="form-label" for="notice-paid-on">{{ __('billing.notice.paid_on') }}</label>
+					<input id="notice-paid-on" type="date" name="paid_on" class="form-control" max="{{ today()->format('Y-m-d') }}" value="{{ old('paid_on', today()->format('Y-m-d')) }}" required>
+				</div>
+				<div class="col-md-4">
+					<label class="form-label" for="notice-note">{{ __('billing.notice.note') }}</label>
+					<input id="notice-note" type="text" name="note" class="form-control" maxlength="500" value="{{ old('note') }}">
+				</div>
+				<div class="col-12 d-flex align-items-center flex-wrap gap-3">
+					<button type="submit" class="btn btn-primary">{{ __('billing.notice.send') }}</button>
+					<span class="text-muted fs-13">{{ __('billing.notice.wait_note') }}</span>
+				</div>
+			</form>
+
+			@if ($notices->isNotEmpty())
+				<hr>
+				<div class="fw-semibold mb-2">{{ __('billing.notice.sent_title') }}</div>
+				<ul class="list-unstyled mb-0" data-notices>
+					@foreach ($notices as $notice)
+						<li class="d-flex flex-wrap justify-content-between gap-2 py-1 border-top" data-status="{{ $notice->status }}">
+							<span>{{ $notice->created_at?->format('Y-m-d') }} · {{ Money::format($notice->amount, $notice->currency) }} · {{ __('billing.notice.methods.'.$notice->method) }} · {{ $notice->reference }}</span>
+							<span class="badge {{ $notice->status === \App\Models\PaymentNotice::PENDING ? 'bg-warning' : 'bg-success' }}">{{ $notice->status === \App\Models\PaymentNotice::PENDING ? __('billing.notice.status_pending') : __('billing.notice.status_handled') }}</span>
+						</li>
+					@endforeach
+				</ul>
+			@endif
+		</div>
+	</div>
+
 	{{-- Every plan and what it includes --}}
 	<div class="card" data-billing-plans>
 		<div class="card-header">
