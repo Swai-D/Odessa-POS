@@ -49,7 +49,7 @@ class BillingOverview
             'plan' => SubscriptionPlan::query()->where('code', Plans::current()->key())->first(),
             'plans' => $plans,
             'trial' => $tenant->status === 'trial',
-            'trial_plan_name' => (string) ($plans->firstWhere('code', config('plans.trial_plan'))?->name ?? ''),
+            'trial_plan_name' => (string) SubscriptionPlan::query()->where('code', config('plans.trial_plan'))->value('name'),
             'state' => $subscription->state(),
             'deadline' => $deadline?->format('Y-m-d'),
             'deadline_at' => $deadline?->copy()->endOfDay()->toIso8601String(),

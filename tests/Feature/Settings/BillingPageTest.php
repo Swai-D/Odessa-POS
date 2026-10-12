@@ -36,7 +36,7 @@ it('shows the plan, paid-until date and a countdown', function () {
     billingPage($this, $owner, 'bill-a')->assertOk()
         ->assertSee('data-billing-status', false)
         ->assertSee('data-deadline="2026-12-31"', false)
-        ->assertSee('data-countdown', false)
+        ->assertSee('data-countdown="', false)
         ->assertSee('data-state="active"', false)
         ->assertSee('Medium');
 });
@@ -75,7 +75,7 @@ it('shows a trial shop its trial end and the trial note', function () {
 it('copes with a shop that has no end date', function () {
     [, $owner] = billingShop('bill-n', null);
 
-    billingPage($this, $owner, 'bill-n')->assertOk()->assertSee('No end date is set')->assertDontSee('data-countdown', false);
+    billingPage($this, $owner, 'bill-n')->assertOk()->assertSee('No end date is set')->assertDontSee('data-countdown="', false);
 });
 
 it('shows only this shop\'s payment history', function () {
