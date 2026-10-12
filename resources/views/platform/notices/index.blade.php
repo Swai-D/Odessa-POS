@@ -19,7 +19,7 @@
 	@include('partials.flash')
 
 	<div class="card">
-		<div class="card-header"><span class="fw-semibold">{{ __('platform.notices.pending_count', ['count' => $pendingCount]) }}</span></div>
+		<div class="card-header"><span class="fw-semibold">{{ trans_choice('platform.notices.pending_count', $pendingCount, ['count' => $pendingCount]) }}</span></div>
 		<div class="card-body p-0">
 			@if ($notices->isEmpty())
 				<p class="p-3 mb-0 text-muted">{{ __('platform.notices.empty') }}</p>
