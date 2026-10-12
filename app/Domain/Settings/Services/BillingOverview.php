@@ -2,6 +2,7 @@
 
 namespace App\Domain\Settings\Services;
 
+use App\Models\PaymentNotice;
 use App\Models\SubscriptionPlan;
 use App\Models\Tenant;
 use App\Models\TenantPayment;
@@ -31,6 +32,8 @@ class BillingOverview
      *     days_left: int|null,
      *     elapsed_percent: int,
      *     payments: Collection<int, TenantPayment>,
+     *     notices: Collection<int, PaymentNotice>,
+     *     notice_methods: list<string>,
      *     methods: list<array{key: string, label: string, network: string, ussd: string, number: string}>,
      *     bank: array{name: string, account: string, branch: string|null}|null,
      *     account_name: string,
@@ -57,6 +60,8 @@ class BillingOverview
             'days_left' => $subscription->daysLeft(),
             'elapsed_percent' => $this->elapsedPercent($tenant, $payments->sortByDesc('period_end')->first(), $deadline),
             'payments' => $payments,
+            'notices' => PaymentNotice::query()->where('tenant_id', $tenant->getKey())->latest()->limit(10)->get(),
+            'notice_methods' => PaymentNotice::methods(),
             'methods' => $this->methods(),
             'bank' => $this->bank(),
             'account_name' => (string) config('billing.account_name'),

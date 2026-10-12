@@ -13,6 +13,7 @@ return [
             ['label' => 'app.menu.tenants', 'icon' => 'ti ti-building-store', 'route' => 'platform.tenants.index', 'permission' => null, 'platform' => true, 'match' => ['platform.tenants.*']],
             ['label' => 'app.menu.plans', 'icon' => 'ti ti-packages', 'route' => 'platform.plans.index', 'permission' => null, 'platform' => true, 'match' => ['platform.plans.*']],
             ['label' => 'app.menu.platform_transactions', 'icon' => 'ti ti-receipt-2', 'route' => 'platform.payments.index', 'permission' => null, 'platform' => true, 'match' => ['platform.payments.*']],
+            ['label' => 'app.menu.platform_notices', 'icon' => 'ti ti-message-check', 'route' => 'platform.notices.index', 'permission' => null, 'platform' => true, 'match' => ['platform.notices.*']],
         ],
     ],
     [

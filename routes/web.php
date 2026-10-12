@@ -19,6 +19,7 @@ use App\Http\Controllers\Inventory\WarehouseController;
 use App\Http\Controllers\People\CustomerController;
 use App\Http\Controllers\Platform\PlatformDashboardController;
 use App\Http\Controllers\Platform\PlatformPaymentController;
+use App\Http\Controllers\Platform\PlatformPaymentNoticeController;
 use App\Http\Controllers\Platform\SubscriptionPlanController;
 use App\Http\Controllers\Platform\TenantController;
 use App\Http\Controllers\Platform\TenantRenewalController;
@@ -36,6 +37,7 @@ use App\Http\Controllers\Settings\AuditLogController;
 use App\Http\Controllers\Settings\BillingController;
 use App\Http\Controllers\Settings\IntegrationController;
 use App\Http\Controllers\Settings\OnboardingController;
+use App\Http\Controllers\Settings\PaymentNoticeController;
 use App\Http\Controllers\Settings\RoleController;
 use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\Settings\UserController;
@@ -89,9 +91,14 @@ Route::middleware(['auth', 'can:platform'])->prefix('platform')->name('platform.
     Route::resource('plans', SubscriptionPlanController::class)->except(['show']);
     Route::get('payments/export', [PlatformPaymentController::class, 'export'])->name('payments.export');
     Route::get('payments', [PlatformPaymentController::class, 'index'])->name('payments.index');
+    Route::get('notices', [PlatformPaymentNoticeController::class, 'index'])->name('notices.index');
+    Route::post('notices/{notice}/handle', [PlatformPaymentNoticeController::class, 'handle'])->name('notices.handle');
     Route::resource('tenants', TenantController::class)->only(['index', 'show', 'create', 'store', 'edit', 'update', 'destroy']);
     Route::post('tenants/{tenant}/renewals', [TenantRenewalController::class, 'store'])->name('tenants.renewals.store');
 });
+
+// A shop that is read-only (or has no subscription left) must still be able to tell us it has paid, so this sits outside the subscription check.
+Route::middleware(['auth', 'tenant.required', 'throttle:10,1'])->post('/billing/notices', [PaymentNoticeController::class, 'store'])->name('billing.notices.store');
 
 // Everything below reads or writes shop data, so it needs a resolved tenant.
 Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (): void {
