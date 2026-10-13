@@ -78,6 +78,9 @@
 							<tr>
 								<td>{{ $product->sku }}</td>
 								<td>
+									@if ($url = $product->imageUrl())
+										<img src="{{ $url }}" alt="" width="32" height="32" style="object-fit: cover; border-radius: 6px;" class="me-2" loading="lazy">
+									@endif
 									{{ $product->name }}
 									@unless ($product->is_active)
 										<span class="badge bg-danger ms-1 fs-10">{{ __('catalog.inactive') }}</span>

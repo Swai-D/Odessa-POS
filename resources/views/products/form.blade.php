@@ -25,7 +25,7 @@
 
 	@include('partials.flash')
 
-	<form method="POST" action="{{ $editing ? route('products.update', $product) : route('products.store') }}" class="add-product-form">
+	<form method="POST" action="{{ $editing ? route('products.update', $product) : route('products.store') }}" class="add-product-form" enctype="multipart/form-data">
 		@csrf
 		@if ($editing) @method('PUT') @endif
 
@@ -35,6 +35,28 @@
 				<div class="card-header"><h5 class="d-flex align-items-center mb-0"><i data-feather="info" class="text-primary me-2"></i><span>{{ __('catalog.product_information') }}</span></h5></div>
 				<div class="card-body">
 					<div class="row">
+						<div class="col-12">
+							<div class="mb-3">
+								<label class="form-label">{{ __('catalog.image.label') }}</label>
+								<div class="d-flex align-items-center gap-3 flex-wrap">
+									@if ($editing && $product->imageUrl())
+										<img src="{{ $product->imageUrl() }}" alt="" width="72" height="72" style="object-fit: cover; border-radius: 8px;" loading="lazy">
+									@endif
+									<div>
+										<input type="file" name="image" class="form-control" accept="image/jpeg,image/png,image/webp,image/gif">
+										<div class="form-text">{{ __('catalog.image.hint') }}</div>
+										@error('image')<div class="text-danger small">{{ $message }}</div>@enderror
+										@if ($editing && $product->imageUrl())
+											<div class="form-check mt-1">
+												<input type="hidden" name="remove_image" value="0">
+												<input type="checkbox" class="form-check-input" id="remove-image" name="remove_image" value="1">
+												<label class="form-check-label" for="remove-image">{{ __('catalog.image.remove') }}</label>
+											</div>
+										@endif
+									</div>
+								</div>
+							</div>
+						</div>
 						<div class="col-sm-6 col-12">
 							<div class="mb-3">
 								<label class="form-label">{{ __('catalog.fields.name') }}<span class="text-danger ms-1">*</span></label>

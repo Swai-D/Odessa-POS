@@ -27,7 +27,7 @@ class ProductController extends Controller
         Gate::authorize('viewAny', Product::class);
 
         $products = Product::query()
-            ->with(['category', 'brand', 'unit'])
+            ->with(['category', 'brand', 'unit', 'imageFile'])
             ->withSum('stocks', 'quantity')
             ->when($request->integer('category'), fn ($q, $id) => $q->where('category_id', $id))
             ->when($request->integer('brand'), fn ($q, $id) => $q->where('brand_id', $id))

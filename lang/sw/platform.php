@@ -143,4 +143,5 @@ return [
     ],
     'save' => 'Hifadhi',
     'back' => 'Rudi',
+    'limit_storage_mb' => 'Nafasi (MB)',
 ];

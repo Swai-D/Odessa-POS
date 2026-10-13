@@ -32,6 +32,7 @@ class BillingOverview
      *     days_left: int|null,
      *     elapsed_percent: int,
      *     payments: Collection<int, TenantPayment>,
+     *     storage: array{used: int, limit: int|null, percent: int},
      *     notices: Collection<int, PaymentNotice>,
      *     notice_methods: list<string>,
      *     methods: list<array{key: string, label: string, network: string, ussd: string, number: string}>,
@@ -60,6 +61,7 @@ class BillingOverview
             'days_left' => $subscription->daysLeft(),
             'elapsed_percent' => $this->elapsedPercent($tenant, $payments->sortByDesc('period_end')->first(), $deadline),
             'payments' => $payments,
+            'storage' => $this->storage(),
             'notices' => PaymentNotice::query()->where('tenant_id', $tenant->getKey())->latest()->limit(10)->get(),
             'notice_methods' => PaymentNotice::methods(),
             'methods' => $this->methods(),
@@ -125,5 +127,19 @@ class BillingOverview
         $value = trim((string) $value);
 
         return $value === '' ? null : $value;
+    }
+
+    /** @return array{used: int, limit: int|null, percent: int} */
+    private function storage(): array
+    {
+        $storage = new TenantStorage;
+        $used = $storage->used();
+        $limit = $storage->limit();
+
+        return [
+            'used' => $used,
+            'limit' => $limit,
+            'percent' => $limit === null || $limit === 0 ? 0 : min(100, (int) round($used * 100 / $limit)),
+        ];
     }
 }

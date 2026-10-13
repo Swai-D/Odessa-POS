@@ -51,6 +51,8 @@ class ProductRequest extends FormRequest
                 'nullable',
                 $inTenant('warehouses'),
             ],
+            'image' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,gif', 'max:5120'],
+            'remove_image' => ['nullable', 'boolean'],
             'opening_quantity' => ['nullable', 'numeric', 'min:0', 'max:99999999'],
         ];
     }

@@ -40,6 +40,10 @@
 					<input id="plan-warehouses" type="number" min="1" name="limit_warehouses" class="form-control" value="{{ old('limit_warehouses', $plan->limits['warehouses'] ?? '') }}">
 				</div>
 				<div class="col-md-3 mb-3">
+					<label class="form-label" for="plan-storage">{{ __('platform.limit_storage_mb') }}</label>
+					<input id="plan-storage" type="number" min="1" name="limit_storage_mb" class="form-control" value="{{ old('limit_storage_mb', $plan->limits['storage_mb'] ?? '') }}">
+				</div>
+				<div class="col-md-3 mb-3">
 					<label class="form-label" for="plan-active">{{ __('platform.status') }}</label>
 					<input type="hidden" name="is_active" value="0">
 					<div class="form-check form-switch mt-2"><input id="plan-active" type="checkbox" name="is_active" value="1" class="form-check-input" @checked(old('is_active', $plan->is_active ?? true))><label class="form-check-label" for="plan-active">{{ __('platform.active') }}</label></div>

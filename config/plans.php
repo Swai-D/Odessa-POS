@@ -42,17 +42,17 @@ return [
     'plans' => [
         'basic' => [
             'features' => ['returns', 'credit_sales', 'printer'],
-            'limits' => ['users' => 3, 'warehouses' => 1],
+            'limits' => ['users' => 3, 'warehouses' => 1, 'storage_mb' => 100],
         ],
         'medium' => [
             'inherits' => 'basic',
             'features' => ['brands', 'purchasing', 'reports', 'expenses', 'mobile_money'],
-            'limits' => ['users' => 10, 'warehouses' => 3],
+            'limits' => ['users' => 10, 'warehouses' => 3, 'storage_mb' => 500],
         ],
         'enterprise' => [
             'inherits' => 'medium',
             'features' => ['*'],
-            'limits' => ['users' => null, 'warehouses' => null],
+            'limits' => ['users' => null, 'warehouses' => null, 'storage_mb' => 2000],
         ],
     ],
 ];

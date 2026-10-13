@@ -3,8 +3,10 @@
 namespace App\Domain\Catalog\Models;
 
 use App\Domain\Inventory\Models\ProductStock;
+use App\Domain\Settings\Services\TenantStorage;
 use App\Models\Concerns\Auditable;
 use App\Models\Concerns\BelongsToTenant;
+use App\Models\StoredFile;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -21,7 +23,7 @@ class Product extends Model
     protected $fillable = [
         'category_id', 'brand_id', 'unit_id', 'type', 'name', 'sku', 'barcode', 'description',
         'cost_price', 'selling_price', 'tax_rate', 'tax_inclusive', 'track_stock', 'alert_quantity',
-        'is_weighed', 'track_batch', 'track_expiry', 'is_active', 'custom_fields',
+        'is_weighed', 'track_batch', 'track_expiry', 'is_active', 'custom_fields', 'image_file_id',
     ];
 
     protected function casts(): array
@@ -39,6 +41,20 @@ class Product extends Model
             'is_active' => 'boolean',
             'custom_fields' => 'array',
         ];
+    }
+
+    /** @return BelongsTo<StoredFile, $this> */
+    public function imageFile(): BelongsTo
+    {
+        return $this->belongsTo(StoredFile::class, 'image_file_id');
+    }
+
+    /** Address of the product picture, or null when it has none. */
+    public function imageUrl(): ?string
+    {
+        $file = $this->imageFile;
+
+        return $file === null ? null : app(TenantStorage::class)->url($file);
     }
 
     /** @return BelongsTo<Category, $this> */

@@ -33,6 +33,7 @@ return [
         'core' => 'Till, products, stock, sales, customers, returns, credit and till closing',
         'users' => 'Users',
         'warehouses' => 'Warehouses',
+        'storage_mb' => 'Storage (MB)',
         'unlimited' => 'unlimited',
         'monthly' => 'Price per month',
         'annual' => 'Price per year',

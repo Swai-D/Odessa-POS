@@ -20,6 +20,7 @@ class SaveSubscriptionPlanAction
             'limits' => [
                 'users' => isset($data['limit_users']) ? (int) $data['limit_users'] : null,
                 'warehouses' => isset($data['limit_warehouses']) ? (int) $data['limit_warehouses'] : null,
+                'storage_mb' => isset($data['limit_storage_mb']) ? (int) $data['limit_storage_mb'] : null,
             ],
             'is_active' => (bool) $data['is_active'],
             'sort_order' => (int) $data['sort_order'],

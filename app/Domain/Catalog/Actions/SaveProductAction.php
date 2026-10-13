@@ -3,17 +3,22 @@
 namespace App\Domain\Catalog\Actions;
 
 use App\Domain\Catalog\Models\Product;
+use App\Domain\Catalog\Services\ProductImageStore;
 use App\Domain\Inventory\Models\StockMovement;
 use App\Domain\Inventory\Models\Warehouse;
 use App\Domain\Inventory\Services\StockService;
 use App\Models\User;
 use App\Support\Money;
 use App\Support\TenantSettings;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 
 class SaveProductAction
 {
-    public function __construct(private readonly StockService $stock) {}
+    public function __construct(
+        private readonly StockService $stock,
+        private readonly ProductImageStore $images,
+    ) {}
 
     /**
      * Create or update a product from validated request data.
@@ -23,7 +28,14 @@ class SaveProductAction
      */
     public function handle(array $data, ?Product $product, ?User $user): Product
     {
-        return DB::transaction(function () use ($data, $product, $user): Product {
+        $upload = $data['image'] ?? null;
+        $removeImage = (bool) ($data['remove_image'] ?? false);
+        unset($data['image'], $data['remove_image']);
+
+        // Checked before anything is saved, so a picture that does not fit never leaves a half-saved product.
+        $prepared = $upload instanceof UploadedFile ? $this->images->prepare($upload, $product) : null;
+
+        $saved = DB::transaction(function () use ($data, $product, $user): Product {
             $openingQuantity = (float) ($data['opening_quantity'] ?? 0);
             $warehouseId = $data['warehouse_id'] ?? null;
             unset($data['opening_quantity'], $data['warehouse_id']);
@@ -66,5 +78,13 @@ class SaveProductAction
 
             return $product;
         });
+
+        if ($prepared !== null) {
+            $this->images->attach($saved, $prepared);
+        } elseif ($removeImage) {
+            $this->images->remove($saved);
+        }
+
+        return $saved;
     }
 }

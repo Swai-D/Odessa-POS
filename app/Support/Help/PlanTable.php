@@ -39,7 +39,7 @@ class PlanTable
             ]);
         }
 
-        foreach (['users', 'warehouses'] as $limit) {
+        foreach (['users', 'warehouses', 'storage_mb'] as $limit) {
             $lines[] = $row([
                 (string) __('help.plan_table.'.$limit),
                 ...$plans->map(fn (SubscriptionPlan $p): string => isset($p->limits[$limit]) ? (string) $p->limits[$limit] : (string) __('help.plan_table.unlimited'))->all(),
