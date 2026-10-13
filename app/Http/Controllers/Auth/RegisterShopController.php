@@ -9,7 +9,6 @@ use App\Models\Tenant;
 use App\Support\Tenancy\TenantContext;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 /** Public sign-up that opens a trial shop. Only on the main address, never on a shop's own address. */

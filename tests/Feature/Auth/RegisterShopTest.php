@@ -1,7 +1,11 @@
 <?php
 
+use App\Domain\Catalog\Models\Unit;
+use App\Domain\Inventory\Models\Warehouse;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Support\Tenancy\TenantContext;
+use Spatie\Permission\PermissionRegistrar;
 
 function signupForm(array $override = []): array
 {
@@ -46,12 +50,12 @@ it('gives the owner the Owner role, a main warehouse and units', function (): vo
     $tenant = Tenant::query()->firstOrFail();
     $owner = User::query()->withoutGlobalScope('tenant')->where('email', 'neema@example.test')->firstOrFail();
 
-    app(App\Support\Tenancy\TenantContext::class)->run($tenant, function () use ($tenant, $owner): void {
-        app(Spatie\Permission\PermissionRegistrar::class)->setPermissionsTeamId($tenant->getKey());
+    app(TenantContext::class)->run($tenant, function () use ($tenant, $owner): void {
+        app(PermissionRegistrar::class)->setPermissionsTeamId($tenant->getKey());
 
         expect($owner->hasRole('Owner'))->toBeTrue()
-            ->and(App\Domain\Inventory\Models\Warehouse::query()->where('is_default', true)->count())->toBe(1)
-            ->and(App\Domain\Catalog\Models\Unit::query()->count())->toBeGreaterThan(0);
+            ->and(Warehouse::query()->where('is_default', true)->count())->toBe(1)
+            ->and(Unit::query()->count())->toBeGreaterThan(0);
     });
 });
 

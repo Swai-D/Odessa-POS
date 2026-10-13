@@ -9,7 +9,10 @@ class RegisterShopRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return (bool) config('plans.self_signup');
+        // Switched off (SELF_SIGNUP_ENABLED=false): the page simply does not exist.
+        abort_unless(config('plans.self_signup'), 404);
+
+        return true;
     }
 
     protected function prepareForValidation(): void
