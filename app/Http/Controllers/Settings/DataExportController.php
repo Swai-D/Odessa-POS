@@ -31,6 +31,6 @@ class DataExportController extends Controller
 
         $audit->note('data_exported', 'Export', null, $dataset);
 
-        return Csv::download(sprintf('%s-%s-%s.csv', $tenant->slug, $dataset, now()->format('Ymd')), $export->header($dataset), $export->rows($dataset));
+        return Csv::download(sprintf('%s-%s-%s.csv', $tenant->slug, $dataset, now()->format('Ymd')), $export->header($dataset), $export->rows($tenant, $dataset));
     }
 }
