@@ -52,7 +52,7 @@
 						<p class="text-muted fs-14 text-center mt-3 mb-0" data-forgot-hint>{{ __('auth.forgot_hint') }}</p>
 
 						<div class="my-4 d-flex justify-content-center align-items-center copyright-text">
-							<p>&copy; {{ date('Y') }} Odessa POS</p>
+							<p>&copy; {{ date('Y') }} Odessa POS · <a href="{{ route('legal.terms') }}">{{ __('legal.terms_link') }}</a> · <a href="{{ route('legal.privacy') }}">{{ __('legal.privacy_link') }}</a></p>
 						</div>
 					</div>
 				</form>

@@ -80,6 +80,18 @@ abstract class LookupController extends Controller
     }
 
     /** @return list<string> columns the list search looks in */
+    /** Name of a route (taking the record) to link from each row, shown to anyone who can view the list; null for none. */
+    protected function viewRoute(): ?string
+    {
+        return null;
+    }
+
+    /** Label translation key for the link above. */
+    protected function viewLabel(): string
+    {
+        return 'app.view';
+    }
+
     protected function searchColumns(): array
     {
         return ['name'];
@@ -99,6 +111,8 @@ abstract class LookupController extends Controller
                 ->paginate(25)
                 ->withQueryString(),
             'canManage' => Gate::allows('create', $this->model()),
+            'viewRoute' => $this->viewRoute(),
+            'viewLabel' => $this->viewLabel(),
         ]);
     }
 

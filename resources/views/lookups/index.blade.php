@@ -39,6 +39,9 @@
 								<th>{{ __($column['label']) }}</th>
 							@endforeach
 							<th>{{ __('catalog.fields.status') }}</th>
+							@if ($viewRoute)
+								<th class="no-sort"></th>
+							@endif
 							@if ($canManage)
 								<th class="no-sort"></th>
 							@endif
@@ -55,6 +58,9 @@
 										{{ $record->is_active ? __('app.yes') : __('app.no') }}
 									</span>
 								</td>
+								@if ($viewRoute)
+									<td><a href="{{ route($viewRoute, $record->getKey()) }}" data-view-link>{{ __($viewLabel) }}</a></td>
+								@endif
 								@if ($canManage)
 									<td class="action-table-data">
 										<div class="edit-delete-action">
