@@ -37,6 +37,7 @@ return [
         'TillClosing' => 'Kufunga till',
         'User' => 'Mtumiaji',
         'Export' => 'Upakuaji wa data',
+        'Stocktake' => 'Hesabu ya stoo',
         'Role' => 'Jukumu',
     ],
     'fields' => [

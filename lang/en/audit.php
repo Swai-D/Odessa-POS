@@ -37,6 +37,7 @@ return [
         'TillClosing' => 'Till closing',
         'User' => 'User',
         'Export' => 'Data export',
+        'Stocktake' => 'Stock count',
         'Role' => 'Role',
     ],
     'fields' => [

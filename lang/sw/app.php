@@ -51,6 +51,7 @@ return [
         'warehouses' => 'Maghala',
         'stock_levels' => 'Viwango vya Stoo',
         'stock_transfers' => 'Uhamisho wa Stock',
+        'stocktake' => 'Kuhesabu Stoo',
         'stock_adjustments' => 'Marekebisho ya Stoo',
         'settings' => 'Mipangilio',
     ],
