@@ -51,6 +51,7 @@ return [
         'warehouses' => 'Warehouses',
         'stock_levels' => 'Stock Levels',
         'stock_transfers' => 'Stock Transfers',
+        'stocktake' => 'Stock Count',
         'stock_adjustments' => 'Stock Adjustments',
         'settings' => 'Settings',
     ],

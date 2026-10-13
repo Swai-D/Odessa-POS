@@ -14,6 +14,7 @@ use App\Http\Controllers\HelpController;
 use App\Http\Controllers\Inventory\StockAdjustmentController;
 use App\Http\Controllers\Inventory\StockBatchController;
 use App\Http\Controllers\Inventory\StockController;
+use App\Http\Controllers\Inventory\StocktakeController;
 use App\Http\Controllers\Inventory\StockTransferController;
 use App\Http\Controllers\Inventory\WarehouseController;
 use App\Http\Controllers\LegalController;
@@ -133,6 +134,8 @@ Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (
     Route::get('/stock/batches', [StockBatchController::class, 'index'])->name('stock.batches');
     Route::get('/stock-adjustments', [StockAdjustmentController::class, 'index'])->name('stock-adjustments.index');
     Route::post('/stock-adjustments', [StockAdjustmentController::class, 'store'])->name('stock-adjustments.store');
+    Route::resource('stocktakes', StocktakeController::class)->only(['index', 'create', 'store', 'show', 'update']);
+    Route::post('/stocktakes/{stocktake}/cancel', [StocktakeController::class, 'cancel'])->name('stocktakes.cancel');
     Route::get('/stock-transfers', [StockTransferController::class, 'index'])->name('stock-transfers.index');
     Route::get('/stock-transfers/create', [StockTransferController::class, 'create'])->name('stock-transfers.create');
     Route::post('/stock-transfers', [StockTransferController::class, 'store'])->name('stock-transfers.store');
