@@ -31,6 +31,7 @@ return [
         'Warehouse' => 'Warehouse',
         'Sale' => 'Sale',
         'SaleReturn' => 'Sale return',
+        'PurchaseReturn' => 'Purchase return',
         'Purchase' => 'Purchase',
         'StockTransfer' => 'Stock transfer',
         'StockMovement' => 'Stock adjustment',

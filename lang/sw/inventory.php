@@ -25,6 +25,7 @@ return [
         'sale' => 'Mauzo',
         'sale_return' => 'Mauzo yaliyorudishwa',
         'purchase' => 'Manunuzi',
+        'purchase_return' => 'Marejesho ya manunuzi',
     ],
     'directions' => [
         'in' => 'Ongeza stoo',

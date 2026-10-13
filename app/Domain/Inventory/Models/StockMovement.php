@@ -27,6 +27,8 @@ class StockMovement extends Model
 
     public const SALE_RETURN = 'sale_return';
 
+    public const PURCHASE_RETURN = 'purchase_return';
+
     public const TRANSFER_IN = 'transfer_in';
 
     public const TRANSFER_OUT = 'transfer_out';

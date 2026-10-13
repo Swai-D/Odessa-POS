@@ -28,6 +28,7 @@ use App\Http\Controllers\Platform\TenantController;
 use App\Http\Controllers\Platform\TenantRenewalController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Purchasing\PurchaseController;
+use App\Http\Controllers\Purchasing\PurchaseReturnController;
 use App\Http\Controllers\Purchasing\SupplierController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Sales\CheckoutController;
@@ -153,6 +154,7 @@ Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (
     Route::post('/purchases', [PurchaseController::class, 'store'])->name('purchases.store')->middleware('plan:purchasing');
     Route::get('/purchases/{purchase}', [PurchaseController::class, 'show'])->name('purchases.show')->middleware('plan:purchasing');
     Route::post('/purchases/{purchase}/payments', [PurchaseController::class, 'storePayment'])->name('purchases.payments.store')->middleware('plan:purchasing');
+    Route::post('/purchases/{purchase}/returns', [PurchaseReturnController::class, 'store'])->name('purchases.returns.store')->middleware('plan:purchasing');
     Route::resource('suppliers', SupplierController::class)->only($lookup)->middleware('plan:purchasing');
     Route::view('/people', 'modules.placeholder', ['title' => 'app.menu.people'])->name('people.index');
     Route::get('/reports/branches', [BranchReportController::class, 'index'])->name('reports.branches')->middleware('plan:branch_reports');

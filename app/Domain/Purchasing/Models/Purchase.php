@@ -22,7 +22,7 @@ class Purchase extends Model
 
     protected $fillable = [
         'number', 'idempotency_key', 'supplier_id', 'warehouse_id', 'user_id', 'reference', 'currency',
-        'total', 'amount_paid', 'balance_due', 'payment_status', 'note', 'purchased_at',
+        'total', 'amount_paid', 'balance_due', 'returned_total', 'payment_status', 'note', 'purchased_at',
     ];
 
     protected function casts(): array
@@ -31,6 +31,7 @@ class Purchase extends Model
             'total' => 'integer',
             'amount_paid' => 'integer',
             'balance_due' => 'integer',
+            'returned_total' => 'integer',
             'purchased_at' => 'datetime',
         ];
     }
@@ -45,6 +46,12 @@ class Purchase extends Model
     public function payments(): HasMany
     {
         return $this->hasMany(PurchasePayment::class);
+    }
+
+    /** @return HasMany<PurchaseReturn, $this> */
+    public function returns(): HasMany
+    {
+        return $this->hasMany(PurchaseReturn::class);
     }
 
     /** @return BelongsTo<Supplier, $this> */

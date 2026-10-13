@@ -35,7 +35,8 @@ class RecordPurchasePaymentAction
             ]);
 
             $paid = $locked->amount_paid + $amount;
-            $balance = $locked->total - $paid;
+            // Taken from the stored balance, which already accounts for goods sent back to the supplier.
+            $balance = $locked->balance_due - $amount;
 
             $locked->update([
                 'amount_paid' => $paid,

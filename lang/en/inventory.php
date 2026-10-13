@@ -25,6 +25,7 @@ return [
         'sale' => 'Sale',
         'sale_return' => 'Sale return',
         'purchase' => 'Purchase',
+        'purchase_return' => 'Purchase return',
     ],
     'directions' => [
         'in' => 'Add stock',
