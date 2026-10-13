@@ -84,7 +84,9 @@
 							<div class="fw-semibold">{{ $limit('warehouses') }}</div>
 						</div>
 						<div class="col-12 mt-2">
-							@php($mb = fn (int $bytes): string => rtrim(rtrim(number_format($bytes / 1048576, 1, '.', ''), '0'), '.').' MB')
+							@php
+								$mb = fn (int $bytes): string => rtrim(rtrim(number_format($bytes / 1048576, 1, '.', ''), '0'), '.').' MB';
+							@endphp
 							<div class="text-muted fs-13">{{ __('billing.storage') }}</div>
 							<div class="fw-semibold">{{ $mb($storage['used']) }} / {{ $storage['limit'] === null ? __('billing.unlimited') : $mb($storage['limit']) }}</div>
 							@if ($storage['limit'] !== null)
