@@ -31,6 +31,7 @@ return [
         'Warehouse' => 'Ghala',
         'Sale' => 'Mauzo',
         'SaleReturn' => 'Marejesho ya mauzo',
+        'PurchaseReturn' => 'Marejesho ya manunuzi',
         'Purchase' => 'Manunuzi',
         'StockTransfer' => 'Uhamisho wa stock',
         'StockMovement' => 'Marekebisho ya stock',

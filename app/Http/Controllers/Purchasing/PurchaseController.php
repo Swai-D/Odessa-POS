@@ -104,7 +104,7 @@ class PurchaseController extends Controller
         Gate::authorize('view', $purchase);
 
         return view('purchases.show', [
-            'purchase' => $purchase->load(['items', 'payments.user', 'supplier', 'warehouse', 'user']),
+            'purchase' => $purchase->load(['items', 'payments.user', 'supplier', 'warehouse', 'user', 'returns']),
             'canPay' => Gate::allows('update', $purchase),
             'methods' => Payment::methods(),
         ]);

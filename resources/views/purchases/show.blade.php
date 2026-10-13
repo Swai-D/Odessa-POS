@@ -54,6 +54,10 @@
 			<table class="w-100">
 				<tr class="fw-bold"><td>{{ __('purchases.total') }}</td><td class="text-end">{{ $fmt($purchase->total) }}</td></tr>
 				<tr><td>{{ __('purchases.paid') }}</td><td class="text-end">{{ $fmt($purchase->amount_paid) }}</td></tr>
+				@if ($purchase->returned_total > 0)
+					<tr><td>{{ __('purchases.returned') }}</td><td class="text-end">-{{ $fmt($purchase->returned_total) }}</td></tr>
+					<tr class="fw-bold"><td>{{ __('purchases.net_total') }}</td><td class="text-end">{{ $fmt($purchase->total - $purchase->returned_total) }}</td></tr>
+				@endif
 				@if ($purchase->balance_due > 0)
 					<tr class="fw-bold text-danger"><td>{{ __('purchases.balance') }}</td><td class="text-end">{{ $fmt($purchase->balance_due) }}</td></tr>
 				@endif
@@ -109,6 +113,94 @@
 					</div>
 					<div class="col-12"><button type="submit" class="btn btn-primary">{{ __('purchases.record_payment') }}</button></div>
 				</form>
+			</div>
+		</div>
+	@endif
+
+	@php
+		$returnable = $purchase->items->filter(fn ($item) => $item->remainingQuantity() > 0);
+	@endphp
+	@if ($canPay && $returnable->isNotEmpty())
+		<div class="card">
+			<div class="card-header"><h5 class="mb-0">{{ __('purchases.return_items') }}</h5></div>
+			<div class="card-body">
+				<form method="POST" action="{{ route('purchases.returns.store', $purchase) }}">
+					@csrf
+					<div class="table-responsive">
+						<table class="table table-sm align-middle">
+							<thead>
+								<tr>
+									<th>{{ __('purchases.product') }}</th>
+									<th class="text-end">{{ __('purchases.qty') }}</th>
+									<th class="text-end">{{ __('purchases.returned') }}</th>
+									<th style="width: 140px;">{{ __('purchases.return_qty') }}</th>
+								</tr>
+							</thead>
+							<tbody>
+								@foreach ($returnable as $i => $item)
+									<tr>
+										<td>{{ $item->product_name }}</td>
+										<td class="text-end">{{ $qty($item->quantity) }}</td>
+										<td class="text-end">{{ $qty($item->returned_quantity) }}</td>
+										<td>
+											<input type="hidden" name="items[{{ $i }}][purchase_item_id]" value="{{ $item->id }}">
+											<input type="number" class="form-control form-control-sm" name="items[{{ $i }}][quantity]" min="0" max="{{ $qty($item->remainingQuantity()) }}" step="any" value="{{ old('items.'.$i.'.quantity', 0) }}">
+										</td>
+									</tr>
+								@endforeach
+							</tbody>
+						</table>
+					</div>
+					@error('items')<div class="text-danger small mb-2">{{ $message }}</div>@enderror
+					<div class="row g-3">
+						<div class="col-md-4">
+							<label class="form-label">{{ __('purchases.refund_method') }}</label>
+							<select name="refund_method" class="form-select">
+								<option value=""></option>
+								@foreach ($methods as $method)
+									<option value="{{ $method }}" @selected(old('refund_method') === $method)>{{ __('pos.methods.'.$method) }}</option>
+								@endforeach
+							</select>
+							@error('refund_method')<div class="text-danger small">{{ $message }}</div>@enderror
+						</div>
+						<div class="col-md-8">
+							<label class="form-label">{{ __('purchases.reason') }}</label>
+							<input type="text" name="reason" class="form-control" maxlength="500" value="{{ old('reason') }}">
+						</div>
+					</div>
+					<p class="text-muted small mt-2 mb-3">{{ __('purchases.refund_hint') }}</p>
+					<button type="submit" class="btn btn-primary">{{ __('purchases.submit_return') }}</button>
+				</form>
+			</div>
+		</div>
+	@endif
+
+	@if ($purchase->returns->isNotEmpty())
+		<div class="card">
+			<div class="card-header"><h5 class="mb-0">{{ __('purchases.returns') }}</h5></div>
+			<div class="table-responsive">
+				<table class="table table-sm mb-0">
+					<thead>
+						<tr>
+							<th>{{ __('purchases.return_number') }}</th>
+							<th>{{ __('purchases.date') }}</th>
+							<th class="text-end">{{ __('purchases.total') }}</th>
+							<th class="text-end">{{ __('purchases.credit_applied') }}</th>
+							<th class="text-end">{{ __('purchases.refunded') }}</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach ($purchase->returns as $return)
+							<tr>
+								<td>{{ $return->number }}@if ($return->reason) <small class="text-muted">· {{ $return->reason }}</small>@endif</td>
+								<td>{{ $return->returned_at?->format('Y-m-d H:i') }}</td>
+								<td class="text-end">{{ $fmt($return->total) }}</td>
+								<td class="text-end">{{ $fmt($return->credit_applied) }}</td>
+								<td class="text-end">{{ $fmt($return->refunded) }}@if ($return->refund_method) <small class="text-muted">({{ __('pos.methods.'.$return->refund_method) }})</small>@endif</td>
+							</tr>
+						@endforeach
+					</tbody>
+				</table>
 			</div>
 		</div>
 	@endif
