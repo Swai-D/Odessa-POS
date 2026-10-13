@@ -126,7 +126,7 @@ it('keeps sales made while counting correct', function () {
 
     // Two sold while the shelves were being counted: 10 -> 8 in the system.
     $seller = createTenantUser($tenant, posPermissions());
-    checkout($this, 'cnt-h', $seller, cart($product, $warehouse))->assertCreated();
+    checkout($this, 'cnt-h', $seller, cart($product, $warehouse, ['payments' => [['method' => 'cash', 'amount' => 200000]]]))->assertCreated();
     expect(stockOf($tenant, $product))->toBe(8.0);
 
     // The shelves held 10 when the count began, and 10 were counted: no difference, stock stays at 8.
