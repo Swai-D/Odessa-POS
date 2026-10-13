@@ -33,7 +33,7 @@ class ProductImageStore
         $image = $this->decode($upload);
         $prepared = $this->encode($image);
 
-        $releasing = (int) ($replacing?->imageFile?->size ?? 0);
+        $releasing = $replacing === null ? 0 : (int) $replacing->imageFile()->value('size');
 
         if (! $this->storage->fits(strlen($prepared['bytes']), $releasing)) {
             throw ValidationException::withMessages(['image' => __('catalog.image.storage_full')]);
