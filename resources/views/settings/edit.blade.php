@@ -72,5 +72,15 @@
 			<button type="submit" class="btn btn-primary">{{ __('app.save') }}</button>
 		</div>
 	</form>
+
+	<div class="card" data-export-link>
+		<div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
+			<div>
+				<h5 class="mb-1">{{ __('export.open') }}</h5>
+				<span class="text-muted">{{ __('export.open_hint') }}</span>
+			</div>
+			<a href="{{ route('settings.export') }}" class="btn btn-outline-primary"><i class="ti ti-download me-1"></i>{{ __('export.open') }}</a>
+		</div>
+	</div>
 </div>
 @endsection

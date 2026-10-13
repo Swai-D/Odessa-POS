@@ -20,6 +20,7 @@ return [
         'created' => 'Created',
         'updated' => 'Changed',
         'deleted' => 'Deleted',
+        'data_exported' => 'Data downloaded',
         'role_changed' => 'Role changed',
     ],
     'types' => [
@@ -35,6 +36,7 @@ return [
         'StockMovement' => 'Stock adjustment',
         'TillClosing' => 'Till closing',
         'User' => 'User',
+        'Export' => 'Data export',
         'Role' => 'Role',
     ],
     'fields' => [

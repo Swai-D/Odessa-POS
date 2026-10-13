@@ -20,6 +20,7 @@ return [
         'created' => 'Imeundwa',
         'updated' => 'Imebadilishwa',
         'deleted' => 'Imefutwa',
+        'data_exported' => 'Data imepakuliwa',
         'role_changed' => 'Jukumu limebadilishwa',
     ],
     'types' => [
@@ -35,6 +36,7 @@ return [
         'StockMovement' => 'Marekebisho ya stock',
         'TillClosing' => 'Kufunga till',
         'User' => 'Mtumiaji',
+        'Export' => 'Upakuaji wa data',
         'Role' => 'Jukumu',
     ],
     'fields' => [

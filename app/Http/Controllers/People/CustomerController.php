@@ -25,6 +25,16 @@ class CustomerController extends LookupController
         return 'app.menu.customers';
     }
 
+    protected function viewRoute(): ?string
+    {
+        return 'customers.statement';
+    }
+
+    protected function viewLabel(): string
+    {
+        return 'statement.open';
+    }
+
     protected function searchColumns(): array
     {
         return ['name', 'phone', 'email'];

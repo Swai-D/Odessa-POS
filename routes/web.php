@@ -16,7 +16,9 @@ use App\Http\Controllers\Inventory\StockBatchController;
 use App\Http\Controllers\Inventory\StockController;
 use App\Http\Controllers\Inventory\StockTransferController;
 use App\Http\Controllers\Inventory\WarehouseController;
+use App\Http\Controllers\LegalController;
 use App\Http\Controllers\People\CustomerController;
+use App\Http\Controllers\People\CustomerStatementController;
 use App\Http\Controllers\Platform\PlatformDashboardController;
 use App\Http\Controllers\Platform\PlatformPaymentController;
 use App\Http\Controllers\Platform\PlatformPaymentNoticeController;
@@ -35,6 +37,7 @@ use App\Http\Controllers\Sales\SaleReturnController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\Settings\AuditLogController;
 use App\Http\Controllers\Settings\BillingController;
+use App\Http\Controllers\Settings\DataExportController;
 use App\Http\Controllers\Settings\IntegrationController;
 use App\Http\Controllers\Settings\OnboardingController;
 use App\Http\Controllers\Settings\PaymentNoticeController;
@@ -62,6 +65,9 @@ Route::get('/t/{tenant:slug}', function (Request $request, Tenant $tenant) {
 
     return redirect()->route($user ? 'dashboard' : 'login');
 })->name('tenant.entry');
+
+Route::get('/terms', [LegalController::class, 'terms'])->name('legal.terms');
+Route::get('/privacy', [LegalController::class, 'privacy'])->name('legal.privacy');
 
 Route::post('/language/{locale}', function (Request $request, string $locale) {
     abort_unless(in_array($locale, ['en', 'sw'], true), 404);
@@ -137,6 +143,7 @@ Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (
     Route::get('/sales/{sale}/receipt.pdf', [SaleController::class, 'pdf'])->name('sales.pdf');
     Route::post('/sales/{sale}/payments', [SaleController::class, 'storePayment'])->name('sales.payments.store');
     Route::post('/sales/{sale}/returns', [SaleReturnController::class, 'store'])->name('sales.returns.store')->middleware('plan:returns');
+    Route::get('/customers/{customer}/statement', [CustomerStatementController::class, 'show'])->name('customers.statement');
     Route::resource('customers', CustomerController::class)->only($lookup);
     Route::get('/purchases', [PurchaseController::class, 'index'])->name('purchases.index')->middleware('plan:purchasing');
     Route::get('/purchases/create', [PurchaseController::class, 'create'])->name('purchases.create')->middleware('plan:purchasing');
@@ -159,6 +166,8 @@ Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (
     Route::get('/till-closings/{tillClosing}', [TillClosingController::class, 'show'])->name('till-closings.show');
     Route::get('/settings', [SettingsController::class, 'edit'])->name('settings.index');
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
+    Route::get('/settings/export', [DataExportController::class, 'index'])->name('settings.export');
+    Route::get('/settings/export/{dataset}', [DataExportController::class, 'download'])->where('dataset', '[a-z_]+')->middleware('throttle:20,1')->name('settings.export.download');
     Route::get('/billing', [BillingController::class, 'index'])->name('billing.index');
     Route::post('/onboarding/dismiss', [OnboardingController::class, 'dismiss'])->name('onboarding.dismiss');
     Route::resource('users', UserController::class)->only(['index', 'store', 'update', 'destroy']);
