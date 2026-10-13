@@ -16,11 +16,12 @@ RUN apt-get update \
         libjpeg62-turbo-dev \
         libonig-dev \
         libpng-dev \
+        libwebp-dev \
         libpq-dev \
         libxml2-dev \
         libzip-dev \
         unzip \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install -j"$(nproc)" bcmath exif gd mbstring pdo_pgsql xml zip opcache \
     && rm -f /etc/apache2/mods-enabled/mpm_*.load /etc/apache2/mods-enabled/mpm_*.conf \
     && a2enmod mpm_prefork rewrite headers \

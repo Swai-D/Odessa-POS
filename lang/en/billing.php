@@ -98,4 +98,5 @@ return [
         'methods' => ['mpesa' => 'M-Pesa', 'mixx' => 'Mixx by Yas', 'airtel' => 'Airtel Money', 'halopesa' => 'HaloPesa', 'bank' => 'Bank transfer', 'other' => 'Other'],
     ],
     'pay_now' => 'Pay now',
+    'storage' => 'Storage used',
 ];

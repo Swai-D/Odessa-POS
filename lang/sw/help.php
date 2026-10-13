@@ -33,6 +33,7 @@ return [
         'core' => 'Till, bidhaa, stock, mauzo, wateja, marejesho, mkopo na kufunga till',
         'users' => 'Watumiaji',
         'warehouses' => 'Maghala',
+        'storage_mb' => 'Nafasi (MB)',
         'unlimited' => 'bila kikomo',
         'monthly' => 'Bei kwa mwezi',
         'annual' => 'Bei kwa mwaka',

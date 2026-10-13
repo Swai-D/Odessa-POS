@@ -1,6 +1,9 @@
 <?php
 
 return [
+    // Where uploaded files (product pictures) are kept: a disk from config/filesystems.php. `public` is the local
+    // disk (a Railway volume mounted at storage/app/public); set UPLOADS_DISK=s3 for S3/R2 once it is configured.
+    'uploads_disk' => env('UPLOADS_DISK', 'public'),
     'default_currency' => env('POS_DEFAULT_CURRENCY', 'TZS'),
     // Most rows one product CSV upload may hold (keeps the request short and the transaction small).
     'import_max_rows' => 2000,

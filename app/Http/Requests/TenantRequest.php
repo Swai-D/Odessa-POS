@@ -46,6 +46,7 @@ class TenantRequest extends FormRequest
             'override_features.*' => [Rule::in(config('plans.features'))],
             'limit_users' => ['nullable', 'integer', 'min:1', 'max:100000'],
             'limit_warehouses' => ['nullable', 'integer', 'min:1', 'max:100000'],
+            'limit_storage_mb' => ['nullable', 'integer', 'min:1', 'max:10000000'],
         ];
 
         if ($id === null) {

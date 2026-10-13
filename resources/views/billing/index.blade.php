@@ -83,6 +83,14 @@
 							<div class="text-muted fs-13">{{ __('billing.warehouses_limit') }}</div>
 							<div class="fw-semibold">{{ $limit('warehouses') }}</div>
 						</div>
+						<div class="col-12 mt-2">
+							@php($mb = fn (int $bytes): string => rtrim(rtrim(number_format($bytes / 1048576, 1, '.', ''), '0'), '.').' MB')
+							<div class="text-muted fs-13">{{ __('billing.storage') }}</div>
+							<div class="fw-semibold">{{ $mb($storage['used']) }} / {{ $storage['limit'] === null ? __('billing.unlimited') : $mb($storage['limit']) }}</div>
+							@if ($storage['limit'] !== null)
+								<div class="progress mt-1" style="height: 6px;"><div class="progress-bar {{ $storage['percent'] >= 90 ? 'bg-danger' : 'bg-primary' }}" style="width: {{ $storage['percent'] }}%"></div></div>
+							@endif
+						</div>
 					</div>
 
 					@if ($plan)

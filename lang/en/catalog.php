@@ -97,4 +97,11 @@ return [
             'opening_stock' => 'Quantity in your default warehouse. New products only.',
         ],
     ],
+    'image' => [
+        'label' => 'Picture',
+        'hint' => 'JPG, PNG, WebP or GIF, up to 5 MB. It is shrunk automatically and counts towards your shop\'s storage.',
+        'remove' => 'Remove the picture',
+        'storage_full' => 'Your shop\'s storage is full. Remove some pictures or ask us for a bigger plan.',
+        'unreadable' => 'This file is not a picture we can read.',
+    ],
 ];

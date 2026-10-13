@@ -143,4 +143,5 @@ return [
     ],
     'save' => 'Save',
     'back' => 'Back',
+    'limit_storage_mb' => 'Storage (MB)',
 ];

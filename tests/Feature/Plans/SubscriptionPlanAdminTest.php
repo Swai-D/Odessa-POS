@@ -49,7 +49,7 @@ it('lets super admins create and edit a priced plan with features and limits', f
     expect($plan->monthly_price)->toBe(6_500_000)
         ->and($plan->annual_price)->toBe(65_000_000)
         ->and($plan->features)->toBe(['returns', 'reports'])
-        ->and($plan->limits)->toBe(['users' => 7, 'warehouses' => 2]);
+        ->and($plan->limits)->toBe(['users' => 7, 'warehouses' => 2, 'storage_mb' => null]);
 
     $update = subscriptionPlanPayload([
         'name' => 'Starter Plus Updated',
@@ -68,7 +68,7 @@ it('lets super admins create and edit a priced plan with features and limits', f
         ->and($plan->monthly_price)->toBe(7_000_000)
         ->and($plan->annual_price)->toBe(70_000_000)
         ->and($plan->features)->toBe(['returns'])
-        ->and($plan->limits)->toBe(['users' => null, 'warehouses' => 4]);
+        ->and($plan->limits)->toBe(['users' => null, 'warehouses' => 4, 'storage_mb' => null]);
 
     $tenant = createTenant('starter-plus-shop', 'starter_plus');
     $plans = app(TenantContext::class)->run($tenant, fn (): Plans => Plans::current());

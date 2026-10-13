@@ -122,6 +122,10 @@
 				<label class="form-label">{{ __('platform.limit_warehouses') }}</label>
 				<input type="number" min="1" name="limit_warehouses" class="form-control" value="{{ $value('limit_warehouses', $overrides['limits']['warehouses'] ?? '') }}">
 			</div>
+			<div class="col-md-3 mb-3">
+				<label class="form-label">{{ __('platform.limit_storage_mb') }}</label>
+				<input type="number" min="1" name="limit_storage_mb" class="form-control" value="{{ $value('limit_storage_mb', $overrides['limits']['storage_mb'] ?? '') }}">
+			</div>
 		</div>
 	</div>
 </div>

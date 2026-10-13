@@ -98,4 +98,5 @@ return [
         'methods' => ['mpesa' => 'M-Pesa', 'mixx' => 'Mixx by Yas', 'airtel' => 'Airtel Money', 'halopesa' => 'HaloPesa', 'bank' => 'Uhamisho wa benki', 'other' => 'Nyingine'],
     ],
     'pay_now' => 'Lipa sasa',
+    'storage' => 'Nafasi iliyotumika',
 ];

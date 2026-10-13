@@ -131,6 +131,7 @@ class TenantController extends Controller
             'limits' => array_filter([
                 'users' => isset($data['limit_users']) ? (int) $data['limit_users'] : null,
                 'warehouses' => isset($data['limit_warehouses']) ? (int) $data['limit_warehouses'] : null,
+                'storage_mb' => isset($data['limit_storage_mb']) ? (int) $data['limit_storage_mb'] : null,
             ], fn ($value): bool => $value !== null),
         ]);
 

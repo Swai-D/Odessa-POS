@@ -97,4 +97,11 @@ return [
             'opening_stock' => 'Kiasi kwenye ghala lako kuu. Bidhaa mpya tu.',
         ],
     ],
+    'image' => [
+        'label' => 'Picha',
+        'hint' => 'JPG, PNG, WebP au GIF, hadi MB 5. Inapunguzwa ukubwa yenyewe na inahesabiwa kwenye nafasi ya duka lako.',
+        'remove' => 'Ondoa picha',
+        'storage_full' => 'Nafasi ya duka lako imejaa. Ondoa picha chache au tuombe kifurushi kikubwa zaidi.',
+        'unreadable' => 'Faili hili si picha tunayoweza kusoma.',
+    ],
 ];

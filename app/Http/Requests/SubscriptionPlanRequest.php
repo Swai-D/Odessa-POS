@@ -28,6 +28,7 @@ class SubscriptionPlanRequest extends FormRequest
             'features.*' => [Rule::in([...config('plans.features', []), '*'])],
             'limit_users' => ['nullable', 'integer', 'min:1', 'max:100000'],
             'limit_warehouses' => ['nullable', 'integer', 'min:1', 'max:100000'],
+            'limit_storage_mb' => ['nullable', 'integer', 'min:1', 'max:10000000'],
             'is_active' => ['required', 'boolean'],
             'sort_order' => ['required', 'integer', 'min:0', 'max:65535'],
         ];
