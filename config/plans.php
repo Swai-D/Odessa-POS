@@ -24,6 +24,9 @@ return [
     // get by paying. Limits still follow the plan the shop is assigned to.
     'trial_plan' => 'medium',
 
+    // Lets anyone open a trial shop from the public /register page. Switch off with SELF_SIGNUP_ENABLED=false.
+    'self_signup' => (bool) env('SELF_SIGNUP_ENABLED', true),
+
     // Shown on the "not in your plan" page so a shop knows who to call to upgrade. Set in .env.
     'contact' => [
         'phone' => env('PLAN_CONTACT_PHONE'),

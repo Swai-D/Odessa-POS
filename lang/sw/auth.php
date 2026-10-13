@@ -13,4 +13,17 @@ return [
     'forgot_hint' => 'Umesahau nenosiri? Mwombe Owner wa duka akuwekee jipya.',
     'language' => 'Lugha',
     'tagline' => 'Mauzo, stock na ripoti za duka lako',
+    'register' => [
+        'title' => 'Fungua duka lako',
+        'hint' => 'Jaribio la bure la siku :days lenye huduma zote. Hakuna kadi inayohitajika.',
+        'shop_name' => 'Jina la duka',
+        'owner_name' => 'Jina lako',
+        'password_hint' => 'Angalau herufi 8.',
+        'password_confirm' => 'Rudia nenosiri',
+        'accept' => 'Nakubali :terms na :privacy.',
+        'submit' => 'Anza jaribio la bure',
+        'have_account' => 'Una duka tayari?',
+        'start_trial' => 'Mgeni? Anza jaribio la bure',
+        'welcome' => 'Duka lako liko tayari. Fuata hatua za maandalizi hapa chini ili uanze kuuza.',
+    ],
 ];

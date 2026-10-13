@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\RegisterShopController;
 use App\Http\Controllers\Catalog\BrandController;
 use App\Http\Controllers\Catalog\CategoryController;
 use App\Http\Controllers\Catalog\ProductController;
@@ -67,6 +68,11 @@ Route::get('/t/{tenant:slug}', function (Request $request, Tenant $tenant) {
 
     return redirect()->route($user ? 'dashboard' : 'login');
 })->name('tenant.entry');
+
+Route::middleware('guest')->group(function (): void {
+    Route::get('/register', [RegisterShopController::class, 'create'])->name('register');
+    Route::post('/register', [RegisterShopController::class, 'store'])->middleware('throttle:5,60');
+});
 
 Route::get('/terms', [LegalController::class, 'terms'])->name('legal.terms');
 Route::get('/privacy', [LegalController::class, 'privacy'])->name('legal.privacy');

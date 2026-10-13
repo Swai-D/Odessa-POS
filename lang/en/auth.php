@@ -13,4 +13,17 @@ return [
     'forgot_hint' => 'Forgot your password? Ask your shop Owner to set a new one.',
     'language' => 'Language',
     'tagline' => 'Sales, stock and reports for your shop',
+    'register' => [
+        'title' => 'Open your shop',
+        'hint' => 'Free :days-day trial with every feature. No card needed.',
+        'shop_name' => 'Shop name',
+        'owner_name' => 'Your name',
+        'password_hint' => 'At least 8 characters.',
+        'password_confirm' => 'Repeat password',
+        'accept' => 'I agree to the :terms and the :privacy.',
+        'submit' => 'Start free trial',
+        'have_account' => 'Already have a shop?',
+        'start_trial' => 'New here? Start a free trial',
+        'welcome' => 'Your shop is ready. Follow the setup steps below to start selling.',
+    ],
 ];
