@@ -12,45 +12,45 @@
 	<table class="stmt-head">
 		<tr>
 			<td>
-				<div class="stmt-title">{{ __('statement.doc.heading') }}</div>
+				<div class="stmt-title">{{ __('business_statement.doc.heading') }}</div>
 				<div class="stmt-shop">{{ $statement->shop_name }}</div>
 			</td>
 			<td class="r">
-				<div>{{ __('statement.doc.number') }}: <strong>{{ $statement->number }}</strong></div>
-				<div>{{ __('statement.doc.issued') }}: {{ $statement->generated_at->format('Y-m-d') }}</div>
-				<div>{{ __('statement.doc.period') }}: {{ $statement->period_from->format('Y-m-d') }} – {{ $statement->period_to->format('Y-m-d') }} ({{ __('statement.months', ['n' => $statement->months]) }})</div>
+				<div>{{ __('business_statement.doc.number') }}: <strong>{{ $statement->number }}</strong></div>
+				<div>{{ __('business_statement.doc.issued') }}: {{ $statement->generated_at->format('Y-m-d') }}</div>
+				<div>{{ __('business_statement.doc.period') }}: {{ $statement->period_from->format('Y-m-d') }} – {{ $statement->period_to->format('Y-m-d') }} ({{ __('business_statement.months', ['n' => $statement->months]) }})</div>
 			</td>
 		</tr>
 	</table>
 
-	<h3>{{ __('statement.doc.summary') }}</h3>
+	<h3>{{ __('business_statement.doc.summary') }}</h3>
 	<table class="stmt-grid">
-		<tr><td>{{ __('statement.doc.net_sales') }}</td><td class="r strong">{{ $fmt($t['net_sales']) }}</td></tr>
-		<tr><td>{{ __('statement.doc.avg_monthly_sales') }}</td><td class="r strong">{{ $fmt($a['monthly_net_sales']) }}</td></tr>
-		<tr><td>{{ __('statement.doc.gross_profit') }}</td><td class="r">{{ $fmt($t['gross_profit']) }}</td></tr>
-		<tr><td>{{ __('statement.doc.expenses') }}</td><td class="r">{{ $fmt($t['expenses']) }}</td></tr>
-		<tr><td>{{ __('statement.doc.net_profit') }}</td><td class="r strong">{{ $fmt($t['net_profit']) }}</td></tr>
-		<tr><td>{{ __('statement.doc.avg_monthly_profit') }}</td><td class="r">{{ $fmt($a['monthly_net_profit']) }}</td></tr>
-		<tr><td>{{ __('statement.doc.transactions') }}</td><td class="r">{{ number_format($t['sales_count']) }}</td></tr>
-		<tr><td>{{ __('statement.doc.avg_sale') }}</td><td class="r">{{ $fmt($a['average_sale']) }}</td></tr>
-		<tr><td>{{ __('statement.doc.customers') }}</td><td class="r">{{ number_format($d['activity']['customers']) }}</td></tr>
-		<tr><td>{{ __('statement.doc.active_months') }}</td><td class="r">{{ $a['active_months'] }} / {{ $statement->months }}</td></tr>
-		<tr><td>{{ __('statement.doc.trading_since') }}</td><td class="r">{{ $d['activity']['first_sale_on'] ?? '—' }}</td></tr>
+		<tr><td>{{ __('business_statement.doc.net_sales') }}</td><td class="r strong">{{ $fmt($t['net_sales']) }}</td></tr>
+		<tr><td>{{ __('business_statement.doc.avg_monthly_sales') }}</td><td class="r strong">{{ $fmt($a['monthly_net_sales']) }}</td></tr>
+		<tr><td>{{ __('business_statement.doc.gross_profit') }}</td><td class="r">{{ $fmt($t['gross_profit']) }}</td></tr>
+		<tr><td>{{ __('business_statement.doc.expenses') }}</td><td class="r">{{ $fmt($t['expenses']) }}</td></tr>
+		<tr><td>{{ __('business_statement.doc.net_profit') }}</td><td class="r strong">{{ $fmt($t['net_profit']) }}</td></tr>
+		<tr><td>{{ __('business_statement.doc.avg_monthly_profit') }}</td><td class="r">{{ $fmt($a['monthly_net_profit']) }}</td></tr>
+		<tr><td>{{ __('business_statement.doc.transactions') }}</td><td class="r">{{ number_format($t['sales_count']) }}</td></tr>
+		<tr><td>{{ __('business_statement.doc.avg_sale') }}</td><td class="r">{{ $fmt($a['average_sale']) }}</td></tr>
+		<tr><td>{{ __('business_statement.doc.customers') }}</td><td class="r">{{ number_format($d['activity']['customers']) }}</td></tr>
+		<tr><td>{{ __('business_statement.doc.active_months') }}</td><td class="r">{{ $a['active_months'] }} / {{ $statement->months }}</td></tr>
+		<tr><td>{{ __('business_statement.doc.trading_since') }}</td><td class="r">{{ $d['activity']['first_sale_on'] ?? '—' }}</td></tr>
 	</table>
 
-	<h3>{{ __('statement.doc.monthly') }}</h3>
+	<h3>{{ __('business_statement.doc.monthly') }}</h3>
 	<table class="stmt-table">
 		<thead>
 			<tr>
-				<th>{{ __('statement.doc.month') }}</th>
-				<th class="r">{{ __('statement.doc.sales_count') }}</th>
-				<th class="r">{{ __('statement.doc.gross_sales') }}</th>
-				<th class="r">{{ __('statement.doc.returns') }}</th>
-				<th class="r">{{ __('statement.doc.net_sales') }}</th>
-				<th class="r">{{ __('statement.doc.gross_profit') }}</th>
-				<th class="r">{{ __('statement.doc.expenses') }}</th>
-				<th class="r">{{ __('statement.doc.net_profit') }}</th>
-				<th class="r">{{ __('statement.doc.purchases') }}</th>
+				<th>{{ __('business_statement.doc.month') }}</th>
+				<th class="r">{{ __('business_statement.doc.sales_count') }}</th>
+				<th class="r">{{ __('business_statement.doc.gross_sales') }}</th>
+				<th class="r">{{ __('business_statement.doc.returns') }}</th>
+				<th class="r">{{ __('business_statement.doc.net_sales') }}</th>
+				<th class="r">{{ __('business_statement.doc.gross_profit') }}</th>
+				<th class="r">{{ __('business_statement.doc.expenses') }}</th>
+				<th class="r">{{ __('business_statement.doc.net_profit') }}</th>
+				<th class="r">{{ __('business_statement.doc.purchases') }}</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -68,7 +68,7 @@
 				</tr>
 			@endforeach
 			<tr class="total">
-				<td>{{ __('statement.doc.total') }}</td>
+				<td>{{ __('business_statement.doc.total') }}</td>
 				<td class="r">{{ number_format($t['sales_count']) }}</td>
 				<td class="r">{{ $fmt($t['gross_sales']) }}</td>
 				<td class="r">{{ $fmt($t['returns']) }}</td>
@@ -81,15 +81,15 @@
 		</tbody>
 	</table>
 
-	<h3>{{ __('statement.doc.position', ['date' => $statement->generated_at->format('Y-m-d')]) }}</h3>
+	<h3>{{ __('business_statement.doc.position', ['date' => $statement->generated_at->format('Y-m-d')]) }}</h3>
 	<table class="stmt-grid">
-		<tr><td>{{ __('statement.doc.receivables') }}</td><td class="r">{{ $fmt($p['receivables']) }}</td></tr>
-		<tr><td>{{ __('statement.doc.payables') }}</td><td class="r">{{ $fmt($p['payables']) }}</td></tr>
-		<tr><td>{{ __('statement.doc.stock_value') }}</td><td class="r">{{ $fmt($p['stock_value']) }}</td></tr>
+		<tr><td>{{ __('business_statement.doc.receivables') }}</td><td class="r">{{ $fmt($p['receivables']) }}</td></tr>
+		<tr><td>{{ __('business_statement.doc.payables') }}</td><td class="r">{{ $fmt($p['payables']) }}</td></tr>
+		<tr><td>{{ __('business_statement.doc.stock_value') }}</td><td class="r">{{ $fmt($p['stock_value']) }}</td></tr>
 	</table>
 
 	@if (! empty($d['expense_categories']))
-		<h3>{{ __('statement.doc.expense_breakdown') }}</h3>
+		<h3>{{ __('business_statement.doc.expense_breakdown') }}</h3>
 		<table class="stmt-grid">
 			@foreach ($d['expense_categories'] as $row)
 				<tr><td>{{ $row['name'] }}</td><td class="r">{{ $fmt($row['amount']) }}</td></tr>
@@ -98,10 +98,10 @@
 	@endif
 
 	<div class="stmt-verify">
-		<div class="strong">{{ __('statement.doc.verify_title') }}</div>
-		<div>{{ __('statement.doc.verify_text', ['url' => $verifyUrl]) }}</div>
-		<div class="stmt-code">{{ __('statement.doc.code') }}: {{ $statement->code }}</div>
+		<div class="strong">{{ __('business_statement.doc.verify_title') }}</div>
+		<div>{{ __('business_statement.doc.verify_text', ['url' => $verifyUrl]) }}</div>
+		<div class="stmt-code">{{ __('business_statement.doc.code') }}: {{ $statement->code }}</div>
 	</div>
 
-	<p class="stmt-note">{{ __('statement.doc.disclaimer') }}</p>
+	<p class="stmt-note">{{ __('business_statement.doc.disclaimer') }}</p>
 </div>

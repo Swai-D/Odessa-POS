@@ -29,12 +29,12 @@
 		<div class="add-item d-flex">
 			<div class="page-title">
 				<h4 class="fw-bold">{{ $statement->number }}</h4>
-				<h6><a href="{{ route('business-statements.index') }}">{{ __('statement.title') }}</a></h6>
+				<h6><a href="{{ route('business-statements.index') }}">{{ __('business_statement.title') }}</a></h6>
 			</div>
 		</div>
 		<div class="page-btn d-flex gap-2">
-			<a href="{{ route('business-statements.pdf', $statement) }}" class="btn btn-primary">{{ __('statement.download_pdf') }}</a>
-			<button type="button" class="btn btn-outline-secondary" onclick="window.print()">{{ __('statement.print') }}</button>
+			<a href="{{ route('business-statements.pdf', $statement) }}" class="btn btn-primary">{{ __('business_statement.download_pdf') }}</a>
+			<button type="button" class="btn btn-outline-secondary" onclick="window.print()">{{ __('business_statement.print') }}</button>
 		</div>
 	</div>
 

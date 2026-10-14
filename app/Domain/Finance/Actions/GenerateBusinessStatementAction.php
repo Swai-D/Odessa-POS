@@ -7,8 +7,8 @@ use App\Domain\Finance\Services\BusinessStatementBuilder;
 use App\Domain\Sales\Services\DocumentNumber;
 use App\Domain\Settings\Services\AuditRecorder;
 use App\Models\User;
-use App\Support\TenantSettings;
 use App\Support\Tenancy\TenantContext;
+use App\Support\TenantSettings;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
