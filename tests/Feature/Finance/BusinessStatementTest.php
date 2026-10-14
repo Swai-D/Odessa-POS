@@ -155,6 +155,20 @@ it('shows the statement and a PDF, in the language it was issued in', function (
     expect($pdf->headers->get('content-type'))->toContain('application/pdf')->and(substr($pdf->getContent(), 0, 4))->toBe('%PDF');
 });
 
+it('prints a QR code that opens the verify page with the code', function (): void {
+    [$tenant, $viewer] = lenderShop($this, 'lend-qr');
+
+    issueStatement($this, 'lend-qr', $viewer);
+    $statement = theStatement($tenant);
+
+    $page = $this->actingAs($viewer)->withHeader('X-Tenant', 'lend-qr')->get('/business-statements/'.$statement->id)->assertOk();
+    preg_match('/src="data:image\/png;base64,([^"]+)"/', $page->getContent(), $found);
+
+    expect($found)->toHaveCount(2)->and(substr((string) base64_decode($found[1], true), 0, 4))->toBe("\x89PNG");
+
+    $this->actingAs($viewer)->withHeader('X-Tenant', 'lend-qr')->get('/business-statements/'.$statement->id.'/pdf')->assertOk();
+});
+
 it('verifies a statement on a public page, whatever way the code is typed', function (): void {
     [$tenant, $viewer] = lenderShop($this, 'lend-i');
 

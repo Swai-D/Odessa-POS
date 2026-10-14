@@ -97,11 +97,16 @@
 		</table>
 	@endif
 
-	<div class="stmt-verify">
-		<div class="strong">{{ __('business_statement.doc.verify_title') }}</div>
-		<div>{{ __('business_statement.doc.verify_text', ['url' => $verifyUrl]) }}</div>
-		<div class="stmt-code">{{ __('business_statement.doc.code') }}: {{ $statement->code }}</div>
-	</div>
+	<table class="stmt-verify">
+		<tr>
+			<td style="width: 120px; vertical-align: middle;"><img src="{{ $qr }}" alt="QR" width="110" height="110"></td>
+			<td style="vertical-align: middle;">
+				<div class="strong">{{ __('business_statement.doc.verify_title') }}</div>
+				<div>{{ __('business_statement.doc.verify_text', ['url' => $verifyUrl]) }}</div>
+				<div class="stmt-code">{{ __('business_statement.doc.code') }}: {{ $statement->code }}</div>
+			</td>
+		</tr>
+	</table>
 
 	<p class="stmt-note">{{ __('business_statement.doc.disclaimer') }}</p>
 </div>

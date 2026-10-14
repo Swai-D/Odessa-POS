@@ -18,7 +18,8 @@
 	.stmt-table th { border-bottom: 1px solid #999; text-align: left; }
 	.stmt-table th.r { text-align: right; }
 	.stmt-table tr.total td { font-weight: bold; border-top: 1px solid #999; }
-	.stmt-verify { margin-top: 20px; padding: 8px 10px; border: 1px solid #999; }
+	.stmt-verify { margin-top: 20px; border: 1px solid #999; }
+	.stmt-verify td { padding: 8px 10px; }
 	.stmt-code { font-size: 16px; font-weight: bold; letter-spacing: 1px; margin-top: 4px; }
 	.stmt-note { margin-top: 14px; color: #666; font-size: 10.5px; }
 
