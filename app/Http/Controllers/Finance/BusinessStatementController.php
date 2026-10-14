@@ -32,7 +32,7 @@ class BusinessStatementController extends Controller
         $data = $request->validated();
         $statement = $action->handle((int) $data['months'], (string) $data['locale'], $request->user());
 
-        return redirect()->route('business-statements.show', $statement)->with('status', __('statement.created'));
+        return redirect()->route('business-statements.show', $statement)->with('status', __('business_statement.created'));
     }
 
     public function show(BusinessStatement $statement): View
