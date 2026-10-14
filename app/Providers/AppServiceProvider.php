@@ -40,6 +40,10 @@ use App\Policies\TillClosingPolicy;
 use App\Policies\UnitPolicy;
 use App\Policies\WarehousePolicy;
 use App\Support\Plans;
+use App\Support\Sms\LogSmsGateway;
+use App\Support\Sms\NextSmsGateway;
+use App\Support\Sms\NullSmsGateway;
+use App\Support\Sms\SmsGateway;
 use App\Support\Tenancy\TenantContext;
 use Illuminate\Contracts\View\View as ViewContract;
 use Illuminate\Pagination\Paginator;
@@ -59,6 +63,11 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(TenantContext::class);
+        $this->app->bind(SmsGateway::class, fn (): SmsGateway => match (config('notifications.sms.driver')) {
+            'nextsms' => new NextSmsGateway,
+            'null' => new NullSmsGateway,
+            default => new LogSmsGateway,
+        });
     }
 
     /**

@@ -4,6 +4,8 @@ return [
     'title' => 'My Profile',
     'details' => 'Your details',
     'name' => 'Name',
+    'phone' => 'Phone number',
+    'phone_hint' => 'Used for SMS reminders and receipts, for example 0712 345 678.',
     'email' => 'Email',
     'language' => 'Language',
     'change_password' => 'Change password',

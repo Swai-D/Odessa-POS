@@ -4,6 +4,8 @@ return [
     'title' => 'Wasifu Wangu',
     'details' => 'Taarifa zako',
     'name' => 'Jina',
+    'phone' => 'Namba ya simu',
+    'phone_hint' => 'Hutumika kutuma SMS za vikumbusho na risiti, mfano 0712 345 678.',
     'email' => 'Barua pepe',
     'language' => 'Lugha',
     'change_password' => 'Badilisha nywila',

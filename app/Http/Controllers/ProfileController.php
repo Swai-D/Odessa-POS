@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PasswordRequest;
 use App\Http\Requests\ProfileRequest;
+use App\Support\Sms\PhoneNumber;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,7 +19,9 @@ class ProfileController extends Controller
 
     public function update(ProfileRequest $request): RedirectResponse
     {
-        $request->user()->update($request->validated());
+        $data = $request->validated();
+        $data['phone'] = PhoneNumber::normalize($data['phone'] ?? null);
+        $request->user()->update($data);
 
         return redirect()->route('profile.edit')->with('status', __('app.saved'));
     }

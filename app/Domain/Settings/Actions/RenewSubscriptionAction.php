@@ -2,6 +2,7 @@
 
 namespace App\Domain\Settings\Actions;
 
+use App\Domain\Settings\Services\ShopNotifier;
 use App\Models\SubscriptionPlan;
 use App\Models\Tenant;
 use App\Models\TenantPayment;
@@ -20,10 +21,12 @@ use Illuminate\Validation\ValidationException;
  */
 class RenewSubscriptionAction
 {
+    public function __construct(private readonly ShopNotifier $notifier) {}
+
     /** @param  array{months: int, discount_amount?: float|int|string|null, discount_reason?: string|null, method: string, paid_on: string, reference?: string|null, note?: string|null, idempotency_key: string}  $data */
     public function handle(Tenant $tenant, array $data, ?User $by): TenantPayment
     {
-        return DB::transaction(function () use ($tenant, $data, $by): TenantPayment {
+        $payment = DB::transaction(function () use ($tenant, $data, $by): TenantPayment {
             $existing = TenantPayment::query()->where('idempotency_key', $data['idempotency_key'])->first();
 
             if ($existing !== null) {
@@ -79,5 +82,12 @@ class RenewSubscriptionAction
 
             return $payment;
         });
+
+        // Only the first call for an idempotency key sends the receipt; a repeat returns the stored payment quietly.
+        if ($payment->wasRecentlyCreated) {
+            $this->notifier->paymentReceived($payment);
+        }
+
+        return $payment;
     }
 }
