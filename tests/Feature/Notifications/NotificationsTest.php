@@ -65,13 +65,14 @@ it('sends an SMS to NextSMS with basic auth and the configured sender', function
 });
 
 it('treats a rejected SMS as final and a provider outage as retryable', function () {
-    Http::fake(['*' => Http::response(['messages' => [['status' => ['groupId' => 5, 'description' => 'REJECTED']]]], 200)]);
+    // Responses are served in order: rejected, provider outage, bad request.
+    Http::fake(['*' => Http::sequence()
+        ->push(['messages' => [['status' => ['groupId' => 5, 'description' => 'REJECTED']]]], 200)
+        ->push('oops', 503)
+        ->push('bad', 400)]);
+
     expect((new NextSmsGateway)->send('255712345678', 'Hello')->accepted)->toBeFalse();
-
-    Http::fake(['*' => Http::response('oops', 503)]);
     expect(fn () => (new NextSmsGateway)->send('255712345678', 'Hello'))->toThrow(SmsFailedException::class);
-
-    Http::fake(['*' => Http::response('bad', 400)]);
     expect((new NextSmsGateway)->send('255712345678', 'Hello')->accepted)->toBeFalse();
 });
 
