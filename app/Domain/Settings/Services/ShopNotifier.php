@@ -5,6 +5,7 @@ namespace App\Domain\Settings\Services;
 use App\Models\PaymentNotice;
 use App\Models\Tenant;
 use App\Models\TenantPayment;
+use App\Notifications\LowStockNotification;
 use App\Notifications\PaymentNoticeReceivedNotification;
 use App\Notifications\PaymentReceivedNotification;
 use App\Notifications\ShopNotification;
@@ -41,6 +42,12 @@ class ShopNotifier
             Money::format((int) $payment->amount, (string) $payment->currency),
             $payment->period_end->format('d/m/Y'),
         ));
+    }
+
+    /** @param  array<int, string>  $names  The first few product names, for the message. */
+    public function lowStock(Tenant $tenant, int $count, array $names): void
+    {
+        $this->toOwner($tenant, fn (): ShopNotification => new LowStockNotification($tenant->name, $count, implode(', ', $names)));
     }
 
     public function paymentNoticeReceived(Tenant $tenant, PaymentNotice $notice): void
