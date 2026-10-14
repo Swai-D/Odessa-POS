@@ -22,6 +22,7 @@ return [
         'deleted' => 'Deleted',
         'data_exported' => 'Data downloaded',
         'role_changed' => 'Role changed',
+        'generated' => 'Issued',
     ],
     'types' => [
         'Product' => 'Product',
@@ -31,6 +32,7 @@ return [
         'Warehouse' => 'Warehouse',
         'Sale' => 'Sale',
         'SaleReturn' => 'Sale return',
+        'BusinessStatement' => 'Business statement',
         'PurchaseReturn' => 'Purchase return',
         'Purchase' => 'Purchase',
         'StockTransfer' => 'Stock transfer',

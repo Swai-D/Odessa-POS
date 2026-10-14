@@ -73,6 +73,7 @@ return [
         'label' => 'app.menu.reports',
         'items' => [
             ['label' => 'app.menu.reports', 'icon' => 'ti ti-chart-bar', 'route' => 'reports.index', 'feature' => 'reports', 'permission' => 'reports.view', 'match' => ['reports.index', 'reports.export']],
+            ['label' => 'app.menu.business_statement', 'icon' => 'ti ti-file-certificate', 'route' => 'business-statements.index', 'feature' => 'reports', 'permission' => 'reports.view', 'match' => ['business-statements.*']],
             ['label' => 'app.menu.branch_report', 'icon' => 'ti ti-building-store', 'route' => 'reports.branches', 'feature' => 'branch_reports', 'permission' => 'reports.view', 'match' => ['reports.branches*']],
         ],
     ],

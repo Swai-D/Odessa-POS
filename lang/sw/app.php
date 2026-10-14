@@ -21,6 +21,7 @@ return [
         'roles' => 'Majukumu',
         'audit' => 'Kumbukumbu za shughuli',
         'branch_report' => 'Ripoti ya matawi',
+        'business_statement' => 'Taarifa ya biashara',
         'platform' => 'Jukwaa',
         'tenants' => 'Maduka',
         'platform_notices' => 'Taarifa za malipo',

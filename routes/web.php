@@ -8,6 +8,7 @@ use App\Http\Controllers\Catalog\ProductTransferController;
 use App\Http\Controllers\Catalog\UnitController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Finance\BranchReportController;
+use App\Http\Controllers\Finance\BusinessStatementController;
 use App\Http\Controllers\Finance\ExpenseCategoryController;
 use App\Http\Controllers\Finance\ExpenseController;
 use App\Http\Controllers\Finance\TillClosingController;
@@ -47,6 +48,7 @@ use App\Http\Controllers\Settings\PaymentNoticeController;
 use App\Http\Controllers\Settings\RoleController;
 use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\Settings\UserController;
+use App\Http\Controllers\StatementVerifyController;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -74,6 +76,7 @@ Route::middleware('guest')->group(function (): void {
     Route::post('/register', [RegisterShopController::class, 'store'])->middleware('throttle:5,60');
 });
 
+Route::get('/verify', [StatementVerifyController::class, 'show'])->middleware('throttle:20,1')->name('statements.verify');
 Route::get('/terms', [LegalController::class, 'terms'])->name('legal.terms');
 Route::get('/privacy', [LegalController::class, 'privacy'])->name('legal.privacy');
 
@@ -165,6 +168,10 @@ Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (
     Route::view('/people', 'modules.placeholder', ['title' => 'app.menu.people'])->name('people.index');
     Route::get('/reports/branches', [BranchReportController::class, 'index'])->name('reports.branches')->middleware('plan:branch_reports');
     Route::get('/reports/branches/export', [BranchReportController::class, 'export'])->name('reports.branches.export')->middleware('plan:branch_reports');
+    Route::get('/business-statements', [BusinessStatementController::class, 'index'])->name('business-statements.index')->middleware('plan:reports');
+    Route::post('/business-statements', [BusinessStatementController::class, 'store'])->name('business-statements.store')->middleware('plan:reports');
+    Route::get('/business-statements/{statement}', [BusinessStatementController::class, 'show'])->name('business-statements.show')->middleware('plan:reports');
+    Route::get('/business-statements/{statement}/pdf', [BusinessStatementController::class, 'pdf'])->name('business-statements.pdf')->middleware('plan:reports');
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index')->middleware('plan:reports');
     Route::get('/reports/export/{report}', [ReportController::class, 'export'])
         ->where('report', 'daily|products|payments|balances|stock')->name('reports.export')->middleware('plan:reports');

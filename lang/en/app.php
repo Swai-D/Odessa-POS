@@ -21,6 +21,7 @@ return [
         'roles' => 'Roles',
         'audit' => 'Audit log',
         'branch_report' => 'Branch report',
+        'business_statement' => 'Business statement',
         'platform' => 'Platform',
         'tenants' => 'Shops',
         'platform_notices' => 'Payment notices',

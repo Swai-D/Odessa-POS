@@ -22,6 +22,7 @@ return [
         'deleted' => 'Imefutwa',
         'data_exported' => 'Data imepakuliwa',
         'role_changed' => 'Jukumu limebadilishwa',
+        'generated' => 'Imetolewa',
     ],
     'types' => [
         'Product' => 'Bidhaa',
@@ -31,6 +32,7 @@ return [
         'Warehouse' => 'Ghala',
         'Sale' => 'Mauzo',
         'SaleReturn' => 'Marejesho ya mauzo',
+        'BusinessStatement' => 'Taarifa ya biashara',
         'PurchaseReturn' => 'Marejesho ya manunuzi',
         'Purchase' => 'Manunuzi',
         'StockTransfer' => 'Uhamisho wa stock',
