@@ -25,6 +25,11 @@ return [
         'body' => 'We received :amount for :shop. Your subscription is now paid until :date.',
         'sms' => ':shop: we received :amount. Paid until :date. Thank you.',
     ],
+    'low_stock' => [
+        'subject' => ':count products are running low',
+        'body' => ':shop has :count products at or below their alert quantity, for example: :names. Restock soon so you do not run out.',
+        'sms' => ':shop: :count products running low (:names). Restock soon.',
+    ],
     'notice_received' => [
         'subject' => ':shop says it has paid',
         'body' => ':shop sent a payment notice of :amount (transaction :reference). Please confirm it and renew the subscription.',

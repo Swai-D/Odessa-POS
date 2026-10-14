@@ -25,6 +25,11 @@ return [
         'body' => 'Tumepokea :amount kwa :shop. Kifurushi chako kimelipiwa hadi :date.',
         'sms' => ':shop: tumepokea :amount. Umelipia hadi :date. Asante.',
     ],
+    'low_stock' => [
+        'subject' => 'Bidhaa :count zinaelekea kuisha',
+        'body' => ':shop ina bidhaa :count zilizofika au kushuka chini ya kiwango cha tahadhari, mfano: :names. Ongeza stoo mapema usije kuishiwa.',
+        'sms' => ':shop: bidhaa :count zinaisha (:names). Ongeza stoo mapema.',
+    ],
     'notice_received' => [
         'subject' => ':shop wamesema wamelipa',
         'body' => ':shop wametuma taarifa ya malipo ya :amount (muamala :reference). Tafadhali thibitisha na uongeze kifurushi.',
