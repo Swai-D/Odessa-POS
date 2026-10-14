@@ -26,9 +26,9 @@ function lenderShop(object $test, string $slug, string $plan = 'medium'): array
         ]))->assertCreated();
     };
 
-    $sell('2026-08-10 10:00:00', 'k-aug');
-    $sell('2026-09-12 11:00:00', 'k-sep');
-    $sell('2026-10-02 09:00:00', 'k-oct');
+    $sell('2026-08-10 10:00:00', 'key-august-sale');
+    $sell('2026-09-12 11:00:00', 'key-september-sale');
+    $sell('2026-10-02 09:00:00', 'key-october-sale');
 
     Carbon::setTestNow('2026-10-14 10:00:00');
 
@@ -98,7 +98,7 @@ it('stays as issued when more sales are made afterwards', function (): void {
     $before = theStatement($tenant)->data;
 
     Carbon::setTestNow('2026-09-20 10:00:00');
-    checkout($this, 'lend-d', $seller, cart($product, $warehouse, ['idempotency_key' => 'late', 'payments' => [['method' => 'cash', 'amount' => 200000]]]))->assertCreated();
+    checkout($this, 'lend-d', $seller, cart($product, $warehouse, ['idempotency_key' => 'key-late-sale', 'payments' => [['method' => 'cash', 'amount' => 200000]]]))->assertCreated();
     Carbon::setTestNow('2026-10-14 10:00:00');
 
     expect(theStatement($tenant)->data)->toBe($before)->and(theStatement($tenant)->isIntact())->toBeTrue();
