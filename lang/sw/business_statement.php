@@ -45,7 +45,7 @@ return [
         'stock_value' => 'Stoo iliyopo, kwa gharama',
         'expense_breakdown' => 'Matumizi makuu kwenye kipindi',
         'verify_title' => 'Thibitisha kuwa taarifa hii ni halisi',
-        'verify_text' => 'Fungua :url kisha uweke msimbo ulio hapa chini.',
+        'verify_text' => 'Piga picha ya QR code, au fungua :url kisha uweke msimbo ulio hapa chini.',
         'code' => 'Msimbo wa uthibitisho',
         'disclaimer' => 'Taarifa hii imetengenezwa na Odessa POS kutokana na rekodi za mauzo, matumizi na stoo zilizoingizwa na duka. Haijakaguliwa (not audited) na haichukui nafasi ya hesabu zilizokaguliwa. Mauzo ambayo hayakurekodiwa kwenye mfumo hayamo.',
     ],

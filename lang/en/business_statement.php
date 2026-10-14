@@ -45,7 +45,7 @@ return [
         'stock_value' => 'Stock on hand, at cost',
         'expense_breakdown' => 'Main expenses in the period',
         'verify_title' => 'Check that this statement is genuine',
-        'verify_text' => 'Open :url and enter the code below.',
+        'verify_text' => 'Scan the QR code, or open :url and enter the code below.',
         'code' => 'Verification code',
         'disclaimer' => 'This statement was produced by Odessa POS from the sales, expense and stock records entered by the shop. It has not been audited and does not replace audited accounts. Sales that were not recorded in the system are not included.',
     ],

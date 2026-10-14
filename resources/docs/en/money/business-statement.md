@@ -24,7 +24,7 @@ The figures are the same ones the Reports page gives for the same dates.
 
 ## How the lender can check it
 
-Every statement has a **number** and a **verification code**. The lender opens the **Verify** page (the address is printed on the paper), types the code and sees the headline figures to compare with the paper. If the paper was changed, the figures will not match.
+Every statement has a **number** and a **verification code**. The lender scans the **QR code** printed on the paper with a phone (or opens the **Verify** page and types the code) and sees the headline figures to compare with the paper. If the paper was changed, the figures will not match.
 
 ## Good to know
 

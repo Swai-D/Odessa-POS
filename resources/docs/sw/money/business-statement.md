@@ -24,7 +24,7 @@ Takwimu ni zilezile ambazo ukurasa wa Ripoti unatoa kwa tarehe hizohizo.
 
 ## Mkopeshaji anavyoweza kuthibitisha
 
-Kila taarifa ina **namba** na **msimbo wa uthibitisho**. Mkopeshaji anafungua ukurasa wa **Thibitisha** (anwani imeandikwa kwenye karatasi), anaandika msimbo na kuona takwimu kuu za kulinganisha na karatasi. Karatasi ikibadilishwa, takwimu hazitalingana.
+Kila taarifa ina **namba** na **msimbo wa uthibitisho**. Mkopeshaji anapiga picha **QR code** iliyo kwenye karatasi kwa simu (au anafungua ukurasa wa **Thibitisha** na kuandika msimbo) na kuona takwimu kuu za kulinganisha na karatasi. Karatasi ikibadilishwa, takwimu hazitalingana.
 
 ## Mambo ya kujua
 
