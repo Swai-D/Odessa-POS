@@ -31,6 +31,12 @@
 						<input type="email" class="form-control" id="email" name="email" value="{{ old('email', $user->email) }}" maxlength="255" required>
 					</div>
 					<div class="col-md-4 mb-3">
+						<label class="form-label" for="phone">{{ __('profile.phone') }}</label>
+						<input type="tel" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" value="{{ old('phone', $user->phone) }}" maxlength="20" placeholder="0712 345 678">
+						<div class="form-text">{{ __('profile.phone_hint') }}</div>
+						@error('phone')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+					</div>
+					<div class="col-md-4 mb-3">
 						<label class="form-label" for="locale">{{ __('profile.language') }}</label>
 						<select class="form-select" id="locale" name="locale">
 							<option value="en" @selected(old('locale', $user->locale) === 'en')>English</option>
