@@ -34,6 +34,7 @@ use App\Http\Controllers\Purchasing\PurchaseReturnController;
 use App\Http\Controllers\Purchasing\SupplierController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Sales\CheckoutController;
+use App\Http\Controllers\Sales\MobileMoneyController;
 use App\Http\Controllers\Sales\PosController;
 use App\Http\Controllers\Sales\PosCustomerController;
 use App\Http\Controllers\Sales\QuotationController;
@@ -50,6 +51,7 @@ use App\Http\Controllers\Settings\RoleController;
 use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\Settings\UserController;
 use App\Http\Controllers\StatementVerifyController;
+use App\Http\Controllers\Webhooks\AzamPayCallbackController;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -78,6 +80,8 @@ Route::middleware('guest')->group(function (): void {
 });
 
 Route::get('/verify', [StatementVerifyController::class, 'show'])->middleware('throttle:20,1')->name('statements.verify');
+// Result callbacks from AzamPay; each shop registers its own address. Verified by signature, so no login or CSRF token.
+Route::post('/webhooks/azampay/{tenant}', AzamPayCallbackController::class)->middleware('throttle:120,1')->name('webhooks.azampay');
 Route::get('/terms', [LegalController::class, 'terms'])->name('legal.terms');
 Route::get('/privacy', [LegalController::class, 'privacy'])->name('legal.privacy');
 
@@ -124,6 +128,8 @@ Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (
     Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
     Route::get('/pos/products', [PosController::class, 'products'])->name('pos.products');
     Route::post('/pos/checkout', CheckoutController::class)->name('pos.checkout');
+    Route::post('/pos/mobile-money', [MobileMoneyController::class, 'store'])->middleware('throttle:30,1')->name('pos.mobile-money.store');
+    Route::get('/pos/mobile-money/{paymentRequest}', [MobileMoneyController::class, 'show'])->name('pos.mobile-money.show');
     Route::get('/pos/customers', [PosCustomerController::class, 'index'])->name('pos.customers.index');
     Route::post('/pos/customers', [PosCustomerController::class, 'store'])->name('pos.customers.store');
     Route::get('/pos/held', [PosController::class, 'heldIndex'])->name('pos.held.index');

@@ -9,6 +9,7 @@ use App\Domain\Inventory\Services\InsufficientStockException;
 use App\Domain\Inventory\Services\StockService;
 use App\Domain\People\Models\Customer;
 use App\Domain\Sales\Models\Payment;
+use App\Domain\Sales\Models\PaymentRequest;
 use App\Domain\Sales\Models\Sale;
 use App\Domain\Sales\Services\DocumentNumber;
 use App\Domain\Sales\Services\SaleCalculator;
@@ -166,16 +167,41 @@ class CheckoutAction
         }
 
         foreach ($settlement['payments'] as $payment) {
+            $request = $this->claimMobileMoney($payment, $sale);
+
             $sale->payments()->create([
                 'user_id' => $user?->getKey(),
                 'method' => $payment['method'],
                 'amount' => $payment['amount'],
-                'reference' => $payment['reference'] ?? null,
+                'reference' => $request !== null ? ($request->mno_reference ?? $request->provider_reference ?? $request->reference) : ($payment['reference'] ?? null),
                 'paid_at' => now(),
             ]);
         }
 
         return $sale->load(['items', 'payments', 'customer']);
+    }
+
+    /**
+     * A mobile money line that came from a provider prompt must match a paid, unused request of this shop and the exact
+     * amount; it is then tied to this sale so the same payment can never pay twice. Failing here rolls the whole sale back.
+     *
+     * @param  array<string, mixed>  $payment
+     */
+    private function claimMobileMoney(array $payment, Sale $sale): ?PaymentRequest
+    {
+        if (empty($payment['payment_request_id'])) {
+            return null;
+        }
+
+        $request = PaymentRequest::query()->lockForUpdate()->find($payment['payment_request_id']);
+
+        if ($request === null || $payment['method'] !== Payment::MOBILE_MONEY || ! $request->isUsable() || $request->amount !== (int) $payment['amount']) {
+            throw ValidationException::withMessages(['payments' => __('mobile_money.errors.not_paid')]);
+        }
+
+        $request->update(['sale_id' => $sale->getKey()]);
+
+        return $request;
     }
 
     /**
@@ -198,8 +224,8 @@ class CheckoutAction
      * Decide what is paid now, what is owed and what change is returned.
      * Cash may exceed the amount due (the surplus is change); every other method may not.
      *
-     * @param  list<array{method: string, amount: int|string, reference?: string|null}>  $payments
-     * @return array{paid: int, balance: int, change: int, status: string, payments: list<array{method: string, amount: int, reference: string|null}>}
+     * @param  list<array{method: string, amount: int|string, reference?: string|null, payment_request_id?: int|string|null}>  $payments
+     * @return array{paid: int, balance: int, change: int, status: string, payments: list<array{method: string, amount: int, reference: string|null, payment_request_id?: int|string|null}>}
      */
     private function settle(int $total, array $payments, ?Customer $customer): array
     {
@@ -215,7 +241,12 @@ class CheckoutAction
                 $cash += $amount;
                 $cashReference ??= $payment['reference'] ?? null;
             } else {
-                $other[] = ['method' => $payment['method'], 'amount' => $amount, 'reference' => $payment['reference'] ?? null];
+                $other[] = [
+                    'method' => $payment['method'],
+                    'amount' => $amount,
+                    'reference' => $payment['reference'] ?? null,
+                    'payment_request_id' => $payment['payment_request_id'] ?? null,
+                ];
                 $otherTotal += $amount;
             }
         }
