@@ -56,9 +56,9 @@ class ProductController extends Controller
 
         return response()->json([
             'data' => Search::apply($query, $request->query('q'), ['name', 'sku', 'barcode'])
-                ->orderBy('name')->limit(20)->get(['id', 'name', 'sku', 'cost_price'])
+                ->orderBy('name')->limit(20)->get(['id', 'name', 'sku', 'cost_price', 'selling_price'])
                 ->map(fn (Product $p): array => [
-                    'id' => $p->getKey(), 'label' => $p->name.' ('.$p->sku.')', 'cost' => Money::toMajor($p->cost_price),
+                    'id' => $p->getKey(), 'label' => $p->name.' ('.$p->sku.')', 'cost' => Money::toMajor($p->cost_price), 'price' => Money::toMajor($p->selling_price),
                 ])->all(),
         ]);
     }
