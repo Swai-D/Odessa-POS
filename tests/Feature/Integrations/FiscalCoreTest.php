@@ -5,7 +5,6 @@ use App\Domain\Integrations\Models\FiscalReceipt;
 use App\Domain\Integrations\Services\FiscalException;
 use App\Domain\Integrations\Services\FiscalIdentity;
 use App\Domain\Integrations\Services\FiscalSigner;
-use App\Domain\People\Models\Customer;
 use App\Domain\Sales\Models\Sale;
 use App\Models\Tenant;
 use App\Support\Tenancy\TenantContext;
@@ -36,7 +35,12 @@ function fiscalSale(object $test, string $slug, array $extraCart = []): Sale
 
     $tenant = Tenant::query()->where('slug', $slug)->firstOrFail();
     $fixtures[$slug] ??= [createTenantUser($tenant, posPermissions()), posFixture($tenant, 10)];
-    [$user, [$product, $warehouse]] = $fixtures[$slug];
+    [$user, [$product, $warehouse, $customer]] = $fixtures[$slug];
+
+    // `customer_id => true` means "the shop's fixture customer" (it does not exist before the first call).
+    if (($extraCart['customer_id'] ?? null) === true) {
+        $extraCart['customer_id'] = $customer->id;
+    }
 
     checkout($test, $slug, $user, cart($product, $warehouse, $extraCart + ['payments' => [['method' => 'cash', 'amount' => 200000]]]))->assertCreated();
 
@@ -125,7 +129,7 @@ it('builds the receipt XML from the sale', function () {
 
 it('reports the unpaid part of a credit sale as an invoice amount', function () {
     $tenant = createTenant('fis-e');
-    $sale = fiscalSale($this, 'fis-e', ['payments' => [['method' => 'cash', 'amount' => 50000]], 'customer_id' => app(TenantContext::class)->run($tenant, fn () => Customer::query()->firstOrFail()->id)]);
+    $sale = fiscalSale($this, 'fis-e', ['payments' => [['method' => 'cash', 'amount' => 50000]], 'customer_id' => true]);
 
     $xml = simplexml_load_string(fiscalIssue($tenant, $sale)->payload);
 
