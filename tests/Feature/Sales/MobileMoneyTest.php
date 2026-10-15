@@ -10,6 +10,7 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Testing\TestResponse;
 
 function mmKey(): OpenSSLAsymmetricKey
 {
@@ -209,7 +210,7 @@ it('keeps shops apart in callbacks and polling', function () {
     $this->postJson('/webhooks/azampay/not-a-shop', mmCallback($request))->assertNotFound();
 });
 
-function mmSell(object $test, Tenant $tenant, $user, string $slug, array $payment): Illuminate\Testing\TestResponse
+function mmSell(object $test, Tenant $tenant, $user, string $slug, array $payment): TestResponse
 {
     static $fixtures = [];
     $fixtures[$slug] ??= posFixture($tenant, 10);
