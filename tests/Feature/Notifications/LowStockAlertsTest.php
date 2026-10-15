@@ -1,5 +1,9 @@
 <?php
 
+use App\Domain\Catalog\Models\Product;
+use App\Domain\Inventory\Models\StockMovement;
+use App\Domain\Inventory\Models\Warehouse;
+use App\Domain\Inventory\Services\StockService;
 use App\Domain\Settings\Actions\ProvisionTenantAction;
 use App\Domain\Settings\Services\TenantOwnerService;
 use App\Models\Tenant;
@@ -22,8 +26,14 @@ function lowStockShop(string $slug, float $alertQuantity): Tenant
     ]);
     app(TenantOwnerService::class)->find($tenant)?->forceFill(['phone' => '0712345678'])->save();
 
-    [$product] = posFixture($tenant, 10);
-    app(TenantContext::class)->run($tenant, fn () => $product->update(['alert_quantity' => $alertQuantity, 'name' => "Sugar {$slug}"]));
+    // Provisioning already created the shop's main warehouse; add one product with 10 in stock.
+    app(TenantContext::class)->run($tenant, function () use ($slug, $alertQuantity): void {
+        $product = Product::create([
+            'name' => "Sugar {$slug}", 'sku' => 'SUG', 'type' => 'standard', 'cost_price' => 50000, 'selling_price' => 100000,
+            'tax_rate' => 0, 'tax_inclusive' => true, 'track_stock' => true, 'alert_quantity' => $alertQuantity,
+        ]);
+        app(StockService::class)->move($product, Warehouse::query()->where('code', 'MAIN')->firstOrFail(), 10, StockMovement::OPENING);
+    });
 
     return $tenant;
 }

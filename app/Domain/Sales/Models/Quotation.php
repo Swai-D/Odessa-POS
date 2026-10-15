@@ -92,6 +92,6 @@ class Quotation extends Model
 
     public function displayName(): string
     {
-        return $this->customer?->name ?? $this->customer_name ?? '';
+        return $this->customer->name ?? $this->customer_name ?? '';
     }
 }
