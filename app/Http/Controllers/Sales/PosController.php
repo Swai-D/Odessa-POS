@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Sales;
 
 use App\Domain\Catalog\Models\Category;
 use App\Domain\Catalog\Models\Product;
+use App\Domain\Integrations\Services\IntegrationManager;
 use App\Domain\Inventory\Models\Warehouse;
 use App\Domain\People\Models\Customer;
-use App\Domain\Integrations\Services\IntegrationManager;
 use App\Domain\Sales\Models\HeldOrder;
 use App\Domain\Sales\Models\Payment;
 use App\Domain\Sales\Models\PaymentRequest;
