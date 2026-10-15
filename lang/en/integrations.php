@@ -14,9 +14,15 @@ return [
     ],
     'drivers' => [
         'browser' => 'Browser print (any printer)',
+        'azampay' => 'AzamPay (mobile money)',
         'escpos' => 'Thermal printer (ESC/POS)',
     ],
     'fields' => [
+        'environment' => 'Environment',
+        'app_name' => 'App name',
+        'client_id' => 'Client ID',
+        'client_secret' => 'Client secret',
+        'api_key' => 'API key',
         'connection' => 'Connection',
         'paper_width' => 'Paper width',
         'copies' => 'Copies',
@@ -24,6 +30,8 @@ return [
     ],
     'options' => [
         'serial' => 'USB serial or paired Bluetooth',
+        'sandbox' => 'Sandbox (testing)',
+        'production' => 'Production (real money)',
         'usb' => 'USB (WebUSB)',
         'yes' => 'Yes',
         'no' => 'No',

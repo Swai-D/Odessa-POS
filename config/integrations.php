@@ -1,5 +1,6 @@
 <?php
 
+use App\Domain\Integrations\Drivers\Payments\AzamPayDriver;
 use App\Domain\Integrations\Drivers\Printer\BrowserPrinterDriver;
 use App\Domain\Integrations\Drivers\Printer\EscPosPrinterDriver;
 
@@ -25,7 +26,7 @@ return [
         'payments' => [
             'feature' => 'mobile_money',
             'plan_feature' => 'mobile_money',
-            'drivers' => [],
+            'drivers' => [AzamPayDriver::class],
         ],
     ],
 ];

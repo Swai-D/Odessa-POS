@@ -51,7 +51,13 @@ class IntegrationController extends Controller
             ];
         }
 
-        return view('settings.integrations', ['channels' => $channels]);
+        $tenant = app(TenantContext::class)->get();
+
+        return view('settings.integrations', [
+            'channels' => $channels,
+            // The address each shop gives AzamPay for payment results (on the main app address, whichever shop it is).
+            'azampayCallback' => $tenant === null ? null : rtrim((string) config('app.url'), '/').route('webhooks.azampay', [$tenant->getKey()], false),
+        ]);
     }
 
     public function update(IntegrationRequest $request, SaveIntegrationAction $action, IntegrationRegistry $registry): RedirectResponse|Response

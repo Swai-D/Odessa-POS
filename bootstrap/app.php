@@ -38,6 +38,9 @@ return Application::configure(basePath: dirname(__DIR__))
             SetLocale::class,
         ]);
 
+        // Provider callbacks cannot carry our CSRF token; they are verified by signature instead.
+        $middleware->validateCsrfTokens(except: ['webhooks/*']);
+
         $middleware->alias([
             'tenant.required' => RequireTenant::class,
             'plan' => RequirePlanFeature::class,

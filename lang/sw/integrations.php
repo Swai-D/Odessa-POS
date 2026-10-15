@@ -14,9 +14,15 @@ return [
     ],
     'drivers' => [
         'browser' => 'Chapa kupitia browser (printa yoyote)',
+        'azampay' => 'AzamPay (pesa ya simu)',
         'escpos' => 'Printa ya thermal (ESC/POS)',
     ],
     'fields' => [
+        'environment' => 'Mazingira',
+        'app_name' => 'Jina la app',
+        'client_id' => 'Client ID',
+        'client_secret' => 'Client secret',
+        'api_key' => 'API key',
         'connection' => 'Muunganisho',
         'paper_width' => 'Upana wa karatasi',
         'copies' => 'Nakala',
@@ -24,6 +30,8 @@ return [
     ],
     'options' => [
         'serial' => 'USB serial au Bluetooth iliyounganishwa',
+        'sandbox' => 'Sandbox (majaribio)',
+        'production' => 'Production (pesa halisi)',
         'usb' => 'USB (WebUSB)',
         'yes' => 'Ndiyo',
         'no' => 'Hapana',

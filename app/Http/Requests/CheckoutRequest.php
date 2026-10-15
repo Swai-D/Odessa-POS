@@ -45,6 +45,8 @@ class CheckoutRequest extends FormRequest
             'payments.*.method' => ['required', Rule::in(Payment::methods())],
             'payments.*.amount' => ['required', 'integer', 'min:1', 'max:99999999999'],
             'payments.*.reference' => ['nullable', 'string', 'max:100'],
+            // A mobile money payment that already went through the provider (see MobileMoneyController).
+            'payments.*.payment_request_id' => ['nullable', 'integer', Rule::exists('payment_requests', 'id')->where('tenant_id', $tenantId)],
             'note' => ['nullable', 'string', 'max:500'],
         ];
     }

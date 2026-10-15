@@ -80,6 +80,14 @@
 							</div>
 						@endforeach
 
+						@if ($channel === 'payments' && $azampayCallback)
+							<div class="alert alert-info js-driver-note" data-driver="azampay" style="display: none;">
+								<div class="fw-medium mb-1">{{ __('mobile_money.callback_title') }}</div>
+								<code>{{ $azampayCallback }}</code>
+								<div class="small mt-1">{{ __('mobile_money.callback_hint') }}</div>
+							</div>
+						@endif
+
 						<button type="submit" class="btn btn-primary">{{ __('app.save') }}</button>
 					</form>
 				@endif
@@ -100,6 +108,9 @@
 				block.style.display = active ? '' : 'none';
 				// Only the chosen driver's fields are submitted.
 				block.querySelectorAll('input, select').forEach(function (input) { input.disabled = !active; });
+			});
+			form.querySelectorAll('.js-driver-note').forEach(function (note) {
+				note.style.display = note.dataset.driver === select.value ? '' : 'none';
 			});
 		}
 
