@@ -38,6 +38,7 @@ return [
         'dashboard' => 'Dashboard',
         'pos' => 'POS',
         'inventory' => 'Inventory',
+        'quotations' => 'Quotations',
         'sales' => 'Sales',
         'purchases' => 'Purchases',
         'customers' => 'Customers',

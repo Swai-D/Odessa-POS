@@ -46,6 +46,7 @@ return [
         'label' => 'app.menu.sales',
         'items' => [
             ['label' => 'app.menu.sales', 'icon' => 'ti ti-file-invoice', 'route' => 'sales.index', 'permission' => 'sales.view', 'match' => ['sales.*']],
+            ['label' => 'app.menu.quotations', 'icon' => 'ti ti-file-description', 'route' => 'quotations.index', 'permission' => 'sales.view', 'match' => ['quotations.*']],
             ['label' => 'app.menu.till', 'icon' => 'ti ti-cash', 'route' => 'till-closings.index', 'permission' => ['till.close', 'till.view'], 'match' => ['till-closings.*']],
         ],
     ],

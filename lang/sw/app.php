@@ -38,6 +38,7 @@ return [
         'dashboard' => 'Dashibodi',
         'pos' => 'Mauzo',
         'inventory' => 'Hesabu ya bidhaa',
+        'quotations' => 'Makadirio ya Bei',
         'sales' => 'Mauzo',
         'purchases' => 'Manunuzi',
         'customers' => 'Wateja',
