@@ -509,6 +509,14 @@
 		sessionExpired: @json(__('pos.screen.session_expired')),
 		errors: @json(__('pos.errors')),
 		i18n: @json(__('pos.screen')),
+		mobileMoney: {
+			enabled: @json($mobileMoney['enabled']),
+			providers: @json($mobileMoney['providers']),
+			i18n: @json(__('mobile_money.till')),
+			statuses: @json(__('mobile_money.statuses')),
+			store: @json(route('pos.mobile-money.store')),
+			showBase: @json(url('/pos/mobile-money'))
+		},
 		routes: {
 			products: @json(route('pos.products')),
 			checkout: @json(route('pos.checkout')),

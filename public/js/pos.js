@@ -9,6 +9,7 @@
 	var CFG = window.POS;
 	if (!CFG) { return; }
 	var T = CFG.i18n;
+	var MM = CFG.mobileMoney || { enabled: false };
 
 	var state = {
 		items: [],
@@ -313,13 +314,107 @@
 	/* ---------- payment modal ---------- */
 
 	function payRow(method, amountMinor) {
-		return { method: method, amount: amountMinor > 0 ? (amountMinor / 100).toFixed(2) : '', reference: '' };
+		return {
+			method: method, amount: amountMinor > 0 ? (amountMinor / 100).toFixed(2) : '', reference: '',
+			provider: MM.enabled && MM.providers ? MM.providers[0] : '', phone: '',
+			mmKey: null, requestId: null, mmStatus: null, mmMessage: '', timer: null
+		};
+	}
+
+	/* ---------- mobile money prompt (AzamPay) ---------- */
+
+	function hasMm(row) { return MM.enabled && row.method === 'mobile_money'; }
+	function mmLocked(row) { return row.mmStatus === 'pending' || row.mmStatus === 'succeeded'; }
+	function stopPolling(row) { if (row.timer) { window.clearInterval(row.timer); row.timer = null; } }
+	function stopAllPolling() { state.pay.rows.forEach(stopPolling); }
+
+	function mmHtml(row) {
+		var M = MM.i18n;
+		var message = row.mmStatus ? (MM.statuses[row.mmStatus] || '') : '';
+		if (row.mmStatus === 'failed' && row.mmMessage) { message += ': ' + row.mmMessage; }
+		if (!row.mmStatus && row.mmMessage) { message = row.mmMessage; }
+		var cls = row.mmStatus === 'succeeded' ? 'text-success' : (row.mmStatus === 'pending' ? 'text-muted' : 'text-danger');
+		var providers = MM.providers.map(function (p) {
+			return '<option value="' + esc(p) + '"' + (p === row.provider ? ' selected' : '') + '>' + esc(p) + '</option>';
+		}).join('');
+		var locked = mmLocked(row) ? ' disabled' : '';
+		var button = row.mmStatus === 'succeeded' ? '' :
+			'<button type="button" class="btn btn-sm btn-primary" data-mm-request="1"' + (row.mmStatus === 'pending' ? ' disabled' : '') + '>' +
+			esc(row.mmStatus === 'failed' || row.mmStatus === 'expired' ? M.retry : M.request) + '</button>';
+		return '<div class="col-4"><select class="form-select form-select-sm" data-pay-field="provider"' + locked + ' aria-label="' + esc(M.provider) + '">' + providers + '</select></div>' +
+			'<div class="col-4"><input type="tel" class="form-control form-control-sm" maxlength="20" data-pay-field="phone"' + locked + ' placeholder="' + esc(M.phone) + '" value="' + esc(row.phone) + '"></div>' +
+			'<div class="col-4">' + button + '</div>' +
+			(message ? '<div class="col-12 small ' + cls + '">' + esc(message) + '</div>' : '');
+	}
+
+	function refreshMm(index) {
+		var holder = document.querySelector('#pos-pay-rows [data-mm="' + index + '"]');
+		var row = state.pay.rows[index];
+		if (holder && row) { holder.innerHTML = mmHtml(row); }
+		var line = document.querySelector('#pos-pay-rows [data-row="' + index + '"]');
+		if (line && row) {
+			$all('[data-pay-field="method"],[data-pay-field="amount"],[data-pay-field="reference"]', line).forEach(function (input) { input.disabled = mmLocked(row); });
+		}
+		updatePaySummary();
+	}
+
+	function pollMm(row) {
+		stopPolling(row);
+		row.timer = window.setInterval(function () {
+			var index = state.pay.rows.indexOf(row);
+			if (index < 0) { stopPolling(row); return; }
+			request('GET', MM.showBase + '/' + row.requestId).then(function (result) {
+				if (!result.ok || state.pay.rows.indexOf(row) < 0) { return; }
+				applyMm(row, result.data);
+			}).catch(function () { /* keep polling; the next tick tries again */ });
+		}, 3000);
+	}
+
+	function applyMm(row, data) {
+		row.mmStatus = data.status;
+		row.mmMessage = data.reason || '';
+		if (data.status !== 'pending') {
+			stopPolling(row);
+			row.mmKey = data.status === 'succeeded' ? row.mmKey : null;
+			if (data.status !== 'succeeded') { row.requestId = null; }
+		}
+		refreshMm(state.pay.rows.indexOf(row));
+	}
+
+	function requestMm(index) {
+		var row = state.pay.rows[index];
+		if (!row) { return; }
+		var amount = toMinor(row.amount);
+		if (row.mmStatus === 'pending' || row.mmStatus === 'succeeded') { return; }
+		if (!row.provider || !row.phone.trim() || amount < 100) { row.mmMessage = MM.i18n.need_fields; refreshMm(index); return; }
+		// A failed or expired request starts over with a new key; a repeat of one still in doubt reuses its key.
+		if (!row.mmKey) { row.mmKey = uuid(); }
+		row.mmMessage = '';
+		row.mmStatus = 'pending';
+		refreshMm(index);
+		request('POST', MM.store, { idempotency_key: row.mmKey, provider: row.provider, phone: row.phone.trim(), amount: amount }).then(function (result) {
+			if (!result.ok) {
+				row.mmStatus = null;
+				row.mmMessage = errorMessages(result).join(' ') || MM.i18n.network_error;
+				if (result.status >= 400 && result.status < 500) { row.mmKey = null; }
+				refreshMm(index);
+				return;
+			}
+			row.requestId = result.data.id;
+			applyMm(row, result.data);
+			if (result.data.status === 'pending') { pollMm(row); }
+		}).catch(function () {
+			row.mmStatus = null;
+			row.mmMessage = MM.i18n.network_error;
+			refreshMm(index);
+		});
 	}
 
 	function openPay(method) {
 		var result = totals();
 		if (!state.items.length) { alertMessage(T.cart_empty, 'warning'); return; }
 		if (result.total <= 0) { alertMessage(CFG.errors.nothing_to_charge, 'warning'); return; }
+		stopAllPolling();
 		if (method === 'credit') {
 			state.pay.rows = [];
 		} else if (method === 'split') {
@@ -340,7 +435,12 @@
 			if (row.method === 'cash') { cash += amount; } else { other += amount; }
 		});
 		var error = null;
-		if (other > total) { error = CFG.errors.overpaid_non_cash; }
+		state.pay.rows.forEach(function (row) {
+			if (!hasMm(row) || error) { return; }
+			if (row.mmStatus === 'pending') { error = MM.i18n.waiting_block; }
+			else if (row.mmStatus === 'failed' || row.mmStatus === 'expired') { error = MM.i18n.unfinished_block; }
+		});
+		if (!error && other > total) { error = CFG.errors.overpaid_non_cash; }
 		var dueForCash = Math.max(total - other, 0);
 		var cashApplied = Math.min(cash, dueForCash);
 		var paid = other + cashApplied;
@@ -352,11 +452,14 @@
 	function renderPay() {
 		var methods = CFG.methods.map(function (m) { return '<option value="' + m + '">' + esc(CFG.methodLabels[m]) + '</option>'; }).join('');
 		$('#pos-pay-rows').innerHTML = state.pay.rows.map(function (row, i) {
+			var off = mmLocked(row) ? ' disabled' : '';
 			return '<div class="row g-2 align-items-end mb-2" data-row="' + i + '">' +
-				'<div class="col-4"><select class="form-select" data-pay-field="method">' + methods.replace('value="' + row.method + '"', 'value="' + row.method + '" selected') + '</select></div>' +
-				'<div class="col-3"><input type="text" inputmode="decimal" class="form-control" data-pay-field="amount" placeholder="' + esc(T.amount) + '" value="' + esc(row.amount) + '"></div>' +
-				'<div class="col-4"><input type="text" class="form-control" maxlength="100" data-pay-field="reference" placeholder="' + esc(T.reference) + '" value="' + esc(row.reference) + '"></div>' +
-				'<div class="col-1"><a href="javascript:void(0);" class="link-danger fs-18" data-pay-remove="' + i + '"><i class="ti ti-trash"></i></a></div></div>';
+				'<div class="col-4"><select class="form-select" data-pay-field="method"' + off + '>' + methods.replace('value="' + row.method + '"', 'value="' + row.method + '" selected') + '</select></div>' +
+				'<div class="col-3"><input type="text" inputmode="decimal" class="form-control" data-pay-field="amount"' + off + ' placeholder="' + esc(T.amount) + '" value="' + esc(row.amount) + '"></div>' +
+				'<div class="col-4"><input type="text" class="form-control" maxlength="100" data-pay-field="reference"' + off + ' placeholder="' + esc(T.reference) + '" value="' + esc(row.reference) + '"></div>' +
+				'<div class="col-1"><a href="javascript:void(0);" class="link-danger fs-18" data-pay-remove="' + i + '"><i class="ti ti-trash"></i></a></div>' +
+				(hasMm(row) ? '<div class="col-12"><div class="row g-2 align-items-center" data-mm="' + i + '">' + mmHtml(row) + '</div></div>' : '') +
+				'</div>';
 		}).join('');
 		updatePaySummary();
 	}
@@ -385,7 +488,9 @@
 
 	function settlePayments() {
 		return state.pay.rows.map(function (row) {
-			return { method: row.method, amount: toMinor(row.amount), reference: row.reference || null };
+			var payment = { method: row.method, amount: toMinor(row.amount), reference: row.reference || null };
+			if (hasMm(row) && row.mmStatus === 'succeeded' && row.requestId) { payment.payment_request_id = row.requestId; }
+			return payment;
 		}).filter(function (payment) { return payment.amount > 0; });
 	}
 
@@ -558,7 +663,17 @@
 			return;
 		}
 		var payRemove = closest('[data-pay-remove]');
-		if (payRemove) { state.pay.rows.splice(parseInt(payRemove.getAttribute('data-pay-remove'), 10), 1); renderPay(); return; }
+		if (payRemove) {
+			var removeAt = parseInt(payRemove.getAttribute('data-pay-remove'), 10);
+			var removing = state.pay.rows[removeAt];
+			if (removing && hasMm(removing) && removing.mmStatus === 'succeeded' && !window.confirm(MM.i18n.remove_paid)) { return; }
+			if (removing) { stopPolling(removing); }
+			state.pay.rows.splice(removeAt, 1);
+			renderPay();
+			return;
+		}
+		var mmRequest = closest('[data-mm-request]');
+		if (mmRequest) { requestMm(parseInt(mmRequest.closest('[data-row]').getAttribute('data-row'), 10)); return; }
 		if (closest('#pos-pay-confirm')) { confirmPay(); return; }
 		if (closest('#pos-hold-save')) { saveHold(); return; }
 		var resume = closest('[data-held-resume]');
@@ -581,6 +696,7 @@
 		if (target.matches && target.matches('[data-pay-field]')) {
 			var row = state.pay.rows[parseInt(target.closest('[data-row]').getAttribute('data-row'), 10)];
 			row[target.getAttribute('data-pay-field')] = target.value;
+			if (target.getAttribute('data-pay-field') === 'method') { stopPolling(row); row.mmStatus = null; row.requestId = null; row.mmKey = null; row.mmMessage = ''; renderPay(); return; }
 			updatePaySummary();
 		}
 		if (target.id === 'pos-warehouse') { clearCart(); loadProducts(); }
@@ -671,6 +787,10 @@
 				: String(state.discount.value);
 		$('#pos-discount-error').textContent = '';
 		$('#pos-discount-error').style.display = 'none';
+	});
+
+	document.addEventListener('hidden.bs.modal', function (event) {
+		if (event.target.id === 'pos-pay') { stopAllPolling(); }
 	});
 
 	document.addEventListener('shown.bs.modal', function (event) {

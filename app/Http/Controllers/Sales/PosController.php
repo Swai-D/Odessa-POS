@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Sales;
 
 use App\Domain\Catalog\Models\Category;
 use App\Domain\Catalog\Models\Product;
+use App\Domain\Integrations\Services\IntegrationManager;
 use App\Domain\Inventory\Models\Warehouse;
 use App\Domain\People\Models\Customer;
 use App\Domain\Sales\Models\HeldOrder;
 use App\Domain\Sales\Models\Payment;
+use App\Domain\Sales\Models\PaymentRequest;
 use App\Domain\Sales\Models\Sale;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\HoldOrderRequest;
@@ -33,6 +35,10 @@ class PosController extends Controller
             'currency' => (string) (new TenantSettings)->get('currency', config('pos.default_currency')),
             'paymentMethods' => Payment::methods(),
             'canCreateCustomer' => Gate::allows('create', Customer::class),
+            'mobileMoney' => [
+                'enabled' => app(IntegrationManager::class)->isActive('payments', 'azampay'),
+                'providers' => PaymentRequest::PROVIDERS,
+            ],
         ]);
     }
 
