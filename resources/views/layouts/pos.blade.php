@@ -15,6 +15,10 @@
 
 	<script src="{{ asset('assets/js/theme-script.js') }}"></script>
 
+	<!-- Installable app: the till can open and sell without internet -->
+	<link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
+	<meta name="theme-color" content="#fe9f43">
+
 	<!-- Favicon -->
 	<link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/img/favicon.png') }}">
 
@@ -95,6 +99,7 @@
 	<script src="{{ asset('assets/js/script.js') }}"></script>
 
 
+    <script src="{{ asset('js/pwa-register.js') }}"></script>
     @stack('extra-js')
 </body>
 </html>

@@ -262,3 +262,14 @@ it('still accepts a manual mobile money line with no provider request', function
 
     expect(app(TenantContext::class)->run($tenant, fn () => Sale::query()->with('payments')->sole()->payments->first()->reference))->toBe('MPESA-ABC');
 });
+
+it('turns the till prompt on only for a shop with AzamPay connected', function () {
+    [$on, $cashierOn] = mmShop('mm-q');
+    [$off, $cashierOff] = mmShop('mm-r', connected: false);
+
+    $with = $this->actingAs($cashierOn)->withHeader('X-Tenant', 'mm-q')->get('/pos')->assertOk()->getContent();
+    $without = $this->actingAs($cashierOff)->withHeader('X-Tenant', 'mm-r')->get('/pos')->assertOk()->getContent();
+
+    expect($with)->toContain('mobileMoney: {')->and($with)->toContain('enabled: true')->and($with)->toContain('Halopesa')
+        ->and($without)->toContain('enabled: false');
+});

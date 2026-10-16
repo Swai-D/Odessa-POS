@@ -54,6 +54,25 @@
 
 	@include('partials.flash')
 
+	@if ($sale->needsReview())
+		<div class="alert alert-warning d-flex flex-wrap align-items-center justify-content-between gap-2 d-print-none">
+			<div>
+				<strong>{{ __('pos.sales.review.title') }}</strong>
+				<ul class="mb-0 mt-1">
+					@foreach (explode(',', (string) $sale->review_reason) as $reason)
+						<li>{{ __('pos.sales.review.reasons.'.$reason) }}</li>
+					@endforeach
+				</ul>
+			</div>
+			@if ($canReview)
+				<form method="POST" action="{{ route('sales.review', $sale) }}">
+					@csrf
+					<button type="submit" class="btn btn-warning">{{ __('pos.sales.review.mark') }}</button>
+				</form>
+			@endif
+		</div>
+	@endif
+
 	<div class="receipt receipt-{{ $format }} mb-4">
 		<div class="text-center mb-3">
 			<h5 class="fw-bold">{{ $business }}</h5>

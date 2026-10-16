@@ -41,6 +41,13 @@
 					<span class="bg-teal text-white d-inline-flex align-items-center"><img src="{{ asset('assets/img/icons/clock-icon.svg') }}" alt="img" class="me-2"><span id="pos-clock">{{ now()->format('H:i:s') }}</span></span>
 				</li>
 				<!-- /Search -->
+
+				<li class="nav-item">
+					<a href="javascript:void(0);" id="pos-net" class="btn btn-sm btn-white d-inline-flex align-items-center" data-bs-toggle="modal" data-bs-target="#pos-offline">
+						<i class="ti ti-circle-filled me-1 text-success" id="pos-net-dot"></i><span id="pos-net-text">{{ __('offline.online') }}</span>
+						<span class="badge bg-warning ms-2" id="pos-net-pending" style="display:none"></span>
+					</a>
+				</li>
 				
 				<li class="nav-item pos-nav">
 					<a href="{{ route('dashboard') }}" class="btn btn-purple btn-md d-inline-flex align-items-center">
@@ -388,12 +395,35 @@
 					<p class="mb-1"><span id="pos-done-number"></span></p>
 					<p class="mb-1 fw-bold fs-18" id="pos-done-total"></p>
 					<p class="mb-1" id="pos-done-change-row">{{ __('pos.screen.change') }}: <span id="pos-done-change"></span></p>
+					<p class="small text-warning mb-2" id="pos-done-offline-note" style="display:none">{{ __('offline.saved') }}</p>
 					<p class="mb-3 text-danger" id="pos-done-balance-row">{{ __('pos.screen.balance_due') }}: <span id="pos-done-balance"></span></p>
 					<div class="d-flex justify-content-center flex-wrap gap-2">
 						<a href="#" target="_blank" rel="noopener" class="btn btn-white" id="pos-done-receipt"><i class="ti ti-printer me-1"></i>{{ __('pos.sales.thermal') }}</a>
 						<a href="#" target="_blank" rel="noopener" class="btn btn-white" id="pos-done-invoice"><i class="ti ti-file-invoice me-1"></i>{{ __('pos.screen.receipt') }}</a>
 						<a href="javascript:void(0);" class="btn btn-primary" id="pos-done-new">{{ __('pos.screen.new_sale') }}</a>
 					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade modal-default pos-modal" id="pos-offline" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5>{{ __('offline.queue_title') }}</h5>
+					<button type="button" class="btn-close custom-btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="ti ti-x"></i></button>
+				</div>
+				<div class="modal-body">
+					<p class="small text-muted" id="pos-offline-info"></p>
+					<div class="alert alert-warning py-2" id="pos-offline-msg" style="display:none"></div>
+					<div class="table-responsive">
+						<table class="table table-sm align-middle mb-3">
+							<thead><tr><th>{{ __('offline.col_time') }}</th><th>{{ __('offline.col_total') }}</th><th>{{ __('offline.col_status') }}</th><th></th></tr></thead>
+							<tbody id="pos-offline-rows"></tbody>
+						</table>
+					</div>
+					<button type="button" class="btn btn-primary" id="pos-offline-sync">{{ __('offline.sync_now') }}</button>
 				</div>
 			</div>
 		</div>
@@ -509,6 +539,23 @@
 		sessionExpired: @json(__('pos.screen.session_expired')),
 		errors: @json(__('pos.errors')),
 		i18n: @json(__('pos.screen')),
+		offline: {
+			tenant: @json((string) (app(\App\Support\Tenancy\TenantContext::class)->get()?->getKey() ?? '')),
+			warehouses: @json($warehouses->pluck('id')->map(fn ($id) => (string) $id)->all()),
+			business: @json($business),
+			i18n: @json(__('offline')),
+			snapshot: @json(route('pos.snapshot')),
+			session: @json(route('pos.session')),
+			checkout: @json(route('pos.checkout'))
+		},
+		mobileMoney: {
+			enabled: @json($mobileMoney['enabled']),
+			providers: @json($mobileMoney['providers']),
+			i18n: @json(__('mobile_money.till')),
+			statuses: @json(__('mobile_money.statuses')),
+			store: @json(route('pos.mobile-money.store')),
+			showBase: @json(url('/pos/mobile-money'))
+		},
 		routes: {
 			products: @json(route('pos.products')),
 			checkout: @json(route('pos.checkout')),
@@ -521,5 +568,6 @@
 	};
 </script>
 <script src="{{ asset('js/pos-calc.js') }}"></script>
+<script src="{{ asset('js/pos-offline.js') }}"></script>
 <script src="{{ asset('js/pos.js') }}?v={{ filemtime(public_path('js/pos.js')) }}"></script>
 @endpush

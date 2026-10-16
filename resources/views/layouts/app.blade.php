@@ -100,6 +100,7 @@
 
 	
 
+    <script src="{{ asset('js/pwa-register.js') }}"></script>
     @stack('extra-js')
 </body>
 </html>

@@ -30,11 +30,12 @@
 			<div class="d-flex table-dropdown my-xl-auto right-content align-items-center flex-wrap row-gap-3">
 				<div class="dropdown">
 					<a href="javascript:void(0);" class="dropdown-toggle btn btn-white btn-md d-inline-flex align-items-center" data-bs-toggle="dropdown">
-						{{ $status === 'unpaid' ? __('pos.sales.unpaid_only') : __('pos.sales.all') }}
+						{{ $status === 'unpaid' ? __('pos.sales.unpaid_only') : ($status === 'review' ? __('pos.sales.review.filter') : __('pos.sales.all')) }}
 					</a>
 					<ul class="dropdown-menu dropdown-menu-end p-3">
 						<li><a href="{{ route('sales.index') }}" class="dropdown-item rounded-1">{{ __('pos.sales.all') }}</a></li>
 						<li><a href="{{ route('sales.index', ['status' => 'unpaid']) }}" class="dropdown-item rounded-1">{{ __('pos.sales.unpaid_only') }}</a></li>
+						<li><a href="{{ route('sales.index', ['status' => 'review']) }}" class="dropdown-item rounded-1">{{ __('pos.sales.review.filter') }}</a></li>
 					</ul>
 				</div>
 			</div>
@@ -69,6 +70,9 @@
 									<span class="badge table-badge {{ ['paid' => 'bg-success', 'partial' => 'bg-warning', 'unpaid' => 'bg-danger'][$sale->payment_status] ?? 'bg-secondary' }} fw-medium fs-10">
 										{{ __('pos.sales.statuses.'.$sale->payment_status) }}
 									</span>
+									@if ($sale->needsReview())
+										<span class="badge table-badge bg-warning fw-medium fs-10" title="{{ __('pos.sales.review.title') }}">{{ __('pos.sales.review.badge') }}</span>
+									@endif
 								</td>
 								<td class="action-table-data">
 									<div class="edit-delete-action">

@@ -25,6 +25,7 @@ class CheckoutController extends Controller
             'balance_due' => $sale->balance_due,
             'change_given' => $sale->change_given,
             'payment_status' => $sale->payment_status,
+            'needs_review' => $sale->needsReview(),
             'receipt_url' => route('sales.show', $sale),
         ], $created ? 201 : 200);
     }

@@ -48,6 +48,14 @@ class CheckoutRequest extends FormRequest
             // A mobile money payment that already went through the provider (see MobileMoneyController).
             'payments.*.payment_request_id' => ['nullable', 'integer', Rule::exists('payment_requests', 'id')->where('tenant_id', $tenantId)],
             'note' => ['nullable', 'string', 'max:500'],
+            // Present only when the till sold this while offline and is syncing it now.
+            'offline' => ['nullable', 'array'],
+            'offline.sold_at' => [
+                'required_with:offline', 'date',
+                'before_or_equal:'.now()->addMinutes(5)->toIso8601String(),
+                'after:'.now()->subDays((int) config('pos.offline_max_age_days'))->toIso8601String(),
+            ],
+            'offline.expected_total' => ['required_with:offline', 'integer', 'min:0', 'max:99999999999'],
         ];
     }
 }

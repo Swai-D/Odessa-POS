@@ -7,6 +7,11 @@ return [
     'default_currency' => env('POS_DEFAULT_CURRENCY', 'TZS'),
     // Most rows one product CSV upload may hold (keeps the request short and the transaction small).
     'import_max_rows' => 2000,
+    // Offline sales older than this many days are refused when the till syncs them.
+    'offline_max_age_days' => 30,
+    // Most products and customers the till downloads for offline use.
+    'offline_max_products' => 5000,
+    'offline_max_customers' => 1000,
     'currencies' => ['TZS', 'KES', 'UGX', 'USD', 'EUR'],
     'features' => [
         'printer' => false,

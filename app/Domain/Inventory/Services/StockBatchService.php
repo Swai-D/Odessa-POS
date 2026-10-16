@@ -34,6 +34,16 @@ class StockBatchService
             return;
         }
 
+        $this->applyIncoming($movement, $product, $warehouse, $unitCost, $origin, $quantity);
+
+        // Only stock that arrives into a deficit (left by an offline sale) needs the batches trimmed.
+        if (round((float) $movement->balance_after - $quantity, 3) < 0) {
+            $this->settleDeficit($movement, $product, $warehouse);
+        }
+    }
+
+    private function applyIncoming(StockMovement $movement, Product $product, Warehouse $warehouse, ?int $unitCost, ?StockMovement $origin, float $quantity): void
+    {
         if ($quantity === 0.0) {
             return;
         }
@@ -51,6 +61,34 @@ class StockBatchService
         }
 
         $this->receive($product, $warehouse, $quantity, $unitCost ?? $this->defaultCost($product, $warehouse), $movement->type, $movement);
+    }
+
+    /**
+     * An offline sale can leave a warehouse below zero. Units that arrive afterwards first cover that gap, so the
+     * batches never hold more than the stock really is: shrink the newest batches by the excess.
+     */
+    private function settleDeficit(StockMovement $movement, Product $product, Warehouse $warehouse): void
+    {
+        $batches = StockBatch::query()
+            ->where('product_id', $product->getKey())
+            ->where('warehouse_id', $warehouse->getKey())
+            ->where('quantity_remaining', '>', 0)
+            ->orderByDesc('received_at')
+            ->orderByDesc('id')
+            ->lockForUpdate()
+            ->get();
+
+        $excess = round((float) $batches->sum('quantity_remaining') - max((float) $movement->balance_after, 0.0), 3);
+
+        foreach ($batches as $batch) {
+            if ($excess <= 0) {
+                break;
+            }
+
+            $cut = round(min((float) $batch->quantity_remaining, $excess), 3);
+            $batch->update(['quantity_remaining' => round((float) $batch->quantity_remaining - $cut, 3)]);
+            $excess = round($excess - $cut, 3);
+        }
     }
 
     /** Cost to use when the caller gives none: the most recent batch in the warehouse, else the product's reference cost. */

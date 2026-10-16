@@ -24,7 +24,9 @@ class StockService
      * @param  int|null  $unitCost  cost per unit (minor units) of incoming stock; becomes the cost of its batch
      * @param  StockMovement|null  $origin  the sale movement a return undoes, or the transfer-out a transfer-in completes
      *
-     * @throws InsufficientStockException when the result would be below zero
+     * @param  bool  $allowNegative  only for a sale the till already made offline: the goods left the shop, so the ledger must show it
+     *
+     * @throws InsufficientStockException when the result would be below zero (unless $allowNegative)
      */
     public function move(
         Product $product,
@@ -36,10 +38,11 @@ class StockService
         ?Model $reference = null,
         ?int $unitCost = null,
         ?StockMovement $origin = null,
+        bool $allowNegative = false,
     ): StockMovement {
         $delta = round((float) $delta, 3);
 
-        return DB::transaction(function () use ($product, $warehouse, $delta, $type, $reason, $user, $reference, $unitCost, $origin): StockMovement {
+        return DB::transaction(function () use ($product, $warehouse, $delta, $type, $reason, $user, $reference, $unitCost, $origin, $allowNegative): StockMovement {
             $stock = ProductStock::query()
                 ->where('product_id', $product->getKey())
                 ->where('warehouse_id', $warehouse->getKey())
@@ -56,7 +59,7 @@ class StockService
 
             $balance = round((float) $stock->quantity + $delta, 3);
 
-            if ($balance < 0) {
+            if ($balance < 0 && ! ($allowNegative && $delta < 0)) {
                 throw new InsufficientStockException(
                     __('inventory.insufficient_stock', ['product' => $product->name]),
                 );
