@@ -20,6 +20,14 @@ class PromotionRequest extends FormRequest
         return true;
     }
 
+    /** Codes are stored in capitals, so "welcome" and "WELCOME" are the same code when checking for duplicates. */
+    protected function prepareForValidation(): void
+    {
+        if (is_string($this->input('code'))) {
+            $this->merge(['code' => strtoupper(trim($this->input('code')))]);
+        }
+    }
+
     /** @return array<string, mixed> */
     public function rules(): array
     {
