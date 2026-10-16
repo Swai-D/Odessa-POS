@@ -147,7 +147,7 @@ class SentryReporter
             $frames[] = [
                 'filename' => $this->relative($step['file']),
                 'lineno' => $step['line'] ?? 0,
-                'function' => ($step['class'] ?? '').($step['type'] ?? '').($step['function'] ?? ''),
+                'function' => ($step['class'] ?? '').($step['type'] ?? '').$step['function'],
                 'in_app' => ! $this->vendor($step['file']),
             ];
         }
