@@ -7,6 +7,7 @@ use App\Http\Middleware\RequireTenant;
 use App\Http\Middleware\ResolveTenant;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetLocale;
+use App\Support\ErrorTracking\SentryReporter;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -39,7 +40,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         // Provider callbacks cannot carry our CSRF token; they are verified by signature instead.
-        $middleware->validateCsrfTokens(except: ['webhooks/*']);
+        // Browser error reports are throttled, stored nowhere and may come from a page whose token went stale.
+        $middleware->validateCsrfTokens(except: ['webhooks/*', 'client-errors']);
 
         $middleware->alias([
             'tenant.required' => RequireTenant::class,
@@ -54,5 +56,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->appendToPriorityList(after: ShareErrorsFromSession::class, append: ResolveTenant::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        // Error tracking (Sentry) is off until SENTRY_DSN is set. This adds to normal logging, it does not replace it.
+        $exceptions->report(function (Throwable $e): void {
+            app(SentryReporter::class)->capture($e);
+        });
     })->create();

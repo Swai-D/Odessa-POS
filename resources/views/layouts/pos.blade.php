@@ -100,6 +100,9 @@
 
 
     <script src="{{ asset('js/pwa-register.js') }}"></script>
+    @if (config('errors.dsn') && config('errors.browser'))
+    <script src="{{ asset('js/error-report.js') }}" data-url="{{ route('client-errors') }}"></script>
+    @endif
     @stack('extra-js')
 </body>
 </html>
