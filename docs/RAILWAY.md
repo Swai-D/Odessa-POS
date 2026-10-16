@@ -76,3 +76,8 @@ Filesystem ya container ya Railway ni ya muda; picha na files zilizohifadhiwa kw
 `QUEUE_CONNECTION=database` huhifadhi queued jobs kwenye PostgreSQL. App ikianza kutuma background jobs, ongeza Railway service ya pili kutoka repository na Dockerfile hiyohiyo, mpe app/database variables zilezile, kisha weka start command `php artisan queue:work --tries=3 --timeout=90`. Web service ibaki na Docker start command yake ya kawaida. Usiendeshe `db:seed` kila deploy.
 
 Fanya PostgreSQL backups kivyake na ujaribu kurejesha backup: soma `docs/BACKUPS.md`. Weka uptime monitor kwenye `/health`, ambayo pia inakagua database. Angalia logs za Railway; container inaandika logs kwenda stderr. Health check ya `/up` inathibitisha Laravel inajibu, lakini haithibitishi business workflows, email provider, custom domains, au uploads persistence vimesanidiwa.
+## Domain ya duka (custom domain)
+
+Duka linaomba domain yake kwenye **Settings → Domain** na kuweka rekodi mbili za DNS (TXT ya uthibitisho na CNAME). Weka `CUSTOM_DOMAIN_TARGET` kuwa hostname ya Railway ya service (mfano `xxxx.up.railway.app`) ili CNAME ilengwe sawa na mfumo ukague kwa usahihi.
+
+Duka likithibitisha umiliki, admin anapata barua pepe/SMS (`NOTIFY_ADMIN_EMAIL`/`NOTIFY_ADMIN_PHONE`). **Kitu pekee cha mkono**: kwenye Railway, Settings, Networking, Custom Domain, ongeza domain hiyo (Railway itakupa CNAME/TXT yake kama itaomba). Railway hutoa cheti cha HTTPS yenyewe. Amri ya `php artisan domains:check` (hutekelezwa kila saa) huandika kama domain inaelekeza kwenye app; hapo ndipo kiungo cha `/t/{slug}` kinaanza kuelekeza kwenye domain ya duka.

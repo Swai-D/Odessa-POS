@@ -46,6 +46,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\Settings\AuditLogController;
 use App\Http\Controllers\Settings\BillingController;
 use App\Http\Controllers\Settings\DataExportController;
+use App\Http\Controllers\Settings\DomainController;
 use App\Http\Controllers\Settings\IntegrationController;
 use App\Http\Controllers\Settings\OnboardingController;
 use App\Http\Controllers\Settings\PaymentNoticeController;
@@ -70,6 +71,11 @@ Route::get('/t/{tenant:slug}', function (Request $request, Tenant $tenant) {
 
     $user = $request->user();
     abort_if($user && ($user->is_super_admin || $user->tenant_id !== $tenant->getKey()), 403);
+
+    // A shop with its own working domain is sent there. Only once the name has been seen pointing at this app.
+    if ($tenant->domain && $tenant->domain_routed_at) {
+        return redirect()->away($request->getScheme().'://'.$tenant->domain.'/');
+    }
 
     $request->session()->put('tenant_slug', $tenant->slug);
 
@@ -229,6 +235,10 @@ Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (
     Route::middleware('plan:custom_roles')->group(function (): void {
         Route::resource('roles', RoleController::class)->only(['index', 'store', 'update', 'destroy']);
     });
+    Route::get('/settings/domain', [DomainController::class, 'show'])->name('settings.domain');
+    Route::post('/settings/domain', [DomainController::class, 'store'])->middleware('throttle:10,1')->name('settings.domain.store');
+    Route::post('/settings/domain/check', [DomainController::class, 'check'])->middleware('throttle:20,1')->name('settings.domain.check');
+    Route::delete('/settings/domain', [DomainController::class, 'destroy'])->name('settings.domain.destroy');
     Route::get('/settings/integrations', [IntegrationController::class, 'index'])->name('settings.integrations')->middleware('plan:printer,mobile_money,fiscal');
     Route::put('/settings/integrations/{channel}', [IntegrationController::class, 'update'])->name('settings.integrations.update')->middleware('plan:printer,mobile_money,fiscal');
 });

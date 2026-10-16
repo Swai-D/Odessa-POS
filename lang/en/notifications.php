@@ -35,4 +35,9 @@ return [
         'body' => ':shop sent a payment notice of :amount (transaction :reference). Please confirm it and renew the subscription.',
         'sms' => ':shop paid :amount, ref :reference. Please confirm.',
     ],
+    'domain_verified' => [
+        'subject' => ':shop verified its domain :domain',
+        'body' => ':shop proved it owns :domain. Add the domain to the hosting (Railway: Settings, Networking, Custom Domain) so it starts working.',
+        'sms' => ':shop verified :domain. Please add it on Railway.',
+    ],
 ];
