@@ -2,6 +2,7 @@
 
 use App\Domain\Settings\Services\CustomDomainService;
 use App\Models\Tenant;
+use App\Notifications\DomainVerifiedNotification;
 use App\Support\Dns\DnsResolver;
 use Illuminate\Support\Facades\Notification;
 
@@ -105,7 +106,7 @@ it('verifies with the TXT record, activates the name and tells the platform team
     $fresh = $tenant->fresh();
     expect($fresh->domain)->toBe('pos.mama-asha.co.tz')->and($fresh->domain_pending)->toBeNull()->and($fresh->domain_token)->toBeNull()
         ->and($fresh->domain_verified_at)->not->toBeNull()->and($fresh->domain_routed_at)->not->toBeNull();
-    Notification::assertSentOnDemand(App\Notifications\DomainVerifiedNotification::class);
+    Notification::assertSentOnDemand(DomainVerifiedNotification::class);
 });
 
 it('verifies but marks the name as not routed when DNS does not point here', function (): void {
