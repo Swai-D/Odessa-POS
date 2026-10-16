@@ -43,6 +43,8 @@ use App\Policies\SupplierPolicy;
 use App\Policies\TillClosingPolicy;
 use App\Policies\UnitPolicy;
 use App\Policies\WarehousePolicy;
+use App\Support\Dns\DnsResolver;
+use App\Support\Dns\SystemDnsResolver;
 use App\Support\Plans;
 use App\Support\Sms\LogSmsGateway;
 use App\Support\Sms\NextSmsGateway;
@@ -67,6 +69,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(TenantContext::class);
+        $this->app->bind(DnsResolver::class, SystemDnsResolver::class);
         $this->app->bind(SmsGateway::class, fn (): SmsGateway => match (config('notifications.sms.driver')) {
             'nextsms' => new NextSmsGateway,
             'null' => new NullSmsGateway,

@@ -14,6 +14,8 @@ return [
     // Most products and customers the till downloads for offline use.
     'offline_max_products' => 5000,
     'offline_max_customers' => 1000,
+    // Where a shop's own domain must point (CNAME). Defaults to the app's own host name.
+    'custom_domain_target' => env('CUSTOM_DOMAIN_TARGET'),
     'currencies' => ['TZS', 'KES', 'UGX', 'USD', 'EUR'],
     'features' => [
         'printer' => false,

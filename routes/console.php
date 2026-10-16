@@ -11,3 +11,4 @@ Artisan::command('inspire', function () {
 // Subscription reminders go out every morning, Tanzania time. Needs `schedule:work` (see docker/entrypoint.sh).
 Schedule::command('subscriptions:remind')->dailyAt('08:00')->timezone('Africa/Dar_es_Salaam')->withoutOverlapping();
 Schedule::command('stock:low-alerts')->dailyAt('08:30')->timezone('Africa/Dar_es_Salaam')->withoutOverlapping();
+Schedule::command('domains:check')->hourly()->withoutOverlapping();

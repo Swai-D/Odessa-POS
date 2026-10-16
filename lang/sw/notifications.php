@@ -35,4 +35,9 @@ return [
         'body' => ':shop wametuma taarifa ya malipo ya :amount (muamala :reference). Tafadhali thibitisha na uongeze kifurushi.',
         'sms' => ':shop wamelipa :amount, ref :reference. Tafadhali thibitisha.',
     ],
+    'domain_verified' => [
+        'subject' => ':shop imethibitisha domain :domain',
+        'body' => ':shop imethibitisha kuwa inamiliki :domain. Iongeze domain kwenye hosting (Railway: Settings, Networking, Custom Domain) ianze kufanya kazi.',
+        'sms' => ':shop imethibitisha :domain. Tafadhali iongeze Railway.',
+    ],
 ];

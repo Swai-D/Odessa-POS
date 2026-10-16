@@ -5,6 +5,7 @@ namespace App\Domain\Settings\Services;
 use App\Models\PaymentNotice;
 use App\Models\Tenant;
 use App\Models\TenantPayment;
+use App\Notifications\DomainVerifiedNotification;
 use App\Notifications\LowStockNotification;
 use App\Notifications\PaymentNoticeReceivedNotification;
 use App\Notifications\PaymentReceivedNotification;
@@ -64,6 +65,18 @@ class ShopNotifier
             Money::format((int) $notice->amount, (string) $notice->currency),
             (string) $notice->reference,
         ));
+    }
+
+    public function domainVerified(Tenant $tenant, string $domain): void
+    {
+        $email = config('notifications.admin_email');
+        $phone = config('notifications.admin_phone');
+
+        if (! is_string($email) && ! is_string($phone)) {
+            return;
+        }
+
+        $this->send($email, $phone, 'en', new DomainVerifiedNotification($tenant->name, $domain));
     }
 
     /** @param  callable(): ShopNotification  $make */
