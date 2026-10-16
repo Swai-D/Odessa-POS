@@ -41,7 +41,10 @@ jobs:
           DB_DATABASE: ':memory:'
 
       - name: POS calculator (JS)
-        run: node tests/js/calc.test.mjs
+        run: |
+          node tests/js/calc.test.mjs
+          node tests/js/promo.test.mjs
+          node tests/js/barcode.test.mjs
 
       - name: Composer audit
         run: .github/scripts/annotate.sh 'Composer audit' composer audit

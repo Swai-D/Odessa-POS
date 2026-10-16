@@ -152,6 +152,7 @@ Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (
     Route::get('/products/import', [ProductTransferController::class, 'create'])->name('products.import');
     Route::get('/products/import/template', [ProductTransferController::class, 'template'])->name('products.import.template');
     Route::post('/products/import', [ProductTransferController::class, 'store'])->name('products.import.store');
+    Route::get('/products/labels', [ProductController::class, 'labels'])->name('products.labels');
     Route::get('/products/lookup', [ProductController::class, 'lookup'])->name('products.lookup');
     Route::resource('products', ProductController::class)->except(['show']);
     Route::resource('categories', CategoryController::class)->only($lookup);
