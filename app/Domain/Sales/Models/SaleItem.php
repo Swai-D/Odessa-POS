@@ -13,6 +13,7 @@ class SaleItem extends Model
     protected $fillable = [
         'sale_id', 'product_id', 'product_name', 'sku', 'quantity', 'unit_price', 'cost_price',
         'tax_rate', 'tax_inclusive', 'gross', 'discount', 'tax', 'total', 'returned_quantity', 'returned_amount',
+        'promotion_id', 'promotion_name', 'promo_discount',
     ];
 
     protected function casts(): array
@@ -25,6 +26,7 @@ class SaleItem extends Model
             'tax_inclusive' => 'boolean',
             'gross' => 'integer',
             'discount' => 'integer',
+            'promo_discount' => 'integer',
             'tax' => 'integer',
             'total' => 'integer',
             'returned_quantity' => 'decimal:3',

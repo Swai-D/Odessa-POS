@@ -1,0 +1,1453 @@
+[
+ {
+  "name": "percent off a whole shop",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "percent",
+    "value_kind": null,
+    "value": 1000,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": null,
+    "time_to": null,
+    "code": null,
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 3,
+    "unit_price": 10000
+   }
+  ],
+  "coupon": null,
+  "at": {
+   "date": "2026-10-14",
+   "weekday": 3,
+   "minutes": 720
+  },
+  "expected": [
+   {
+    "promotion_id": 1,
+    "amount": 3000
+   }
+  ]
+ },
+ {
+  "name": "half a percent step rounds half up",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "percent",
+    "value_kind": null,
+    "value": 1250,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": null,
+    "time_to": null,
+    "code": null,
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 1,
+    "unit_price": 10001
+   }
+  ],
+  "coupon": null,
+  "at": {
+   "date": "2026-10-14",
+   "weekday": 3,
+   "minutes": 720
+  },
+  "expected": [
+   {
+    "promotion_id": 1,
+    "amount": 1250
+   }
+  ]
+ },
+ {
+  "name": "fixed amount off each unit, only for listed products",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "fixed",
+    "value_kind": null,
+    "value": 2000,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "products",
+    "scope_ids": [
+     1
+    ],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": null,
+    "time_to": null,
+    "code": null,
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 3,
+    "unit_price": 10000
+   },
+   {
+    "product_id": 2,
+    "category_id": 10,
+    "quantity": 3,
+    "unit_price": 10000
+   }
+  ],
+  "coupon": null,
+  "at": {
+   "date": "2026-10-14",
+   "weekday": 3,
+   "minutes": 720
+  },
+  "expected": [
+   {
+    "promotion_id": 1,
+    "amount": 6000
+   },
+   null
+  ]
+ },
+ {
+  "name": "fixed off each unit cannot exceed the unit price",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "fixed",
+    "value_kind": null,
+    "value": 5000,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": null,
+    "time_to": null,
+    "code": null,
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 2,
+    "unit_price": 3000
+   }
+  ],
+  "coupon": null,
+  "at": {
+   "date": "2026-10-14",
+   "weekday": 3,
+   "minutes": 720
+  },
+  "expected": [
+   {
+    "promotion_id": 1,
+    "amount": 6000
+   }
+  ]
+ },
+ {
+  "name": "buy 2 get 1 free: two full groups in 7 units",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "bogo",
+    "value_kind": null,
+    "value": 0,
+    "min_qty": null,
+    "buy_qty": 2,
+    "get_qty": 1,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": null,
+    "time_to": null,
+    "code": null,
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 7,
+    "unit_price": 5000
+   }
+  ],
+  "coupon": null,
+  "at": {
+   "date": "2026-10-14",
+   "weekday": 3,
+   "minutes": 720
+  },
+  "expected": [
+   {
+    "promotion_id": 1,
+    "amount": 10000
+   }
+  ]
+ },
+ {
+  "name": "buy 2 get 1 free: not enough units",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "bogo",
+    "value_kind": null,
+    "value": 0,
+    "min_qty": null,
+    "buy_qty": 2,
+    "get_qty": 1,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": null,
+    "time_to": null,
+    "code": null,
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 2,
+    "unit_price": 5000
+   }
+  ],
+  "coupon": null,
+  "at": {
+   "date": "2026-10-14",
+   "weekday": 3,
+   "minutes": 720
+  },
+  "expected": [
+   null
+  ]
+ },
+ {
+  "name": "bogo with a decimal quantity counts whole units only",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "bogo",
+    "value_kind": null,
+    "value": 0,
+    "min_qty": null,
+    "buy_qty": 1,
+    "get_qty": 1,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": null,
+    "time_to": null,
+    "code": null,
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 2.5,
+    "unit_price": 4000
+   }
+  ],
+  "coupon": null,
+  "at": {
+   "date": "2026-10-14",
+   "weekday": 3,
+   "minutes": 720
+  },
+  "expected": [
+   {
+    "promotion_id": 1,
+    "amount": 4000
+   }
+  ]
+ },
+ {
+  "name": "bulk percent needs the minimum quantity",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "bulk",
+    "value_kind": "percent",
+    "value": 1500,
+    "min_qty": 12,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": null,
+    "time_to": null,
+    "code": null,
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 11,
+    "unit_price": 1000
+   },
+   {
+    "product_id": 2,
+    "category_id": 10,
+    "quantity": 12,
+    "unit_price": 1000
+   }
+  ],
+  "coupon": null,
+  "at": {
+   "date": "2026-10-14",
+   "weekday": 3,
+   "minutes": 720
+  },
+  "expected": [
+   null,
+   {
+    "promotion_id": 1,
+    "amount": 1800
+   }
+  ]
+ },
+ {
+  "name": "bulk fixed amount per unit",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "bulk",
+    "value_kind": "fixed",
+    "value": 100,
+    "min_qty": 10,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": null,
+    "time_to": null,
+    "code": null,
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 10,
+    "unit_price": 1000
+   }
+  ],
+  "coupon": null,
+  "at": {
+   "date": "2026-10-14",
+   "weekday": 3,
+   "minutes": 720
+  },
+  "expected": [
+   {
+    "promotion_id": 1,
+    "amount": 1000
+   }
+  ]
+ },
+ {
+  "name": "the promotion that takes the most off wins",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "percent",
+    "value_kind": null,
+    "value": 1000,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": null,
+    "time_to": null,
+    "code": null,
+    "is_active": true
+   },
+   {
+    "id": 2,
+    "name": "P2",
+    "type": "fixed",
+    "value_kind": null,
+    "value": 2000,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": null,
+    "time_to": null,
+    "code": null,
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 3,
+    "unit_price": 10000
+   }
+  ],
+  "coupon": null,
+  "at": {
+   "date": "2026-10-14",
+   "weekday": 3,
+   "minutes": 720
+  },
+  "expected": [
+   {
+    "promotion_id": 2,
+    "amount": 6000
+   }
+  ]
+ },
+ {
+  "name": "a tie goes to the lowest id",
+  "promotions": [
+   {
+    "id": 5,
+    "name": "P5",
+    "type": "percent",
+    "value_kind": null,
+    "value": 1000,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": null,
+    "time_to": null,
+    "code": null,
+    "is_active": true
+   },
+   {
+    "id": 3,
+    "name": "P3",
+    "type": "fixed",
+    "value_kind": null,
+    "value": 1000,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": null,
+    "time_to": null,
+    "code": null,
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 3,
+    "unit_price": 10000
+   }
+  ],
+  "coupon": null,
+  "at": {
+   "date": "2026-10-14",
+   "weekday": 3,
+   "minutes": 720
+  },
+  "expected": [
+   {
+    "promotion_id": 3,
+    "amount": 3000
+   }
+  ]
+ },
+ {
+  "name": "weighed quantity",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "percent",
+    "value_kind": null,
+    "value": 1000,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": null,
+    "time_to": null,
+    "code": null,
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 1.5,
+    "unit_price": 10000
+   }
+  ],
+  "coupon": null,
+  "at": {
+   "date": "2026-10-14",
+   "weekday": 3,
+   "minutes": 720
+  },
+  "expected": [
+   {
+    "promotion_id": 1,
+    "amount": 1500
+   }
+  ]
+ },
+ {
+  "name": "category scope",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "percent",
+    "value_kind": null,
+    "value": 1000,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "categories",
+    "scope_ids": [
+     10
+    ],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": null,
+    "time_to": null,
+    "code": null,
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 3,
+    "unit_price": 10000
+   },
+   {
+    "product_id": 2,
+    "category_id": 99,
+    "quantity": 3,
+    "unit_price": 10000
+   },
+   {
+    "product_id": 3,
+    "category_id": null,
+    "quantity": 3,
+    "unit_price": 10000
+   }
+  ],
+  "coupon": null,
+  "at": {
+   "date": "2026-10-14",
+   "weekday": 3,
+   "minutes": 720
+  },
+  "expected": [
+   {
+    "promotion_id": 1,
+    "amount": 3000
+   },
+   null,
+   null
+  ]
+ },
+ {
+  "name": "an inactive promotion does nothing",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "percent",
+    "value_kind": null,
+    "value": 1000,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": null,
+    "time_to": null,
+    "code": null,
+    "is_active": false
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 3,
+    "unit_price": 10000
+   }
+  ],
+  "coupon": null,
+  "at": {
+   "date": "2026-10-14",
+   "weekday": 3,
+   "minutes": 720
+  },
+  "expected": [
+   null
+  ]
+ },
+ {
+  "name": "a coupon does nothing without its code",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "percent",
+    "value_kind": null,
+    "value": 2000,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": null,
+    "time_to": null,
+    "code": "SAVE20",
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 3,
+    "unit_price": 10000
+   }
+  ],
+  "coupon": null,
+  "at": {
+   "date": "2026-10-14",
+   "weekday": 3,
+   "minutes": 720
+  },
+  "expected": [
+   null
+  ]
+ },
+ {
+  "name": "a coupon applies with its code, any letter case",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "percent",
+    "value_kind": null,
+    "value": 2000,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": null,
+    "time_to": null,
+    "code": "SAVE20",
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 3,
+    "unit_price": 10000
+   }
+  ],
+  "coupon": " save20 ",
+  "at": {
+   "date": "2026-10-14",
+   "weekday": 3,
+   "minutes": 720
+  },
+  "expected": [
+   {
+    "promotion_id": 1,
+    "amount": 6000
+   }
+  ]
+ },
+ {
+  "name": "a wrong code applies nothing, automatic promotions still apply",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "percent",
+    "value_kind": null,
+    "value": 2000,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": null,
+    "time_to": null,
+    "code": "SAVE20",
+    "is_active": true
+   },
+   {
+    "id": 2,
+    "name": "P2",
+    "type": "percent",
+    "value_kind": null,
+    "value": 500,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": null,
+    "time_to": null,
+    "code": null,
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 3,
+    "unit_price": 10000
+   }
+  ],
+  "coupon": "NOPE",
+  "at": {
+   "date": "2026-10-14",
+   "weekday": 3,
+   "minutes": 720
+  },
+  "expected": [
+   {
+    "promotion_id": 2,
+    "amount": 1500
+   }
+  ]
+ },
+ {
+  "name": "a coupon competes with automatic promotions on the best amount",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "percent",
+    "value_kind": null,
+    "value": 2000,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": null,
+    "time_to": null,
+    "code": "SAVE20",
+    "is_active": true
+   },
+   {
+    "id": 2,
+    "name": "P2",
+    "type": "percent",
+    "value_kind": null,
+    "value": 500,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": null,
+    "time_to": null,
+    "code": null,
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 3,
+    "unit_price": 10000
+   }
+  ],
+  "coupon": "SAVE20",
+  "at": {
+   "date": "2026-10-14",
+   "weekday": 3,
+   "minutes": 720
+  },
+  "expected": [
+   {
+    "promotion_id": 1,
+    "amount": 6000
+   }
+  ]
+ },
+ {
+  "name": "weekend only: a Wednesday gets nothing",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "percent",
+    "value_kind": null,
+    "value": 1000,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": [
+     6,
+     7
+    ],
+    "time_from": null,
+    "time_to": null,
+    "code": null,
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 3,
+    "unit_price": 10000
+   }
+  ],
+  "coupon": null,
+  "at": {
+   "date": "2026-10-14",
+   "weekday": 3,
+   "minutes": 720
+  },
+  "expected": [
+   null
+  ]
+ },
+ {
+  "name": "weekend only: a Saturday applies",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "percent",
+    "value_kind": null,
+    "value": 1000,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": [
+     6,
+     7
+    ],
+    "time_from": null,
+    "time_to": null,
+    "code": null,
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 3,
+    "unit_price": 10000
+   }
+  ],
+  "coupon": null,
+  "at": {
+   "date": "2026-10-17",
+   "weekday": 6,
+   "minutes": 600
+  },
+  "expected": [
+   {
+    "promotion_id": 1,
+    "amount": 3000
+   }
+  ]
+ },
+ {
+  "name": "happy hour 16:00 to 18:00: inside",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "percent",
+    "value_kind": null,
+    "value": 1000,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": "16:00",
+    "time_to": "18:00",
+    "code": null,
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 3,
+    "unit_price": 10000
+   }
+  ],
+  "coupon": null,
+  "at": {
+   "date": "2026-10-14",
+   "weekday": 3,
+   "minutes": 1020
+  },
+  "expected": [
+   {
+    "promotion_id": 1,
+    "amount": 3000
+   }
+  ]
+ },
+ {
+  "name": "happy hour: the end minute is excluded",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "percent",
+    "value_kind": null,
+    "value": 1000,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": "16:00",
+    "time_to": "18:00",
+    "code": null,
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 3,
+    "unit_price": 10000
+   }
+  ],
+  "coupon": null,
+  "at": {
+   "date": "2026-10-14",
+   "weekday": 3,
+   "minutes": 1080
+  },
+  "expected": [
+   null
+  ]
+ },
+ {
+  "name": "happy hour: the start minute is included",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "percent",
+    "value_kind": null,
+    "value": 1000,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": "16:00",
+    "time_to": "18:00",
+    "code": null,
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 3,
+    "unit_price": 10000
+   }
+  ],
+  "coupon": null,
+  "at": {
+   "date": "2026-10-14",
+   "weekday": 3,
+   "minutes": 960
+  },
+  "expected": [
+   {
+    "promotion_id": 1,
+    "amount": 3000
+   }
+  ]
+ },
+ {
+  "name": "a window past midnight: 23:30 is inside",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "percent",
+    "value_kind": null,
+    "value": 1000,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": "22:00",
+    "time_to": "02:00",
+    "code": null,
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 3,
+    "unit_price": 10000
+   }
+  ],
+  "coupon": null,
+  "at": {
+   "date": "2026-10-14",
+   "weekday": 3,
+   "minutes": 1410
+  },
+  "expected": [
+   {
+    "promotion_id": 1,
+    "amount": 3000
+   }
+  ]
+ },
+ {
+  "name": "a window past midnight: 01:00 is inside",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "percent",
+    "value_kind": null,
+    "value": 1000,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": "22:00",
+    "time_to": "02:00",
+    "code": null,
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 3,
+    "unit_price": 10000
+   }
+  ],
+  "coupon": null,
+  "at": {
+   "date": "2026-10-14",
+   "weekday": 3,
+   "minutes": 60
+  },
+  "expected": [
+   {
+    "promotion_id": 1,
+    "amount": 3000
+   }
+  ]
+ },
+ {
+  "name": "a window past midnight: noon is outside",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "percent",
+    "value_kind": null,
+    "value": 1000,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": "22:00",
+    "time_to": "02:00",
+    "code": null,
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 3,
+    "unit_price": 10000
+   }
+  ],
+  "coupon": null,
+  "at": {
+   "date": "2026-10-14",
+   "weekday": 3,
+   "minutes": 720
+  },
+  "expected": [
+   null
+  ]
+ },
+ {
+  "name": "only an opening time",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "percent",
+    "value_kind": null,
+    "value": 1000,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": "09:00",
+    "time_to": null,
+    "code": null,
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 3,
+    "unit_price": 10000
+   }
+  ],
+  "coupon": null,
+  "at": {
+   "date": "2026-10-14",
+   "weekday": 3,
+   "minutes": 720
+  },
+  "expected": [
+   {
+    "promotion_id": 1,
+    "amount": 3000
+   }
+  ]
+ },
+ {
+  "name": "only a closing time",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "percent",
+    "value_kind": null,
+    "value": 1000,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": null,
+    "ends_on": null,
+    "days": null,
+    "time_from": null,
+    "time_to": "09:00",
+    "code": null,
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 3,
+    "unit_price": 10000
+   }
+  ],
+  "coupon": null,
+  "at": {
+   "date": "2026-10-14",
+   "weekday": 3,
+   "minutes": 720
+  },
+  "expected": [
+   null
+  ]
+ },
+ {
+  "name": "before the first day",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "percent",
+    "value_kind": null,
+    "value": 1000,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": "2026-11-01",
+    "ends_on": "2026-11-30",
+    "days": null,
+    "time_from": null,
+    "time_to": null,
+    "code": null,
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 3,
+    "unit_price": 10000
+   }
+  ],
+  "coupon": null,
+  "at": {
+   "date": "2026-10-31",
+   "weekday": 6,
+   "minutes": 600
+  },
+  "expected": [
+   null
+  ]
+ },
+ {
+  "name": "on the last day",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "percent",
+    "value_kind": null,
+    "value": 1000,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": "2026-11-01",
+    "ends_on": "2026-11-30",
+    "days": null,
+    "time_from": null,
+    "time_to": null,
+    "code": null,
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 3,
+    "unit_price": 10000
+   }
+  ],
+  "coupon": null,
+  "at": {
+   "date": "2026-11-30",
+   "weekday": 1,
+   "minutes": 600
+  },
+  "expected": [
+   {
+    "promotion_id": 1,
+    "amount": 3000
+   }
+  ]
+ },
+ {
+  "name": "after the last day",
+  "promotions": [
+   {
+    "id": 1,
+    "name": "P1",
+    "type": "percent",
+    "value_kind": null,
+    "value": 1000,
+    "min_qty": null,
+    "buy_qty": null,
+    "get_qty": null,
+    "scope": "all",
+    "scope_ids": [],
+    "starts_on": "2026-11-01",
+    "ends_on": "2026-11-30",
+    "days": null,
+    "time_from": null,
+    "time_to": null,
+    "code": null,
+    "is_active": true
+   }
+  ],
+  "lines": [
+   {
+    "product_id": 1,
+    "category_id": 10,
+    "quantity": 3,
+    "unit_price": 10000
+   }
+  ],
+  "coupon": null,
+  "at": {
+   "date": "2026-12-01",
+   "weekday": 2,
+   "minutes": 600
+  },
+  "expected": [
+   null
+  ]
+ }
+]

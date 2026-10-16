@@ -259,6 +259,17 @@
 											</div>
 											<a href="javascript:void(0);" class="close-icon" data-pos-action="remove-discount"><i class="ti ti-trash"></i></a>
 										</div>
+										<div class="mt-3" id="pos-coupon-box">
+											<div class="input-group input-group-sm" id="pos-coupon-form">
+												<input type="text" class="form-control text-uppercase" id="pos-coupon-input" maxlength="40" placeholder="{{ __('promotions.till.coupon') }}" autocomplete="off">
+												<button type="button" class="btn btn-white" id="pos-coupon-apply">{{ __('promotions.till.apply') }}</button>
+											</div>
+											<div class="align-items-center justify-content-between" id="pos-coupon-applied" style="display:none;">
+												<span class="badge bg-success" id="pos-coupon-code"></span>
+												<a href="javascript:void(0);" class="small text-danger" data-pos-action="remove-coupon">{{ __('promotions.till.remove') }}</a>
+											</div>
+											<div class="small mt-1" id="pos-coupon-msg"></div>
+										</div>
 									</div>
 									<div class="order-total bg-total bg-white p-0">
 										<h5 class="mb-3">{{ __('pos.screen.payment_summary') }}</h5>
@@ -266,6 +277,10 @@
 											<tr>
 												<td>{{ __('pos.screen.tax') }}</td>
 												<td class="text-gray-9 text-end" id="pos-tax">0.00</td>
+											</tr>
+											<tr id="pos-promo-row" style="display:none;">
+												<td class="text-success">{{ __('promotions.till.saved') }}</td>
+												<td class="text-success text-end" id="pos-promo-total">0.00</td>
 											</tr>
 											<tr>
 												<td><span class="text-danger">{{ __('pos.screen.discount') }}</span><a href="javascript:void(0);" class="ms-3 link-default" data-bs-toggle="modal" data-bs-target="#pos-discount"><i class="ti ti-edit"></i></a></td>
@@ -539,6 +554,7 @@
 		sessionExpired: @json(__('pos.screen.session_expired')),
 		errors: @json(__('pos.errors')),
 		i18n: @json(__('pos.screen')),
+		promoI18n: @json(__('promotions.till')),
 		offline: {
 			tenant: @json((string) (app(\App\Support\Tenancy\TenantContext::class)->get()?->getKey() ?? '')),
 			warehouses: @json($warehouses->pluck('id')->map(fn ($id) => (string) $id)->all()),
@@ -546,6 +562,8 @@
 			i18n: @json(__('offline')),
 			snapshot: @json(route('pos.snapshot')),
 			session: @json(route('pos.session')),
+			promotions: @json($promotions),
+			timezone: @json($timezone),
 			checkout: @json(route('pos.checkout'))
 		},
 		mobileMoney: {
@@ -559,6 +577,7 @@
 		routes: {
 			products: @json(route('pos.products')),
 			checkout: @json(route('pos.checkout')),
+			coupon: @json(route('pos.coupon')),
 			customers: @json(route('pos.customers.store')),
 			customerSearch: @json(route('pos.customers.index')),
 			heldIndex: @json(route('pos.held.index')),
@@ -568,6 +587,7 @@
 	};
 </script>
 <script src="{{ asset('js/pos-calc.js') }}"></script>
+<script src="{{ asset('js/pos-promo.js') }}"></script>
 <script src="{{ asset('js/pos-offline.js') }}"></script>
 <script src="{{ asset('js/pos.js') }}?v={{ filemtime(public_path('js/pos.js')) }}"></script>
 @endpush

@@ -12,6 +12,7 @@ use App\Domain\Sales\Models\Payment;
 use App\Domain\Sales\Models\PaymentRequest;
 use App\Domain\Sales\Models\Sale;
 use App\Domain\Sales\Services\DocumentNumber;
+use App\Domain\Sales\Services\PromotionService;
 use App\Domain\Sales\Services\SaleCalculator;
 use App\Models\User;
 use App\Support\Plans;
@@ -32,6 +33,7 @@ class CheckoutAction
         private readonly SaleCalculator $calculator,
         private readonly StockService $stock,
         private readonly DocumentNumber $numbers,
+        private readonly PromotionService $promotions,
     ) {}
 
     /**
@@ -97,6 +99,28 @@ class CheckoutAction
             ];
         }
 
+        // A sale the till made offline already happened: stock, payment and price differences are recorded and flagged
+        // for the owner instead of refusing it.
+        $offline = $data['offline'] ?? null;
+        $review = [];
+        $soldAt = $offline !== null ? min(Carbon::parse($offline['sold_at']), now()) : now();
+
+        // Promotions, as they were running when the sale happened. One promotion at most per line (the best one).
+        $resolved = $this->promotions->resolve(
+            array_map(fn (array $line): array => [
+                'product_id' => (int) $line['product']->getKey(),
+                'category_id' => $line['product']->category_id !== null ? (int) $line['product']->category_id : null,
+                'quantity' => $line['quantity'],
+                'unit_price' => $line['unit_price'],
+            ], $lines),
+            $offline === null ? ($data['coupon_code'] ?? null) : null,
+            $soldAt,
+            lockCoupon: true,
+        );
+        foreach ($lines as $i => $line) {
+            $lines[$i]['promo'] = $resolved['promos'][$i]['amount'] ?? 0;
+        }
+
         $totals = $this->calculator->calculate($lines, $data['discount'] ?? null);
 
         if ($totals['total'] <= 0) {
@@ -106,12 +130,6 @@ class CheckoutAction
         $customer = isset($data['customer_id'])
             ? Customer::query()->where('is_active', true)->lockForUpdate()->findOrFail($data['customer_id'])
             : null;
-
-        // A sale the till made offline already happened: stock, payment and price differences are recorded and flagged
-        // for the owner instead of refusing it.
-        $offline = $data['offline'] ?? null;
-        $review = [];
-        $soldAt = $offline !== null ? min(Carbon::parse($offline['sold_at']), now()) : now();
 
         if ($offline !== null && (int) $offline['expected_total'] !== $totals['total']) {
             $review[] = 'price';
@@ -135,6 +153,8 @@ class CheckoutAction
             'change_given' => $settlement['change'],
             'payment_status' => $settlement['status'],
             'note' => $data['note'] ?? null,
+            'promo_total' => array_sum(array_column(array_filter($resolved['promos']), 'amount')),
+            'coupon_code' => $resolved['coupon']?->code,
             'sold_at' => $soldAt,
             'offline_synced_at' => $offline !== null ? now() : null,
         ]);
@@ -156,6 +176,9 @@ class CheckoutAction
                 'discount' => $totals['lines'][$i]['discount'],
                 'tax' => $totals['lines'][$i]['tax'],
                 'total' => $totals['lines'][$i]['total'],
+                'promotion_id' => $resolved['promos'][$i]['promotion_id'] ?? null,
+                'promotion_name' => $resolved['promos'][$i]['name'] ?? null,
+                'promo_discount' => $resolved['promos'][$i]['amount'] ?? 0,
             ]);
 
             if ($product->track_stock) {
@@ -194,6 +217,9 @@ class CheckoutAction
                 'paid_at' => $soldAt,
             ]);
         }
+
+        // One use of the coupon per sale, counted only when it really gave a discount.
+        $resolved['coupon']?->increment('uses_count');
 
         if ($review !== []) {
             $sale->update(['review_reason' => implode(',', array_values(array_unique($review)))]);

@@ -47,6 +47,7 @@ return [
         'items' => [
             ['label' => 'app.menu.sales', 'icon' => 'ti ti-file-invoice', 'route' => 'sales.index', 'permission' => 'sales.view', 'match' => ['sales.*']],
             ['label' => 'app.menu.quotations', 'icon' => 'ti ti-file-description', 'route' => 'quotations.index', 'permission' => 'sales.view', 'match' => ['quotations.*']],
+            ['label' => 'app.menu.promotions', 'icon' => 'ti ti-discount-2', 'route' => 'promotions.index', 'permission' => 'sales.view', 'match' => ['promotions.*']],
             ['label' => 'app.menu.till', 'icon' => 'ti ti-cash', 'route' => 'till-closings.index', 'permission' => ['till.close', 'till.view'], 'match' => ['till-closings.*']],
         ],
     ],

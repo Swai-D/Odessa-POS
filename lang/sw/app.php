@@ -39,6 +39,7 @@ return [
         'pos' => 'Mauzo',
         'inventory' => 'Hesabu ya bidhaa',
         'quotations' => 'Makadirio ya Bei',
+        'promotions' => 'Promosheni',
         'sales' => 'Mauzo',
         'purchases' => 'Manunuzi',
         'customers' => 'Wateja',

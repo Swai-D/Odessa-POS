@@ -13,6 +13,7 @@ The queue calls the normal `POST /pos/checkout` with an extra `offline: {sold_at
 For a sale with the `offline` block, `CheckoutAction`:
 - never refuses for stock: the movement may take stock below zero (`StockService::move(..., allowNegative: true)`); flag `stock`;
 - uses the **current server prices**; if the total differs from what the customer was shown: flag `price`;
+- evaluates promotions at the device's `sold_at` (coupons are ignored offline);
 - trims a non-cash payment above the new total (flag `payment`), and accepts an unpaid balance that credit rules would refuse (flag `credit`);
 - keeps the device time as `sold_at`, within 30 days and not in the future (`config/pos.php`).
 Flags are stored in `sales.review_reason`; an owner clears them with `sales.reviewed_at` (Sales → Offline sales to check).
