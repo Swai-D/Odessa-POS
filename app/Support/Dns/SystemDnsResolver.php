@@ -52,6 +52,6 @@ class SystemDnsResolver implements DnsResolver
             return [];
         }
 
-        return is_array($records) ? array_values($records) : [];
+        return is_array($records) ? $records : [];
     }
 }
