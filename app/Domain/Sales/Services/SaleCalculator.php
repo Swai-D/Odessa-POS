@@ -9,8 +9,9 @@ namespace App\Domain\Sales\Services;
  * a cashier sees equals what the server charges. Both are checked against the shared fixtures in
  * tests/fixtures/sale-calc-cases.json. Keep them in sync.
  *
- * Steps: gross = qty x price -> order discount allocated across lines -> tax on the discounted
- * amount (inclusive prices extract the tax, exclusive prices add it).
+ * Steps: gross = qty x price -> promotion discount of each line (optional `promo`) -> order discount allocated
+ * across what is left -> tax on the discounted amount (inclusive prices extract the tax, exclusive prices add it).
+ * A line's `discount` is the promotion plus its share of the order discount; `discount_total` likewise.
  */
 class SaleCalculator
 {
@@ -21,7 +22,7 @@ class SaleCalculator
     public const DISCOUNT_FIXED = 'fixed';
 
     /**
-     * @param  list<array{quantity: float|int|string, unit_price: int, tax_rate: float|int|string, tax_inclusive: bool}>  $lines
+     * @param  list<array{quantity: float|int|string, unit_price: int, tax_rate: float|int|string, tax_inclusive: bool, promo?: int}>  $lines
      * @param  array{type?: string, value?: float|int|string}|null  $discount  percent: 0-100, fixed: minor units
      * @return array{lines: list<array{gross: int, discount: int, tax: int, total: int}>, subtotal: int, discount_total: int, tax_total: int, total: int}
      */
@@ -34,15 +35,26 @@ class SaleCalculator
         }
 
         $subtotal = array_sum($gross);
-        $discountTotal = $this->discountAmount($subtotal, $discount);
-        $allocated = $this->allocate($gross, $discountTotal, $subtotal);
+
+        // Promotions first: each line gives up its promotion discount (never more than the line is worth).
+        $promo = [];
+        $afterPromo = [];
+        foreach ($lines as $i => $line) {
+            $promo[$i] = min(max((int) ($line['promo'] ?? 0), 0), $gross[$i]);
+            $afterPromo[$i] = $gross[$i] - $promo[$i];
+        }
+
+        $orderDiscount = $this->discountAmount(array_sum($afterPromo), $discount);
+        $allocated = $this->allocate($afterPromo, $orderDiscount, array_sum($afterPromo));
+        $discountTotal = array_sum($promo) + $orderDiscount;
 
         $result = [];
         $taxTotal = 0;
         $total = 0;
 
         foreach ($lines as $i => $line) {
-            $net = $gross[$i] - $allocated[$i];
+            $lineDiscount = $promo[$i] + $allocated[$i];
+            $net = $gross[$i] - $lineDiscount;
             $basisPoints = (int) round((float) $line['tax_rate'] * 100);
 
             if ($line['tax_inclusive']) {
@@ -55,7 +67,7 @@ class SaleCalculator
 
             $taxTotal += $tax;
             $total += $lineTotal;
-            $result[] = ['gross' => $gross[$i], 'discount' => $allocated[$i], 'tax' => $tax, 'total' => $lineTotal];
+            $result[] = ['gross' => $gross[$i], 'discount' => $lineDiscount, 'tax' => $tax, 'total' => $lineTotal];
         }
 
         return [

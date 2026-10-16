@@ -39,6 +39,7 @@ return [
         'pos' => 'POS',
         'inventory' => 'Inventory',
         'quotations' => 'Quotations',
+        'promotions' => 'Promotions',
         'sales' => 'Sales',
         'purchases' => 'Purchases',
         'customers' => 'Customers',

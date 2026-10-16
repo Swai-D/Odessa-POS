@@ -29,7 +29,7 @@ class Sale extends Model
         'number', 'idempotency_key', 'customer_id', 'user_id', 'warehouse_id', 'currency',
         'subtotal', 'discount_total', 'tax_total', 'total', 'amount_paid', 'balance_due',
         'change_given', 'returned_total', 'payment_status', 'note', 'sold_at',
-        'offline_synced_at', 'review_reason', 'reviewed_at', 'reviewed_by',
+        'promo_total', 'coupon_code', 'offline_synced_at', 'review_reason', 'reviewed_at', 'reviewed_by',
     ];
 
     protected function casts(): array

@@ -11,6 +11,7 @@ use App\Domain\Sales\Models\HeldOrder;
 use App\Domain\Sales\Models\Payment;
 use App\Domain\Sales\Models\PaymentRequest;
 use App\Domain\Sales\Models\Sale;
+use App\Domain\Sales\Services\PromotionService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\HoldOrderRequest;
 use App\Support\Tenancy\TenantContext;
@@ -36,6 +37,8 @@ class PosController extends Controller
             'currency' => (string) (new TenantSettings)->get('currency', config('pos.default_currency')),
             'paymentMethods' => Payment::methods(),
             'business' => (string) (new TenantSettings)->get('business_name', app(TenantContext::class)->get()->name ?? config('app.name')),
+            'promotions' => app(PromotionService::class)->automatic()->map(fn ($promotion): array => $promotion->toEngine())->all(),
+            'timezone' => app(PromotionService::class)->timezone(),
             'canCreateCustomer' => Gate::allows('create', Customer::class),
             'mobileMoney' => [
                 'enabled' => app(IntegrationManager::class)->isActive('payments', 'azampay'),
@@ -119,10 +122,22 @@ class PosController extends Controller
             'generated_at' => now()->toIso8601String(),
             'warehouse_id' => $warehouseId,
             'products' => $products->map(fn (Product $product): array => $this->productPayload($product))->all(),
+            'promotions' => app(PromotionService::class)->automatic()->map(fn ($promotion): array => $promotion->toEngine())->all(),
+            'timezone' => app(PromotionService::class)->timezone(),
             'customers' => Customer::query()->where('is_active', true)->orderBy('name')
                 ->limit((int) config('pos.offline_max_customers'))
                 ->get(['id', 'name', 'phone'])->all(),
         ]);
+    }
+
+    /** A coupon code entered at the till: its rules, so the screen can show the discount before the sale. */
+    public function coupon(Request $request, PromotionService $promotions): JsonResponse
+    {
+        Gate::authorize('create', Sale::class);
+
+        $data = $request->validate(['code' => ['required', 'string', 'max:40']]);
+
+        return response()->json(['data' => $promotions->findCoupon($data['code'], now())->toEngine()]);
     }
 
     /** A fresh CSRF token, so a till that was loaded long ago (or from the offline cache) can sync its queue. */

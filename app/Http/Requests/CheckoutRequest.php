@@ -48,6 +48,7 @@ class CheckoutRequest extends FormRequest
             // A mobile money payment that already went through the provider (see MobileMoneyController).
             'payments.*.payment_request_id' => ['nullable', 'integer', Rule::exists('payment_requests', 'id')->where('tenant_id', $tenantId)],
             'note' => ['nullable', 'string', 'max:500'],
+            'coupon_code' => ['nullable', 'string', 'max:40'],
             // Present only when the till sold this while offline and is syncing it now.
             'offline' => ['nullable', 'array'],
             'offline.sold_at' => [

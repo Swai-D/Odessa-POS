@@ -26,7 +26,9 @@
 		queue: [],
 		syncing: false,
 		syncMessage: '',
-		snapshots: {}
+		snapshots: {},
+		coupon: null,
+		promotions: (CFG.offline && CFG.offline.promotions) || []
 	};
 	var cache = {};
 	var searchTimer = null;
@@ -87,17 +89,69 @@
 		box.style.display = '';
 	}
 
+	/* ---------- coupon ---------- */
+
+	function couponMessage(text, kind) {
+		var box = $('#pos-coupon-msg');
+		box.textContent = text || '';
+		box.className = 'small mt-1 ' + (kind === 'ok' ? 'text-success' : 'text-danger');
+	}
+
+	function renderCoupon(result) {
+		var on = !!state.coupon;
+		$('#pos-coupon-form').style.display = on ? 'none' : '';
+		$('#pos-coupon-applied').style.display = on ? 'flex' : 'none';
+		$('#pos-coupon-code').textContent = on ? state.coupon.code : '';
+		if (on && state.items.length) {
+			var used = (result.promos || []).some(function (promo) { return promo && promo.promotion_id === state.coupon.id; });
+			couponMessage(used ? '' : (CFG.promoI18n || {}).no_effect, 'error');
+		}
+	}
+
+	function applyCoupon() {
+		var code = $('#pos-coupon-input').value.trim();
+		var P = CFG.promoI18n || {};
+		if (!code) { return; }
+		if (!state.online) { couponMessage(P.offline, 'error'); return; }
+		request('POST', CFG.routes.coupon, { code: code }).then(function (result) {
+			if (!result.ok) { couponMessage(errorMessages(result).join(' '), 'error'); return; }
+			state.coupon = result.data.data;
+			state.lastAttempt = null;
+			couponMessage((P.applied || '').replace(':code', state.coupon.code), 'ok');
+			render();
+		}).catch(function () { couponMessage(T.network_error, 'error'); });
+	}
+
 	/* ---------- cart ---------- */
 
-	function calcInput() {
-		return state.items.map(function (item) {
-			return { quantity: item.qty, unit_price: item.price, tax_rate: item.tax_rate, tax_inclusive: item.tax_inclusive };
+	function calcInput(promos) {
+		return state.items.map(function (item, i) {
+			return {
+				quantity: item.qty, unit_price: item.price, tax_rate: item.tax_rate, tax_inclusive: item.tax_inclusive,
+				promo: promos && promos[i] ? promos[i].amount : 0
+			};
 		});
+	}
+
+	// Which promotion gives each line its discount right now (the best one per line), at the shop's clock.
+	function currentPromos() {
+		if (!window.PosPromo || !state.items.length) { return state.items.map(function () { return null; }); }
+		var lines = state.items.map(function (item) {
+			return { product_id: item.id, category_id: item.category_id === undefined ? null : item.category_id, quantity: item.qty, unit_price: item.price };
+		});
+		var list = state.promotions.concat(state.coupon ? [state.coupon] : []);
+		return window.PosPromo.evaluate(list, lines, state.coupon ? state.coupon.code : null, window.PosPromo.localParts(new Date(), (CFG.offline && CFG.offline.timezone) || 'Africa/Dar_es_Salaam'));
 	}
 	function discountInput() {
 		return { type: state.discount.type, value: state.discount.value };
 	}
-	function totals() { return window.PosCalc.calculate(calcInput(), discountInput()); }
+	function totals() {
+		var promos = currentPromos();
+		var result = window.PosCalc.calculate(calcInput(promos), discountInput());
+		result.promos = promos;
+		result.promo_total = promos.reduce(function (sum, promo) { return sum + (promo ? promo.amount : 0); }, 0);
+		return result;
+	}
 
 	function findItem(id) {
 		return state.items.filter(function (item) { return item.id === id; })[0];
@@ -121,7 +175,7 @@
 			state.items.push({
 				id: product.id, name: product.name, sku: product.sku, price: product.price, tax_rate: product.tax_rate,
 				tax_inclusive: product.tax_inclusive, track_stock: product.track_stock, stock: product.stock,
-				allow_decimal: product.allow_decimal, unit: product.unit, qty: quantity
+				allow_decimal: product.allow_decimal, unit: product.unit, category_id: product.category_id, qty: quantity
 			});
 		}
 		render();
@@ -145,6 +199,8 @@
 	function clearCart() {
 		state.items = [];
 		state.discount = { type: 'none', value: 0 };
+		state.coupon = null;
+		$('#pos-coupon-input').value = '';
 		state.lastAttempt = null;
 		alertMessage(null);
 		render();
@@ -165,7 +221,8 @@
 			return '<tr data-id="' + item.id + '">' +
 				'<td><div class="d-flex align-items-center">' +
 				'<a class="delete-icon" href="javascript:void(0);" data-pos-remove="' + item.id + '"><i class="ti ti-trash-x-filled"></i></a>' +
-				'<h6 class="fs-13 fw-normal"><span class="link-default">' + esc(item.name) + '</span></h6></div></td>' +
+				'<h6 class="fs-13 fw-normal"><span class="link-default">' + esc(item.name) + '</span>' +
+				(result.promos[i] ? '<div class="small text-success">' + esc(result.promos[i].name) + ': -' + fmt(result.promos[i].amount) + '</div>' : '') + '</h6></div></td>' +
 				'<td><div class="qty-item m-0">' +
 				'<a href="javascript:void(0);" class="dec dark d-flex justify-content-center align-items-center" data-pos-qty="-1"><i class="ti ti-minus"></i></a>' +
 				'<input type="text" class="form-control text-center" name="qty" value="' + qtyText(item.qty) + '" inputmode="decimal" data-pos-qty-input>' +
@@ -175,16 +232,20 @@
 		}).join('');
 
 		$('#pos-subtotal').textContent = fmt(result.subtotal);
-		$('#pos-discount-total').textContent = result.discount_total > 0 ? '-' + fmt(result.discount_total) : fmt(0);
+		var orderDiscount = result.discount_total - result.promo_total;
+		$('#pos-discount-total').textContent = orderDiscount > 0 ? '-' + fmt(orderDiscount) : fmt(0);
+		$('#pos-promo-row').style.display = result.promo_total > 0 ? '' : 'none';
+		$('#pos-promo-total').textContent = '-' + fmt(result.promo_total);
+		renderCoupon(result);
 		$('#pos-tax').textContent = fmt(result.tax_total);
 		$('#pos-total').textContent = fmt(result.total);
 		$('#pos-pay-total').textContent = fmt(result.total);
 
 		var chip = $('#pos-discount-chip');
-		chip.style.display = result.discount_total > 0 ? '' : 'none';
+		chip.style.display = orderDiscount > 0 ? '' : 'none';
 		$('#pos-discount-label').textContent = state.discount.type === 'percent'
 			? T.discount + ' ' + state.discount.value + '%'
-			: T.discount + ' ' + fmt(result.discount_total);
+			: T.discount + ' ' + fmt(orderDiscount);
 
 		$all('#pos-grid .product-info').forEach(function (tile) {
 			tile.classList.toggle('active', !!findItem(parseInt(tile.getAttribute('data-id'), 10)));
@@ -494,6 +555,7 @@
 			warehouse_id: parseInt(currentWarehouse(), 10),
 			items: state.items.map(function (item) { return { product_id: item.id, quantity: item.qty }; }),
 			discount: state.discount.type === 'none' ? null : { type: state.discount.type, value: state.discount.value },
+			coupon_code: state.coupon ? state.coupon.code : null,
 			payments: settlePayments()
 		};
 	}
@@ -680,6 +742,7 @@
 			else if (name === 'hold') { holdOrder(); }
 			else if (name === 'held') { openHeld(); }
 			else if (name === 'remove-discount') { state.discount = { type: 'none', value: 0 }; render(); }
+			else if (name === 'remove-coupon') { state.coupon = null; state.lastAttempt = null; couponMessage(''); render(); }
 			else if (name === 'scan') { $('#pos-search').focus(); }
 			else if (name === 'pay') { openPay('cash'); }
 			return;
@@ -707,6 +770,7 @@
 		var mmRequest = closest('[data-mm-request]');
 		if (mmRequest) { requestMm(parseInt(mmRequest.closest('[data-row]').getAttribute('data-row'), 10)); return; }
 		if (closest('#pos-pay-confirm')) { confirmPay(); return; }
+		if (closest('#pos-coupon-apply')) { applyCoupon(); return; }
 		if (closest('#pos-hold-save')) { saveHold(); return; }
 		var resume = closest('[data-held-resume]');
 		if (resume) { resumeHeld(resume.getAttribute('data-held-resume')); return; }
@@ -746,6 +810,10 @@
 			window.clearTimeout(searchTimer);
 			searchTimer = window.setTimeout(loadProducts, 250);
 		}
+	});
+
+	$('#pos-coupon-input').addEventListener('keydown', function (event) {
+		if (event.key === 'Enter') { event.preventDefault(); applyCoupon(); }
 	});
 
 	// Enter in the search box adds an exact barcode/SKU match (barcode scanners type the code and press Enter).
@@ -944,7 +1012,8 @@
 			return chain.then(function () {
 				return request('GET', OFF.snapshot + '?warehouse=' + encodeURIComponent(warehouse)).then(function (result) {
 					if (!result.ok || !result.data.products) { return; }
-					var snap = { at: result.data.generated_at, products: result.data.products, customers: result.data.customers || [] };
+					var snap = { at: result.data.generated_at, products: result.data.products, customers: result.data.customers || [], promotions: result.data.promotions || [], timezone: result.data.timezone };
+					state.promotions = snap.promotions;
 					state.snapshots[warehouse] = snap;
 					return store.put(snapKey(warehouse), snap);
 				}).catch(function () { /* try again at the next refresh */ });
@@ -968,6 +1037,7 @@
 		return loadSnapshot(currentWarehouse()).then(function (snap) {
 			if (searchId !== productSearchId) { return; }
 			if (!snap) { alertMessage(OT.no_snapshot, 'warning'); renderProducts([]); return; }
+			if (snap.promotions) { state.promotions = snap.promotions; render(); }
 			var term = $('#pos-search').value.trim().toLowerCase();
 			var list = snap.products.filter(function (p) {
 				if (state.category && String(p.category_id) !== String(state.category)) { return false; }

@@ -55,13 +55,20 @@
 		});
 
 		var subtotal = gross.reduce(function (a, b) { return a + b; }, 0);
-		var discountTotal = discountAmount(subtotal, discount);
-		var allocated = allocate(gross, discountTotal, subtotal);
+
+		// Promotions first: each line gives up its promotion discount (never more than the line is worth).
+		var promo = lines.map(function (line, i) { return Math.min(Math.max(Math.trunc(Number(line.promo || 0)), 0), gross[i]); });
+		var afterPromo = gross.map(function (amount, i) { return amount - promo[i]; });
+		var afterPromoTotal = afterPromo.reduce(function (a, b) { return a + b; }, 0);
+		var orderDiscount = discountAmount(afterPromoTotal, discount);
+		var allocated = allocate(afterPromo, orderDiscount, afterPromoTotal);
+		var discountTotal = promo.reduce(function (a, b) { return a + b; }, 0) + orderDiscount;
 
 		var taxTotal = 0;
 		var total = 0;
 		var result = lines.map(function (line, i) {
-			var net = gross[i] - allocated[i];
+			var lineDiscount = promo[i] + allocated[i];
+			var net = gross[i] - lineDiscount;
 			var basisPoints = Math.round(Number(line.tax_rate) * 100);
 			var tax;
 			var lineTotal;
@@ -77,7 +84,7 @@
 			taxTotal += tax;
 			total += lineTotal;
 
-			return { gross: gross[i], discount: allocated[i], tax: tax, total: lineTotal };
+			return { gross: gross[i], discount: lineDiscount, tax: tax, total: lineTotal };
 		});
 
 		return { lines: result, subtotal: subtotal, discount_total: discountTotal, tax_total: taxTotal, total: total };
