@@ -8,6 +8,7 @@ return [
     'email' => 'Email address',
     'password_label' => 'Password',
     'sign_in_hint' => 'Use your email and password to open :shop.',
+    'not_your_shop' => 'Not your shop? Sign in with your account instead.',
     'sign_in_hint_generic' => 'Use your email and password to open your shop.',
     'remember_me' => 'Remember me',
     'forgot_hint' => 'Forgot your password? Ask your shop Owner to set a new one.',

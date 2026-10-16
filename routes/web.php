@@ -74,6 +74,13 @@ Route::get('/t/{tenant:slug}', function (Request $request, Tenant $tenant) {
     return redirect()->route($user ? 'dashboard' : 'login');
 })->name('tenant.entry');
 
+// "Not your shop?" on a shop's sign-in page: forget the remembered shop and show the general sign-in.
+Route::get('/switch-shop', function (Request $request) {
+    $request->session()->forget('tenant_slug');
+
+    return redirect()->route('login');
+})->name('tenant.leave');
+
 Route::middleware('guest')->group(function (): void {
     Route::get('/register', [RegisterShopController::class, 'create'])->name('register');
     Route::post('/register', [RegisterShopController::class, 'store'])->middleware('throttle:5,60');

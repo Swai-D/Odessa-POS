@@ -23,7 +23,6 @@ class StockService
      * @param  float|int|string  $delta  signed quantity: positive adds stock, negative removes it
      * @param  int|null  $unitCost  cost per unit (minor units) of incoming stock; becomes the cost of its batch
      * @param  StockMovement|null  $origin  the sale movement a return undoes, or the transfer-out a transfer-in completes
-     *
      * @param  bool  $allowNegative  only for a sale the till already made offline: the goods left the shop, so the ledger must show it
      *
      * @throws InsufficientStockException when the result would be below zero (unless $allowNegative)

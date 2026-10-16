@@ -49,6 +49,9 @@
 						<div class="form-login">
 							<button type="submit" class="btn btn-primary w-100">{{ __('auth.sign_in') }}</button>
 						</div>
+						@if ($shop && ! request()->attributes->get('tenant_strict'))
+							<p class="fs-14 text-center mt-3 mb-0"><a href="{{ route('tenant.leave') }}">{{ __('auth.not_your_shop') }}</a></p>
+						@endif
 						<p class="text-muted fs-14 text-center mt-3 mb-0" data-forgot-hint>{{ __('auth.forgot_hint') }}</p>
 						@if (config('plans.self_signup') && ! $shop)
 							<p class="fs-14 text-center mt-2 mb-0"><a href="{{ route('register') }}">{{ __('auth.register.start_trial') }}</a></p>

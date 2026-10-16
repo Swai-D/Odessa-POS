@@ -30,6 +30,11 @@ class ResolveTenant
             $tenant = Tenant::query()->where('slug', $identifier)->first();
         }
 
+        // A shop chosen by the address itself (its own domain or subdomain, or the local header) is strict: only
+        // its users may sign in there. A shop remembered in the session (the shared address /t/shop-slug) is not:
+        // it only decides which shop's login page is shown.
+        $strict = $tenant !== null;
+
         $isLocal = app()->environment('local') || in_array($host, ['localhost', '127.0.0.1'], true);
 
         if (! $tenant && ! $isLocal && $host === $appDomain) {
@@ -42,6 +47,7 @@ class ResolveTenant
 
         if (! $tenant && $isLocal) {
             $identifier = $request->header('X-Tenant') ?: $request->session()->get('tenant_slug');
+            $strict = (bool) $request->header('X-Tenant');
 
             if ($identifier) {
                 $tenant = Tenant::query()->where('slug', $identifier)->first();
@@ -71,6 +77,7 @@ class ResolveTenant
             abort(403);
         }
 
+        $request->attributes->set('tenant_strict', $tenant !== null && $strict);
         $this->tenantContext->set($tenant);
         // Spatie roles/permissions run in "teams" mode: scope them to the resolved tenant.
         app(PermissionRegistrar::class)->setPermissionsTeamId($tenant?->getKey());
