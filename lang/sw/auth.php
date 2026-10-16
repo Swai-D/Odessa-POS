@@ -8,6 +8,7 @@ return [
     'email' => 'Barua pepe',
     'password_label' => 'Nenosiri',
     'sign_in_hint' => 'Tumia barua pepe na nenosiri lako kufungua :shop.',
+    'not_your_shop' => 'Si duka lako? Ingia kwa akaunti yako badala yake.',
     'sign_in_hint_generic' => 'Tumia barua pepe na nenosiri lako kufungua duka lako.',
     'remember_me' => 'Nikumbuke',
     'forgot_hint' => 'Umesahau nenosiri? Mwombe Owner wa duka akuwekee jipya.',
