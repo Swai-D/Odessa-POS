@@ -6,6 +6,7 @@ use App\Http\Controllers\Catalog\CategoryController;
 use App\Http\Controllers\Catalog\ProductController;
 use App\Http\Controllers\Catalog\ProductTransferController;
 use App\Http\Controllers\Catalog\UnitController;
+use App\Http\Controllers\ClientErrorController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Finance\BranchReportController;
 use App\Http\Controllers\Finance\BusinessStatementController;
@@ -89,6 +90,7 @@ Route::middleware('guest')->group(function (): void {
 
 Route::get('/verify', [StatementVerifyController::class, 'show'])->middleware('throttle:20,1')->name('statements.verify');
 // Result callbacks from AzamPay; each shop registers its own address. Verified by signature, so no login or CSRF token.
+Route::post('/client-errors', ClientErrorController::class)->middleware('throttle:20,1')->name('client-errors');
 Route::post('/webhooks/azampay/{tenant}', AzamPayCallbackController::class)->middleware('throttle:120,1')->name('webhooks.azampay');
 Route::get('/terms', [LegalController::class, 'terms'])->name('legal.terms');
 Route::get('/privacy', [LegalController::class, 'privacy'])->name('legal.privacy');
