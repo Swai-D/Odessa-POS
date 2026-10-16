@@ -17,6 +17,7 @@
 			@if ($canManage)
 				<li><a data-bs-toggle="tooltip" data-bs-placement="top" title="{{ __('catalog.import.title') }}" href="{{ route('products.import') }}"><i class="ti ti-file-import"></i></a></li>
 			@endif
+			<li><a data-bs-toggle="tooltip" data-bs-placement="top" title="{{ __('labels.print_labels') }}" href="{{ route('products.labels') }}"><i class="ti ti-barcode"></i></a></li>
 			<li><a data-bs-toggle="tooltip" data-bs-placement="top" title="Refresh" href="{{ route('products.index') }}"><i class="ti ti-refresh"></i></a></li>
 			<li><a data-bs-toggle="tooltip" data-bs-placement="top" title="Collapse" id="collapse-header"><i class="ti ti-chevron-up"></i></a></li>
 		</ul>
@@ -103,6 +104,9 @@
 								<td class="action-table-data">
 									@if ($canManage)
 										<div class="edit-delete-action">
+											<a class="me-2 p-2" href="{{ route('products.labels', ['product' => [$product->id]]) }}" title="{{ __('labels.print_label') }}">
+												<i class="ti ti-barcode"></i>
+											</a>
 											<a class="me-2 p-2" href="{{ route('products.edit', $product) }}">
 												<i data-feather="edit" class="feather-edit"></i>
 											</a>

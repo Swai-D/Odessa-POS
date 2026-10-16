@@ -13,6 +13,7 @@ use App\Http\Requests\ProductRequest;
 use App\Support\Money;
 use App\Support\Search;
 use App\Support\Sort;
+use App\Support\Tenancy\TenantContext;
 use App\Support\TenantSettings;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -56,11 +57,38 @@ class ProductController extends Controller
 
         return response()->json([
             'data' => Search::apply($query, $request->query('q'), ['name', 'sku', 'barcode'])
-                ->orderBy('name')->limit(20)->get(['id', 'name', 'sku', 'cost_price', 'selling_price'])
-                ->map(fn (Product $p): array => [
-                    'id' => $p->getKey(), 'label' => $p->name.' ('.$p->sku.')', 'cost' => Money::toMajor($p->cost_price), 'price' => Money::toMajor($p->selling_price),
+                ->orderBy('name')->limit(20)->get(['id', 'name', 'sku', 'barcode', 'track_stock', 'cost_price', 'selling_price'])
+                ->map(fn (Product $p): array => $this->labelItem($p) + [
+                    'label' => $p->name.' ('.$p->sku.')', 'cost' => Money::toMajor($p->cost_price), 'price' => Money::toMajor($p->selling_price),
                 ])->all(),
         ]);
+    }
+
+    /** Barcode label printing: pick products, set copies and a label size, print. `?product[]=id` preloads rows. */
+    public function labels(Request $request): View
+    {
+        Gate::authorize('viewAny', Product::class);
+
+        $ids = collect((array) $request->query('product', []))->map(fn ($id) => (int) $id)->filter()->unique()->take(50)->all();
+        $preset = $ids === [] ? collect() : Product::query()->whereIn('id', $ids)->orderBy('name')->get(['id', 'name', 'sku', 'barcode', 'track_stock', 'selling_price']);
+
+        return view('products.labels', [
+            'initial' => $preset->map(fn (Product $p): array => $this->labelItem($p))->all(),
+            'business' => (string) (new TenantSettings)->get('business_name', app(TenantContext::class)->get()->name ?? config('app.name')),
+        ]);
+    }
+
+    /** @return array<string, mixed> */
+    private function labelItem(Product $product): array
+    {
+        return [
+            'id' => $product->getKey(),
+            'name' => $product->name,
+            'sku' => $product->sku,
+            'barcode' => $product->barcode,
+            'price_text' => Money::format($product->selling_price),
+            'stock' => $product->track_stock ? $product->totalQuantity() : null,
+        ];
     }
 
     public function create(): View

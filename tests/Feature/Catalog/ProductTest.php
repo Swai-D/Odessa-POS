@@ -142,3 +142,30 @@ it('never tracks stock for service products', function (): void {
     $product = inTenant($tenant, fn () => Product::query()->firstOrFail());
     expect($product->track_stock)->toBeFalse()->and((float) $product->alert_quantity)->toBe(0.0);
 });
+
+it('serves the barcode label page, preloaded with chosen products of this shop only', function (): void {
+    $tenantA = createTenant('shop-a');
+    $tenantB = createTenant('shop-b');
+    $user = createTenantUser($tenantA, inventoryAdminPermissions());
+    $mine = inTenant($tenantA, fn () => Product::create([
+        'name' => 'Soap Blue', 'sku' => 'SOAP-1', 'barcode' => '5901234123457', 'type' => 'standard', 'cost_price' => 100, 'selling_price' => 150000,
+    ]));
+    $foreign = inTenant($tenantB, fn () => Product::create([
+        'name' => 'Foreign Item', 'sku' => 'F-1', 'type' => 'standard', 'cost_price' => 1, 'selling_price' => 2,
+    ]));
+
+    $this->actingAs($user)->withHeader('X-Tenant', 'shop-a')
+        ->get(route('products.labels', ['product' => [$mine->id, $foreign->id]]))
+        ->assertOk()->assertSee('Soap Blue')->assertSee('5901234123457')->assertDontSee('Foreign Item');
+
+    $this->actingAs($user)->withHeader('X-Tenant', 'shop-a')
+        ->getJson(route('products.lookup', ['q' => 'SOAP']))
+        ->assertOk()->assertJsonPath('data.0.barcode', '5901234123457')->assertJsonPath('data.0.sku', 'SOAP-1');
+});
+
+it('keeps the barcode label page behind the product permission', function (): void {
+    $tenant = createTenant('shop-a');
+    $user = createTenantUser($tenant, ['dashboard.view']);
+
+    $this->actingAs($user)->withHeader('X-Tenant', 'shop-a')->get(route('products.labels'))->assertForbidden();
+});
