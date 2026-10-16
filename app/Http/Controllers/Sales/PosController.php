@@ -13,6 +13,7 @@ use App\Domain\Sales\Models\PaymentRequest;
 use App\Domain\Sales\Models\Sale;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\HoldOrderRequest;
+use App\Support\Tenancy\TenantContext;
 use App\Support\TenantSettings;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -34,6 +35,7 @@ class PosController extends Controller
             'customers' => Customer::query()->where('is_active', true)->orderBy('name')->limit(20)->get(['id', 'name', 'phone']),
             'currency' => (string) (new TenantSettings)->get('currency', config('pos.default_currency')),
             'paymentMethods' => Payment::methods(),
+            'business' => (string) (new TenantSettings)->get('business_name', app(TenantContext::class)->get()->name ?? config('app.name')),
             'canCreateCustomer' => Gate::allows('create', Customer::class),
             'mobileMoney' => [
                 'enabled' => app(IntegrationManager::class)->isActive('payments', 'azampay'),
@@ -74,23 +76,61 @@ class PosController extends Controller
             ->limit($request->has('ids') ? 200 : 60)
             ->get();
 
+        return response()->json(['data' => $products->map(fn (Product $product): array => $this->productPayload($product))->all()]);
+    }
+
+    /** @return array<string, mixed> */
+    private function productPayload(Product $product): array
+    {
+        return [
+            'id' => $product->getKey(),
+            'name' => $product->name,
+            'sku' => $product->sku,
+            'barcode' => $product->barcode,
+            'category' => $product->category?->name,
+            'category_id' => $product->category_id,
+            'price' => $product->selling_price,
+            'tax_rate' => (float) $product->tax_rate,
+            'tax_inclusive' => $product->tax_inclusive,
+            'track_stock' => $product->track_stock,
+            'stock' => $product->track_stock ? (float) ($product->stock_quantity ?? 0) : null,
+            'allow_decimal' => (bool) ($product->is_weighed || $product->unit?->allow_decimal),
+            'unit' => $product->unit?->short_name,
+            'initials' => Str::upper(Str::substr($product->name, 0, 2)),
+        ];
+    }
+
+    /** Everything the till needs to keep selling without a connection: products with stock, customers, categories. */
+    public function snapshot(Request $request): JsonResponse
+    {
+        Gate::authorize('create', Sale::class);
+
+        $warehouseId = $request->integer('warehouse');
+
+        $products = Product::query()
+            ->with(['category:id,name', 'unit:id,short_name,allow_decimal'])
+            ->withSum(['stocks as stock_quantity' => fn ($q) => $q->where('warehouse_id', $warehouseId)], 'quantity')
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->limit((int) config('pos.offline_max_products'))
+            ->get();
+
         return response()->json([
-            'data' => $products->map(fn (Product $product): array => [
-                'id' => $product->getKey(),
-                'name' => $product->name,
-                'sku' => $product->sku,
-                'barcode' => $product->barcode,
-                'category' => $product->category?->name,
-                'price' => $product->selling_price,
-                'tax_rate' => (float) $product->tax_rate,
-                'tax_inclusive' => $product->tax_inclusive,
-                'track_stock' => $product->track_stock,
-                'stock' => $product->track_stock ? (float) ($product->stock_quantity ?? 0) : null,
-                'allow_decimal' => (bool) ($product->is_weighed || $product->unit?->allow_decimal),
-                'unit' => $product->unit?->short_name,
-                'initials' => Str::upper(Str::substr($product->name, 0, 2)),
-            ])->all(),
+            'generated_at' => now()->toIso8601String(),
+            'warehouse_id' => $warehouseId,
+            'products' => $products->map(fn (Product $product): array => $this->productPayload($product))->all(),
+            'customers' => Customer::query()->where('is_active', true)->orderBy('name')
+                ->limit((int) config('pos.offline_max_customers'))
+                ->get(['id', 'name', 'phone'])->all(),
         ]);
+    }
+
+    /** A fresh CSRF token, so a till that was loaded long ago (or from the offline cache) can sync its queue. */
+    public function session(Request $request): JsonResponse
+    {
+        Gate::authorize('create', Sale::class);
+
+        return response()->json(['csrf' => csrf_token()]);
     }
 
     public function heldIndex(Request $request): JsonResponse

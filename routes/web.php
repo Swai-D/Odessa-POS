@@ -127,6 +127,8 @@ Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (
     Route::get('/search', SearchController::class)->name('search');
     Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
     Route::get('/pos/products', [PosController::class, 'products'])->name('pos.products');
+    Route::get('/pos/snapshot', [PosController::class, 'snapshot'])->name('pos.snapshot');
+    Route::get('/pos/session', [PosController::class, 'session'])->name('pos.session');
     Route::post('/pos/checkout', CheckoutController::class)->name('pos.checkout');
     Route::post('/pos/mobile-money', [MobileMoneyController::class, 'store'])->middleware('throttle:30,1')->name('pos.mobile-money.store');
     Route::get('/pos/mobile-money/{paymentRequest}', [MobileMoneyController::class, 'show'])->name('pos.mobile-money.show');
@@ -161,6 +163,7 @@ Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (
     Route::get('/sales/{sale}', [SaleController::class, 'show'])->name('sales.show');
     Route::get('/sales/{sale}/escpos', [SaleController::class, 'escpos'])->name('sales.escpos')->middleware('plan:printer');
     Route::get('/sales/{sale}/receipt.pdf', [SaleController::class, 'pdf'])->name('sales.pdf');
+    Route::post('/sales/{sale}/review', [SaleController::class, 'markReviewed'])->name('sales.review');
     Route::post('/sales/{sale}/payments', [SaleController::class, 'storePayment'])->name('sales.payments.store');
     Route::post('/sales/{sale}/returns', [SaleReturnController::class, 'store'])->name('sales.returns.store')->middleware('plan:returns');
     Route::get('/quotations', [QuotationController::class, 'index'])->name('quotations.index');

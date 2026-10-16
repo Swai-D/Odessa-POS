@@ -17,6 +17,7 @@ use App\Models\User;
 use App\Support\Plans;
 use App\Support\TenantSettings;
 use Illuminate\Database\UniqueConstraintViolationException;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -106,7 +107,17 @@ class CheckoutAction
             ? Customer::query()->where('is_active', true)->lockForUpdate()->findOrFail($data['customer_id'])
             : null;
 
-        $settlement = $this->settle($totals['total'], $data['payments'] ?? [], $customer);
+        // A sale the till made offline already happened: stock, payment and price differences are recorded and flagged
+        // for the owner instead of refusing it.
+        $offline = $data['offline'] ?? null;
+        $review = [];
+        $soldAt = $offline !== null ? min(Carbon::parse($offline['sold_at']), now()) : now();
+
+        if ($offline !== null && (int) $offline['expected_total'] !== $totals['total']) {
+            $review[] = 'price';
+        }
+
+        $settlement = $this->settle($totals['total'], $data['payments'] ?? [], $customer, $offline !== null, $review);
 
         $sale = Sale::create([
             'number' => $this->numbers->next('sale', 'SL-'),
@@ -124,7 +135,8 @@ class CheckoutAction
             'change_given' => $settlement['change'],
             'payment_status' => $settlement['status'],
             'note' => $data['note'] ?? null,
-            'sold_at' => now(),
+            'sold_at' => $soldAt,
+            'offline_synced_at' => $offline !== null ? now() : null,
         ]);
 
         foreach ($lines as $i => $line) {
@@ -156,9 +168,14 @@ class CheckoutAction
                         $sale->number,
                         $user,
                         $sale,
+                        allowNegative: $offline !== null,
                     );
                 } catch (InsufficientStockException $e) {
                     throw ValidationException::withMessages(['items' => $e->getMessage()]);
+                }
+
+                if ((float) $movement->balance_after < 0) {
+                    $review[] = 'stock';
                 }
 
                 // The line's cost is what the units really cost: the batches (FIFO) they were taken from.
@@ -174,8 +191,12 @@ class CheckoutAction
                 'method' => $payment['method'],
                 'amount' => $payment['amount'],
                 'reference' => $request !== null ? ($request->mno_reference ?? $request->provider_reference ?? $request->reference) : ($payment['reference'] ?? null),
-                'paid_at' => now(),
+                'paid_at' => $soldAt,
             ]);
+        }
+
+        if ($review !== []) {
+            $sale->update(['review_reason' => implode(',', array_values(array_unique($review)))]);
         }
 
         return $sale->load(['items', 'payments', 'customer']);
@@ -225,9 +246,10 @@ class CheckoutAction
      * Cash may exceed the amount due (the surplus is change); every other method may not.
      *
      * @param  list<array{method: string, amount: int|string, reference?: string|null, payment_request_id?: int|string|null}>  $payments
+     * @param  list<string>  $review  filled with what an offline sale needs the owner to look at
      * @return array{paid: int, balance: int, change: int, status: string, payments: list<array{method: string, amount: int, reference: string|null, payment_request_id?: int|string|null}>}
      */
-    private function settle(int $total, array $payments, ?Customer $customer): array
+    private function settle(int $total, array $payments, ?Customer $customer, bool $offline, array &$review): array
     {
         $cash = 0;
         $cashReference = null;
@@ -252,7 +274,14 @@ class CheckoutAction
         }
 
         if ($otherTotal > $total) {
-            throw ValidationException::withMessages(['payments' => __('pos.errors.overpaid_non_cash')]);
+            if (! $offline) {
+                throw ValidationException::withMessages(['payments' => __('pos.errors.overpaid_non_cash')]);
+            }
+
+            // The price dropped while the till was offline: keep what the customer paid up to the new total.
+            $review[] = 'payment';
+            $other = $this->clampPayments($other, $total);
+            $otherTotal = $total;
         }
 
         $dueForCash = $total - $otherTotal;
@@ -261,7 +290,15 @@ class CheckoutAction
         $paid = $otherTotal + $cashApplied;
         $balance = $total - $paid;
 
-        if ($balance > 0) {
+        if ($balance > 0 && $offline) {
+            $creditProblem = ! Plans::current()->allows('credit_sales')
+                || ! $customer
+                || ($customer->credit_limit !== null && $customer->outstanding() + $balance > $customer->credit_limit);
+
+            if ($creditProblem) {
+                $review[] = 'credit';
+            }
+        } elseif ($balance > 0) {
             if (! Plans::current()->allows('credit_sales')) {
                 throw ValidationException::withMessages(['payments' => __('plans.credit_sales_not_in_plan')]);
             }
@@ -287,5 +324,25 @@ class CheckoutAction
             'status' => $balance === 0 ? Sale::PAID : ($paid > 0 ? Sale::PARTIAL : Sale::UNPAID),
             'payments' => $recorded,
         ];
+    }
+
+    /**
+     * @param  list<array{method: string, amount: int, reference: string|null, payment_request_id: int|string|null}>  $payments
+     * @return list<array{method: string, amount: int, reference: string|null, payment_request_id: int|string|null}>
+     */
+    private function clampPayments(array $payments, int $limit): array
+    {
+        $kept = [];
+
+        foreach ($payments as $payment) {
+            $amount = min($payment['amount'], $limit);
+            $limit -= $amount;
+
+            if ($amount > 0) {
+                $kept[] = ['amount' => $amount] + $payment;
+            }
+        }
+
+        return $kept;
     }
 }

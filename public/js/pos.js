@@ -10,6 +10,9 @@
 	if (!CFG) { return; }
 	var T = CFG.i18n;
 	var MM = CFG.mobileMoney || { enabled: false };
+	var OFF = CFG.offline || {};
+	var OT = OFF.i18n || {};
+	var store = window.PosOffline;
 
 	var state = {
 		items: [],
@@ -18,7 +21,12 @@
 		category: '',
 		busy: false,
 		lastAttempt: null,
-		pay: { rows: [] }
+		pay: { rows: [] },
+		online: navigator.onLine !== false,
+		queue: [],
+		syncing: false,
+		syncMessage: '',
+		snapshots: {}
 	};
 	var cache = {};
 	var searchTimer = null;
@@ -214,6 +222,7 @@
 		if (term) { params.set('q', term); }
 		if (state.category) { params.set('category', state.category); }
 		params.set('warehouse', currentWarehouse());
+		if (!state.online) { return loadProductsOffline(searchId, done); }
 		return request('GET', CFG.routes.products + '?' + params.toString()).then(function (result) {
 			if (searchId !== productSearchId) { return; }
 			if (result.ok) {
@@ -224,7 +233,9 @@
 				alertMessage(errorMessages(result));
 			}
 		}).catch(function () {
-			if (searchId === productSearchId) { alertMessage(T.network_error); }
+			if (searchId !== productSearchId) { return; }
+			goOffline();
+			return loadProductsOffline(searchId, done);
 		});
 	}
 
@@ -283,6 +294,7 @@
 			results.innerHTML = '<span class="dropdown-item-text text-muted">' + esc(T.searching_customers) + '</span>';
 			results.classList.add('show');
 		}
+		if (!state.online) { searchCustomersOffline(term, searchId); return; }
 		request('GET', CFG.routes.customerSearch + '?q=' + encodeURIComponent(term)).then(function (result) {
 			if (searchId !== customerSearchId) { return; }
 			if (result.ok) {
@@ -293,10 +305,9 @@
 				if (term) { $('#pos-customer-results').innerHTML = '<span class="dropdown-item-text text-danger">' + esc(T.network_error) + '</span>'; }
 			}
 		}).catch(function () {
-			if (searchId !== customerSearchId || !term) { return; }
-			var results = $('#pos-customer-results');
-			results.innerHTML = '<span class="dropdown-item-text text-danger">' + esc(T.network_error) + '</span>';
-			results.classList.add('show');
+			if (searchId !== customerSearchId) { return; }
+			goOffline();
+			searchCustomersOffline(term, searchId);
 		});
 	}
 
@@ -384,6 +395,7 @@
 	function requestMm(index) {
 		var row = state.pay.rows[index];
 		if (!row) { return; }
+		if (!state.online) { row.mmMessage = OT.mm_offline; refreshMm(index); return; }
 		var amount = toMinor(row.amount);
 		if (row.mmStatus === 'pending' || row.mmStatus === 'succeeded') { return; }
 		if (!row.provider || !row.phone.trim() || amount < 100) { row.mmMessage = MM.i18n.need_fields; refreshMm(index); return; }
@@ -506,6 +518,7 @@
 
 		state.busy = true;
 		updatePaySummary();
+		if (!state.online && saveSaleOffline(payload)) { return; }
 		request('POST', CFG.routes.checkout, payload).then(function (result) {
 			state.busy = false;
 			if (!result.ok) {
@@ -521,6 +534,9 @@
 			state.lastAttempt = null;
 			loadProducts();
 		}).catch(function () {
+			// The connection dropped. If the server did get the sale, sending it again later with the same key returns it.
+			goOffline();
+			if (saveSaleOffline(payload)) { return; }
 			state.busy = false;
 			updatePaySummary();
 			var error = $('#pos-pay-error');
@@ -529,21 +545,36 @@
 		});
 	}
 
-	function showDone(sale) {
+	function showDone(sale, local) {
+		var invoice = $('#pos-done-invoice');
+		var receipt = $('#pos-done-receipt');
+		$('#pos-done-offline-note').style.display = local ? '' : 'none';
+		invoice.style.display = local ? 'none' : '';
+		if (local) {
+			receipt.removeAttribute('target');
+			receipt.setAttribute('href', 'javascript:void(0);');
+			receipt.setAttribute('data-local-receipt', local.key);
+		} else {
+			receipt.setAttribute('target', '_blank');
+			receipt.removeAttribute('data-local-receipt');
+		}
 		$('#pos-done-number').textContent = sale.number;
 		$('#pos-done-total').textContent = fmt(sale.total);
 		$('#pos-done-change').textContent = fmt(sale.change_given);
 		$('#pos-done-balance').textContent = fmt(sale.balance_due);
 		$('#pos-done-balance-row').style.display = sale.balance_due > 0 ? '' : 'none';
 		$('#pos-done-change-row').style.display = sale.change_given > 0 ? '' : 'none';
-		$('#pos-done-receipt').setAttribute('href', sale.receipt_url + '?format=thermal');
-		$('#pos-done-invoice').setAttribute('href', sale.receipt_url);
+		if (!local) {
+			receipt.setAttribute('href', sale.receipt_url + '?format=thermal');
+			invoice.setAttribute('href', sale.receipt_url);
+		}
 		modal('pos-done').show();
 	}
 
 	/* ---------- hold / resume ---------- */
 
 	function holdOrder() {
+		if (!state.online) { alertMessage(OT.unavailable, 'warning'); return; }
 		if (!state.items.length) { alertMessage(T.cart_empty, 'warning'); return; }
 		$('#pos-hold-reference').value = '';
 		modal('pos-hold').show();
@@ -564,6 +595,7 @@
 	}
 
 	function openHeld() {
+		if (!state.online) { alertMessage(OT.unavailable, 'warning'); return; }
 		var body = $('#pos-held-body');
 		body.innerHTML = '';
 		request('GET', CFG.routes.heldIndex).then(function (result) {
@@ -760,6 +792,7 @@
 	function saveCustomer() {
 		var name = $('#pos-customer-name').value.trim();
 		if (!name) { return; }
+		if (!state.online) { var offlineError = $('#pos-customer-error'); offlineError.textContent = OT.unavailable; offlineError.style.display = ''; return; }
 		request('POST', CFG.routes.customers, { name: name, phone: $('#pos-customer-phone').value.trim() || null }).then(function (result) {
 			var error = $('#pos-customer-error');
 			if (!result.ok) { error.textContent = errorMessages(result).join(' '); error.style.display = ''; return; }
@@ -834,6 +867,327 @@
 		$('#pos-customer-results').innerHTML = '';
 	});
 
+	/* ---------- offline: saved list, queue of sales, sync ---------- */
+
+	function offlineReady() { return !!(store && store.available && OFF.tenant); }
+	function fill(text, values) {
+		return String(text || '').replace(/:(\w+)/g, function (all, key) { return values && values[key] !== undefined ? values[key] : all; });
+	}
+	function snapKey(warehouse) { return 'snapshot:' + OFF.tenant + ':' + warehouse; }
+	function timeText(iso) { var d = new Date(iso); return isNaN(d) ? '' : d.toLocaleString(); }
+
+	function goOffline() {
+		if (!state.online) { return; }
+		state.online = false;
+		renderNet();
+	}
+
+	function setOnline() {
+		if (state.online) { return; }
+		state.online = true;
+		renderNet();
+		syncQueue();
+		refreshSnapshots();
+		loadProducts();
+	}
+
+	function renderNet() {
+		var chip = $('#pos-net-text');
+		if (!chip) { return; }
+		var pending = state.queue.length;
+		chip.textContent = state.online ? OT.online : OT.offline;
+		$('#pos-net-dot').className = 'ti ti-circle-filled me-1 ' + (state.online ? 'text-success' : 'text-danger');
+		var badge = $('#pos-net-pending');
+		badge.style.display = pending ? '' : 'none';
+		badge.textContent = fill(OT.pending, { count: pending });
+		if ($('#pos-offline').classList.contains('show')) { renderQueue(); }
+	}
+
+	function loadQueue() {
+		if (!offlineReady()) { return Promise.resolve(); }
+		return store.queueAll(OFF.tenant).then(function (all) { state.queue = all; renderNet(); }).catch(function () {});
+	}
+
+	function renderQueue() {
+		var rows = $('#pos-offline-rows');
+		rows.innerHTML = state.queue.length ? state.queue.map(function (rec) {
+			var rejected = rec.status === 'rejected';
+			return '<tr><td>' + esc(timeText(rec.created_at)) + '<div class="small text-muted">' + esc(rec.summary.number) + '</div></td>' +
+				'<td>' + fmt(rec.expected_total) + '</td>' +
+				'<td>' + (rejected ? '<span class="badge bg-danger">' + esc(OT.status_rejected) + '</span><div class="small text-danger">' + esc(rec.message) + '</div>' : '<span class="badge bg-warning">' + esc(OT.status_pending) + '</span>') + '</td>' +
+				'<td class="text-end text-nowrap">' + (rejected ? '<button type="button" class="btn btn-sm btn-white me-1" data-off-retry="' + esc(rec.key) + '">' + esc(OT.retry) + '</button>' : '') +
+				'<button type="button" class="btn btn-sm btn-white" data-off-discard="' + esc(rec.key) + '">' + esc(OT.discard) + '</button></td></tr>';
+		}).join('') : '<tr><td colspan="4" class="text-center text-muted py-3">' + esc(OT.queue_empty) + '</td></tr>';
+		$('#pos-offline-info').textContent = OT.info;
+		var message = $('#pos-offline-msg');
+		message.textContent = state.syncMessage;
+		message.style.display = state.syncMessage ? '' : 'none';
+		var button = $('#pos-offline-sync');
+		button.disabled = state.syncing || !state.online || !state.queue.length;
+		button.textContent = state.syncing ? OT.syncing : OT.sync_now;
+	}
+
+	/* The saved product list (per warehouse), used when there is no connection. */
+
+	function loadSnapshot(warehouse) {
+		if (state.snapshots[warehouse]) { return Promise.resolve(state.snapshots[warehouse]); }
+		if (!offlineReady()) { return Promise.resolve(null); }
+		return store.get(snapKey(warehouse)).then(function (snap) {
+			if (snap) { state.snapshots[warehouse] = snap; }
+			return snap || null;
+		}).catch(function () { return null; });
+	}
+
+	function refreshSnapshots() {
+		if (!offlineReady() || !state.online) { return Promise.resolve(); }
+		return (OFF.warehouses || []).reduce(function (chain, warehouse) {
+			return chain.then(function () {
+				return request('GET', OFF.snapshot + '?warehouse=' + encodeURIComponent(warehouse)).then(function (result) {
+					if (!result.ok || !result.data.products) { return; }
+					var snap = { at: result.data.generated_at, products: result.data.products, customers: result.data.customers || [] };
+					state.snapshots[warehouse] = snap;
+					return store.put(snapKey(warehouse), snap);
+				}).catch(function () { /* try again at the next refresh */ });
+			});
+		}, Promise.resolve());
+	}
+
+	function rank(product, term) {
+		var barcode = (product.barcode || '').toLowerCase();
+		var sku = (product.sku || '').toLowerCase();
+		var name = (product.name || '').toLowerCase();
+		if (barcode === term) { return 0; }
+		if (sku === term) { return 1; }
+		if (name === term) { return 2; }
+		if (barcode.indexOf(term) === 0) { return 3; }
+		if (sku.indexOf(term) === 0) { return 4; }
+		return 5;
+	}
+
+	function loadProductsOffline(searchId, done) {
+		return loadSnapshot(currentWarehouse()).then(function (snap) {
+			if (searchId !== productSearchId) { return; }
+			if (!snap) { alertMessage(OT.no_snapshot, 'warning'); renderProducts([]); return; }
+			var term = $('#pos-search').value.trim().toLowerCase();
+			var list = snap.products.filter(function (p) {
+				if (state.category && String(p.category_id) !== String(state.category)) { return false; }
+				if (!term) { return true; }
+				return [p.name, p.sku, p.barcode].some(function (v) { return v && String(v).toLowerCase().indexOf(term) >= 0; });
+			});
+			if (term) {
+				list.sort(function (a, b) { return rank(a, term) - rank(b, term) || (a.name < b.name ? -1 : 1); });
+			}
+			list = list.slice(0, 60);
+			alertMessage(fill(OT.using_saved, { time: timeText(snap.at) }), 'warning');
+			renderProducts(list);
+			if (done) { done(list); }
+		});
+	}
+
+	function searchCustomersOffline(term, searchId) {
+		loadSnapshot(currentWarehouse()).then(function (snap) {
+			if (searchId !== customerSearchId) { return; }
+			var needle = term.toLowerCase();
+			var list = ((snap && snap.customers) || []).filter(function (c) {
+				return !needle || (c.name || '').toLowerCase().indexOf(needle) >= 0 || (c.phone || '').indexOf(needle) >= 0;
+			}).slice(0, 20);
+			fillCustomers(list);
+			renderCustomerResults(list, term);
+		});
+	}
+
+	/* Selling without a connection: keep the sale on this device until it can be sent. */
+
+	function saveSaleOffline(payload) {
+		if (!offlineReady()) { return false; }
+		var calc = totals();
+		var preview = settlePreview();
+		var customerSelect = $('#pos-customer');
+		var customerName = customerSelect.value && customerSelect.selectedOptions[0] ? customerSelect.selectedOptions[0].textContent : '';
+		var rec = {
+			key: payload.idempotency_key,
+			tenant: OFF.tenant,
+			created_at: new Date().toISOString(),
+			status: 'pending',
+			message: '',
+			expected_total: calc.total,
+			payload: payload,
+			summary: {
+				number: (OT.prefix || 'OFF') + '-' + String(payload.idempotency_key).replace(/[^a-zA-Z0-9]/g, '').slice(0, 6).toUpperCase(),
+				customer: customerName,
+				items: state.items.map(function (item, i) {
+					return { name: item.name, qty: item.qty, price: item.price, total: calc.lines[i].total };
+				}),
+				subtotal: calc.subtotal, discount: calc.discount_total, tax: calc.tax_total, total: calc.total,
+				paid: preview.paid, change: preview.change, balance: preview.balance,
+				payments: payload.payments.map(function (p) { return { method: CFG.methodLabels[p.method] || p.method, amount: p.amount }; })
+			}
+		};
+		var sold = state.items.map(function (item) { return { id: item.id, qty: item.qty }; });
+		store.queuePut(rec).then(function () {
+			state.busy = false;
+			state.queue.push(rec);
+			lowerLocalStock(sold);
+			renderNet();
+			modal('pos-pay').hide();
+			showDone({ number: rec.summary.number, total: calc.total, change_given: preview.change, balance_due: preview.balance }, rec);
+			clearCart();
+			state.lastAttempt = null;
+			loadProducts();
+		}).catch(function () {
+			state.busy = false;
+			updatePaySummary();
+			var error = $('#pos-pay-error');
+			error.textContent = T.network_error;
+			error.style.display = '';
+		});
+		return true;
+	}
+
+	// The saved list keeps counting down, so a second offline sale of the last unit is not offered.
+	function lowerLocalStock(sold) {
+		var warehouse = currentWarehouse();
+		var snap = state.snapshots[warehouse];
+		if (!snap) { return; }
+		sold.forEach(function (line) {
+			snap.products.forEach(function (p) {
+				if (p.id === line.id && p.track_stock && p.stock !== null) { p.stock = Math.round((p.stock - line.qty) * 1000) / 1000; }
+			});
+		});
+		store.put(snapKey(warehouse), snap).catch(function () {});
+	}
+
+	function printLocalReceipt(key) {
+		var rec = state.queue.filter(function (r) { return r.key === key; })[0];
+		if (!rec) { return; }
+		var sum = rec.summary;
+		var w = window.open('', '_blank', 'width=360,height=640');
+		if (!w) { return; }
+		var rows = sum.items.map(function (item) {
+			return '<tr><td>' + esc(item.name) + '<br><small>' + qtyText(item.qty) + ' x ' + fmt(item.price) + '</small></td><td style="text-align:right">' + fmt(item.total) + '</td></tr>';
+		}).join('');
+		var pay = sum.payments.map(function (p) { return '<tr><td>' + esc(p.method) + '</td><td style="text-align:right">' + fmt(p.amount) + '</td></tr>'; }).join('');
+		w.document.write('<!doctype html><meta charset="utf-8"><title>' + esc(sum.number) + '</title>' +
+			'<style>body{font-family:monospace;font-size:12px;width:280px;margin:8px auto}table{width:100%;border-collapse:collapse}td{padding:2px 0;vertical-align:top}hr{border:0;border-top:1px dashed #000}h3,p{text-align:center;margin:4px 0}</style>' +
+			'<h3>' + esc(OFF.business || '') + '</h3><p>' + esc(sum.number) + '<br>' + esc(timeText(rec.created_at)) + (sum.customer ? '<br>' + esc(sum.customer) : '') + '</p><hr>' +
+			'<table>' + rows + '</table><hr><table>' +
+			'<tr><td>' + esc(T.subtotal || 'Subtotal') + '</td><td style="text-align:right">' + fmt(sum.subtotal) + '</td></tr>' +
+			(sum.discount ? '<tr><td>' + esc(T.discount || 'Discount') + '</td><td style="text-align:right">-' + fmt(sum.discount) + '</td></tr>' : '') +
+			'<tr><td><b>Total</b></td><td style="text-align:right"><b>' + fmt(sum.total) + '</b></td></tr>' + pay +
+			(sum.change ? '<tr><td>' + esc(T.change) + '</td><td style="text-align:right">' + fmt(sum.change) + '</td></tr>' : '') +
+			(sum.balance ? '<tr><td>' + esc(T.balance_due) + '</td><td style="text-align:right">' + fmt(sum.balance) + '</td></tr>' : '') +
+			'</table><hr><p><small>' + esc(OT.receipt_note) + '</small></p>');
+		w.document.close();
+		w.focus();
+		w.print();
+	}
+
+	/* Sending the queue: one sale at a time, oldest first. A key already recorded comes back as the same sale. */
+
+	function syncQueue() {
+		if (!offlineReady() || state.syncing || !state.online) { return Promise.resolve(); }
+		var waiting = state.queue.filter(function (rec) { return rec.status !== 'rejected'; });
+		if (!waiting.length) { return Promise.resolve(); }
+		state.syncing = true;
+		state.syncMessage = '';
+		renderNet();
+		var sent = 0;
+		var flagged = 0;
+
+		function finish() {
+			state.syncing = false;
+			if (sent) {
+				state.syncMessage = fill(OT.synced, { count: sent }) + (flagged ? ' ' + fill(OT.sync_checks, { count: flagged }) : '') + (state.syncMessage ? ' ' + state.syncMessage : '');
+				refreshSnapshots().then(function () { loadProducts(); });
+			}
+			renderNet();
+		}
+
+		function sendNext(list, retried) {
+			var rec = list.shift();
+			if (!rec) { return Promise.resolve(); }
+			var body = Object.assign({}, rec.payload, { offline: { sold_at: rec.created_at, expected_total: rec.expected_total } });
+			return request('POST', OFF.checkout, body).then(function (result) {
+				if (result.ok) {
+					sent += 1;
+					if (result.data.needs_review) { flagged += 1; }
+					state.queue = state.queue.filter(function (r) { return r.key !== rec.key; });
+					return store.queueRemove(rec.key).then(function () { return sendNext(list, false); });
+				}
+				if (result.status === 401) { state.syncMessage = OT.login_needed; return; }
+				if (result.status === 419 && !retried) {
+					return fetchToken().then(function (ok) { if (!ok) { return; } list.unshift(rec); return sendNext(list, true); });
+				}
+				if (result.status === 422 || result.status === 403 || result.status === 404) {
+					rec.status = 'rejected';
+					rec.message = errorMessages(result).join(' ') || String(result.status);
+					return store.queuePut(rec).then(function () { return sendNext(list, false); });
+				}
+				state.syncMessage = OT.server_down;
+			});
+		}
+
+		return fetchToken().then(function (ok) {
+			if (!ok) { return; }
+			return sendNext(waiting.slice(), false);
+		}).catch(function () {
+			state.online = false;
+			state.syncMessage = OT.server_down;
+		}).then(finish);
+	}
+
+	function fetchToken() {
+		return request('GET', OFF.session).then(function (result) {
+			if (result.ok && result.data.csrf) { CFG.csrf = result.data.csrf; return true; }
+			state.syncMessage = result.status === 401 || result.ok ? OT.login_needed : OT.server_down;
+			return false;
+		});
+	}
+
+	document.addEventListener('click', function (event) {
+		var target = event.target;
+		var closest = function (selector) { return target.closest ? target.closest(selector) : null; };
+		var local = closest('[data-local-receipt]');
+		if (local) { printLocalReceipt(local.getAttribute('data-local-receipt')); return; }
+		if (closest('#pos-offline-sync')) { syncQueue(); return; }
+		var retry = closest('[data-off-retry]');
+		if (retry) {
+			var rec = state.queue.filter(function (r) { return r.key === retry.getAttribute('data-off-retry'); })[0];
+			if (rec) { rec.status = 'pending'; rec.message = ''; store.queuePut(rec).then(function () { renderNet(); syncQueue(); }); }
+			return;
+		}
+		var discard = closest('[data-off-discard]');
+		if (discard && window.confirm(OT.confirm_discard)) {
+			var key = discard.getAttribute('data-off-discard');
+			state.queue = state.queue.filter(function (r) { return r.key !== key; });
+			store.queueRemove(key).then(renderNet);
+		}
+	});
+
+	document.addEventListener('show.bs.modal', function (event) {
+		if (event.target.id === 'pos-offline') { renderQueue(); }
+	});
+
+	function initOffline() {
+		if (!offlineReady()) { return; }
+		window.addEventListener('online', setOnline);
+		window.addEventListener('offline', goOffline);
+		renderNet();
+		loadQueue().then(function () { if (state.online) { syncQueue(); } });
+		(OFF.warehouses || []).forEach(loadSnapshot);
+		if (state.online) { refreshSnapshots(); }
+		// Retry what is waiting, check whether the connection is back, and keep the saved list fresh.
+		window.setInterval(function () {
+			if (!state.online) {
+				request('GET', OFF.session).then(function () { setOnline(); }).catch(function () {});
+			} else if (state.queue.some(function (rec) { return rec.status !== 'rejected'; })) {
+				syncQueue();
+			}
+		}, 20000);
+		window.setInterval(refreshSnapshots, 10 * 60 * 1000);
+	}
+
 	render();
 	loadProducts();
+	initOffline();
 })();

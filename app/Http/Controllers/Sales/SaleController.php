@@ -30,6 +30,7 @@ class SaleController extends Controller
         $sales = Sale::query()
             ->with(['customer:id,name', 'user:id,name'])
             ->when($request->query('status') === 'unpaid', fn ($q) => $q->where('balance_due', '>', 0))
+            ->when($request->query('status') === 'review', fn ($q) => $q->whereNotNull('review_reason')->whereNull('reviewed_at'))
             ->tap(fn ($q) => Search::apply($q, $request->query('q'), ['number', 'customer.name']));
 
         [$sort, $dir] = Sort::apply($sales, $request, ['number' => 'number', 'date' => 'sold_at', 'total' => 'total', 'balance' => 'balance_due'], 'date', 'desc');
@@ -51,6 +52,7 @@ class SaleController extends Controller
             'sale' => $sale->load(['items', 'payments.user', 'customer', 'user', 'warehouse', 'returns']),
             'format' => $request->query('format') === 'thermal' ? 'thermal' : 'a4',
             'canPay' => Gate::allows('update', $sale),
+            'canReview' => Gate::allows('update', $sale),
             'escpos' => app(IntegrationManager::class)->isActive('printer', 'escpos'),
             'business' => (string) (new TenantSettings)->get('business_name', app(TenantContext::class)->get()->name ?? config('app.name')),
             'footer' => (string) (new TenantSettings)->get('receipt_footer', ''),
@@ -94,6 +96,18 @@ class SaleController extends Controller
             'business' => (string) (new TenantSettings)->get('business_name', app(TenantContext::class)->get()->name ?? config('app.name')),
             'footer' => (string) (new TenantSettings)->get('receipt_footer', ''),
         ])->setPaper('a4')->stream($sale->number.'.pdf');
+    }
+
+    /** The owner has looked at an offline sale that was flagged on sync. */
+    public function markReviewed(Request $request, Sale $sale): RedirectResponse
+    {
+        Gate::authorize('update', $sale);
+
+        if ($sale->needsReview()) {
+            $sale->update(['reviewed_at' => now(), 'reviewed_by' => $request->user()->getKey()]);
+        }
+
+        return redirect()->route('sales.show', $sale)->with('status', __('pos.sales.review.done'));
     }
 
     public function storePayment(PaymentRequest $request, Sale $sale, RecordPaymentAction $action): RedirectResponse
