@@ -84,7 +84,7 @@ npm run build                       # Vite
 composer audit
 ```
 
-Custom artisan commands: `subscriptions:remind`, `stock:low-alerts`, `domains:check`, `errors:test`.
+Custom artisan commands: `subscriptions:remind`, `stock:low-alerts`, `stock:expiry-alerts`, `domains:check`, `errors:test`.
 
 ## 4. Architecture in one page
 
@@ -233,7 +233,7 @@ After a shop verifies a custom domain, add that domain in Railway -> Settings ->
 | Back up / restore | `docs/BACKUPS.md` |
 | Review offline sales | Sales -> Offline sales to check |
 
-Scheduled (Africa/Dar_es_Salaam): `subscriptions:remind` 08:00, `stock:low-alerts` 08:30, `domains:check` hourly. Each shop registers its own AzamPay callback URL.
+Scheduled (Africa/Dar_es_Salaam): `subscriptions:remind` 08:00, `stock:low-alerts` 08:30, `stock:expiry-alerts` 08:40, `domains:check` hourly. Each shop registers its own AzamPay callback URL.
 
 ## 12. Working on the codebase
 
@@ -265,11 +265,10 @@ Claude-Session: <session url>
 
 ## 13. Status and roadmap
 
-Built and in `main`: tenancy, plans and subscriptions, till with offline mode, catalog with import/export and labels, inventory with FIFO/FEFO, purchasing, expenses and reports, promotions, mobile money (AzamPay), notifications (email/SMS), error tracking, custom domains, plan gating, help centre, platform admin.
+Built and in `main`: tenancy, plans and subscriptions, till with offline mode, catalog with import/export and labels, inventory with FIFO/FEFO, purchasing, expenses and reports, promotions, mobile money (AzamPay), notifications (email/SMS, including the daily low-stock and expiry digests), error tracking, custom domains, plan gating, help centre, platform admin.
 
 Open items:
 
-- **Expiry digest** (daily email/SMS for products near expiry): PR #92.
 - **TRA fiscal receipts**, parts 2-3 (sending, QR, connector UI): blocked on TRA test credentials (TIN, `.pfx` certificate, CERTKEY).
 - Manual smoke test on real hardware (thermal printer, drawer, scanner) and a real AzamPay sandbox payment.
 - Possibly retire the `/t/{slug}` entry route once every shop uses its subdomain or custom domain.
