@@ -12,3 +12,4 @@ Artisan::command('inspire', function () {
 Schedule::command('subscriptions:remind')->dailyAt('08:00')->timezone('Africa/Dar_es_Salaam')->withoutOverlapping();
 Schedule::command('stock:low-alerts')->dailyAt('08:30')->timezone('Africa/Dar_es_Salaam')->withoutOverlapping();
 Schedule::command('domains:check')->hourly()->withoutOverlapping();
+Schedule::command('stock:expiry-alerts')->dailyAt('08:40')->timezone('Africa/Dar_es_Salaam')->withoutOverlapping();

@@ -30,6 +30,11 @@ return [
         'body' => ':shop has :count products at or below their alert quantity, for example: :names. Restock soon so you do not run out.',
         'sms' => ':shop: :count products running low (:names). Restock soon.',
     ],
+    'expiry' => [
+        'subject' => ':count products have stock that is expiring',
+        'body' => ':shop has :count products with stock that expires within 30 days (:expired already expired), for example: :names. Sell or remove them in time.',
+        'sms' => ':shop: :count products expiring within 30 days (:expired expired): :names.',
+    ],
     'notice_received' => [
         'subject' => ':shop says it has paid',
         'body' => ':shop sent a payment notice of :amount (transaction :reference). Please confirm it and renew the subscription.',
