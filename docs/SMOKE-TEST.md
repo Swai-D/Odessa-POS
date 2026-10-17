@@ -85,12 +85,67 @@ Use two browser profiles (or a private window) so a platform admin and a shop us
 - [ ] Count less or more than expected: the difference shows red or amber. Try leaving more float than counted: you get a clear message.
 - [ ] A cashier sees only their own closings; the owner/manager/accountant sees everyone's with the cashier name.
 
+## 7g. Plans: promotions and custom domain
+- [ ] Basic shop: **Promotions** is dimmed with a lock; `/promotions` shows the upgrade page naming Medium. The till has no coupon box.
+- [ ] Medium shop: Promotions opens; custom domain (Settings > Domain) shows the upgrade page naming Enterprise. Enterprise opens both.
+- [ ] Create a 10% promotion on a Medium shop, then switch that shop to Basic: the promotion stays in the list data but no longer applies at the till or on a synced offline sale, and no sale is refused.
+- [ ] At **Platform > Plans** give Basic the Promotions feature: the Basic shop gets it at once, with no code change.
+
+## 7h. Promotions and coupons (Medium and up)
+- [ ] Create an automatic promotion (percent, all products): the till shows the discount on the line and the receipt/sale page records the promotion name.
+- [ ] Create a coupon promotion: type the code in the till coupon box; a wrong code gives a clear message; a valid code is used once only when it has a limit.
+- [ ] A promotion outside its dates or hours does not apply.
+
+## 7i. Offline till
+Use Chrome with DevTools > Network > Offline (or switch off Wi-Fi).
+- [ ] Open `/pos` online once, then go offline and reload: the till still loads and search finds products and customers from the saved list.
+- [ ] Make two sales offline: each is saved, the header shows how many are waiting, and receipts can be printed.
+- [ ] Go back online: the queue sends by itself, oldest first; stock and the dashboard update; refreshing or sending again never creates a duplicate.
+- [ ] Sell more than the stock offline: the sale is accepted on sync, stock may go negative, and the sale appears in **Sales > Offline sales to check** with a reason. Mark it reviewed.
+- [ ] Sign out: the cached till is cleared (the next visit needs a sign-in).
+
+## 7j. Settings switches (Settings > Optional features)
+- [ ] Barcode scanner **off**: pressing Enter in the till search does not add an item. **On**: scanning (or typing a code + Enter) adds the product; an unknown code gives a message.
+- [ ] Cash drawer **off**: nothing happens after a cash sale. **On** with a printer connected: the drawer opens after a cash sale (see section 8).
+- [ ] Batch / lot number and expiry date: switching them on shows the lot and expiry fields on purchases and adjustments; switching them off hides them and does not delete old data.
+
+## 7k. Batches and expiry
+- [ ] Receive a purchase with a lot number and expiry date for a product that tracks expiry. Stock > expiry list shows the date and the days left.
+- [ ] Receive a second lot with an earlier expiry, then sell one unit: the earlier lot is used first (FEFO).
+- [ ] A transfer to another warehouse carries the lot and expiry with it.
+- [ ] A product that expires soon shows an expiry badge in the till.
+- [ ] Run `php artisan stock:expiry-alerts`: the owner gets one email/SMS digest; running it again with the same list of products sends nothing more until the repeat period has passed.
+
+## 7l. Barcode labels
+- [ ] Products > select products > print labels: the preview shows the barcode, name and price; EAN-13, UPC-A, EAN-8 and Code 128 values draw correctly.
+- [ ] Print to a real label sheet or label printer: size and margins are right and a phone/scanner reads the code.
+
+## 7m. Notifications (email and SMS)
+Needs `SMS_DRIVER=nextsms`, `NEXTSMS_*`, `SMS_SENDER_ID`, the Resend SMTP settings and `NOTIFY_ADMIN_EMAIL/PHONE`.
+- [ ] A new shop registration reaches the platform admin by email and SMS.
+- [ ] A low-stock digest and a subscription reminder arrive at the shop owner (email and, where a phone is set, SMS).
+- [ ] Wrong SMS credentials do not break the page that triggered the message; the failure is only logged.
+
+## 7n. Custom domain (Enterprise)
+- [ ] Settings > Domain: enter `pos.example.co.tz`; the page shows the TXT record `_odessa-verify.<domain>` and the CNAME target (`CUSTOM_DOMAIN_TARGET`).
+- [ ] Before the DNS exists, **Verify** says what is missing and the pending name does not open the shop.
+- [ ] After adding both records: Verify succeeds, the owner is notified, and the platform admin adds the domain in Railway > Settings > Networking > Custom Domain.
+- [ ] The shop opens on the new domain and its sign-in works; the old `slug.your-domain` link keeps working.
+- [ ] A domain already used by another shop is refused.
+
+## 7o. Error tracking (Sentry)
+- [ ] Set `SENTRY_DSN`, run `php artisan errors:test`: one event appears in Sentry; the same error twice in a short time is reported once.
+- [ ] Cause a JavaScript error in the till (e.g. DevTools console `setTimeout(()=>{throw new Error("smoke")})`): it appears in Sentry as a browser error.
+- [ ] The event contains no email addresses, passwords or database values.
+
 ## 8. Hardware and integrations (needs the real device)
-- [ ] ESC/POS thermal printer through the browser (Web Serial/WebUSB): not tested on real hardware yet.
-- [ ] Barcode scanner (keyboard wedge) in the till search box.
-- [ ] Mobile money and TRA fiscal receipts: not built yet.
+- [ ] ESC/POS thermal printer through the browser (Web Serial/WebUSB): print a receipt; the cash drawer pulse (ESC p) opens a drawer wired to the printer.
+- [ ] Barcode scanner (keyboard wedge) in the till search box, with the scanner switch on.
+- [ ] Mobile money (AzamPay): each shop enters its keys in Integrations and registers its own callback URL with AzamPay; a test payment confirms the sale from the callback; keys are never shown again after saving.
+- [ ] TRA fiscal receipts: not finished; waiting for TRA test credentials (TIN, .pfx certificate, CERTKEY).
 
 ## 9. Production checklist
 - [ ] `.env` uses PostgreSQL, `APP_DEBUG=false`, a real `APP_KEY`, and the tenant header/session overrides are **off**.
 - [ ] Wildcard DNS and TLS for `*.your-domain`; a shop opens on `slug.your-domain`.
-- [ ] Queue worker and scheduler are running; backups of the database are tested by restoring one.
+- [ ] Queue worker and scheduler are running (`subscriptions:remind`, `stock:low-alerts`, `stock:expiry-alerts` and `domains:check` hourly); backups of the database are tested by restoring one.
+- [ ] `POS_TIMEZONE`, `BILLING_*`, `SENTRY_DSN`, `CUSTOM_DOMAIN_TARGET` and the notification variables are set in Railway (see `docs/RAILWAY.md`).
