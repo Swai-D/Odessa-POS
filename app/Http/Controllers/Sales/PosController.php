@@ -121,7 +121,7 @@ class PosController extends Controller
             'allow_decimal' => (bool) ($product->is_weighed || $product->unit?->allow_decimal),
             'unit' => $product->unit?->short_name,
             // Date the oldest stock on the shelf goes off (products that track expiry only).
-            'expiry' => $product->track_expiry && $product->next_expiry ? substr((string) $product->next_expiry, 0, 10) : null,
+            'expiry' => $product->track_expiry && $product->getAttribute('next_expiry') ? substr((string) $product->getAttribute('next_expiry'), 0, 10) : null,
             'initials' => Str::upper(Str::substr($product->name, 0, 2)),
         ];
     }

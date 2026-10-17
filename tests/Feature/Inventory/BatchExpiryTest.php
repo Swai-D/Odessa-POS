@@ -39,7 +39,7 @@ function receiveLot(Tenant $tenant, Product $product, Warehouse $warehouse, floa
     app(TenantContext::class)->run($tenant, fn () => app(StockService::class)->move($product, $warehouse, $qty, $type, unitCost: 1000, lot: $lot));
 }
 
-function sellUnits(Tenant $tenant, Product $product, Warehouse $warehouse, float $qty): void
+function lotSell(Tenant $tenant, Product $product, Warehouse $warehouse, float $qty): void
 {
     app(TenantContext::class)->run($tenant, fn () => app(StockService::class)->move($product, $warehouse, -$qty, StockMovement::SALE));
 }
@@ -72,7 +72,7 @@ it('sells the batch that expires first, even when it arrived later', function ()
     receiveLot($tenant, $product, $warehouse, 5, ['number' => 'A', 'expiry' => '2027-06-01']);
     receiveLot($tenant, $product, $warehouse, 5, ['number' => 'B', 'expiry' => '2027-02-01']);
     receiveLot($tenant, $product, $warehouse, 5, ['number' => 'C', 'expiry' => null]);
-    sellUnits($tenant, $product, $warehouse, 7);
+    lotSell($tenant, $product, $warehouse, 7);
 
     expect(remainingByLot($tenant, $product))->toBe(['A@2027-06-01' => 3.0, 'B@2027-02-01' => 0.0, 'none@-' => 5.0]);
 });
@@ -84,7 +84,7 @@ it('keeps selling the oldest delivery first for products that do not track expir
 
     receiveLot($tenant, $product, $warehouse, 5, ['number' => 'A']);
     receiveLot($tenant, $product, $warehouse, 5, ['number' => 'B']);
-    sellUnits($tenant, $product, $warehouse, 6);
+    lotSell($tenant, $product, $warehouse, 6);
 
     expect(remainingByLot($tenant, $product))->toBe(['A@-' => 0.0, 'B@-' => 4.0]);
 });
