@@ -13,5 +13,8 @@ Verify your sending domain in Resend (SPF/DKIM), then set `MAIL_MAILER=smtp`, `M
 ## SMS (NextSMS)
 Set `SMS_DRIVER=nextsms`, `NEXTSMS_USERNAME`, `NEXTSMS_PASSWORD` and `SMS_SENDER_ID` (a sender ID registered with NextSMS). `NEXTSMS_SEND_PATH` defaults to `/api/sms/v1/text/single` with body `{from, to, text, reference}`; confirm it against the "Send SMS" section of the NextSMS documentation and change it if it differs. With `SMS_DRIVER=log` messages are only written to the log.
 
+## Expiry digest
+`stock:expiry-alerts` runs daily at 08:40 (Africa/Dar_es_Salaam). For products that track expiry it lists those with stock that has already expired or expires within 30 days. Same rules as the low-stock digest: only when the list changed or after 7 days (`expiry_alerts`), shop by shop. Uses the same email/SMS settings; nothing new to configure.
+
 ## Low-stock digest
 `stock:low-alerts` runs daily at 08:30 (Africa/Dar_es_Salaam). It sends the owner one message listing products at or below their alert quantity, only when that list changed since the last digest or after 7 days (`low_stock_alerts`). It works shop by shop inside that shop's tenant context.
