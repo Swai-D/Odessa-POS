@@ -10,6 +10,8 @@
 	if (!CFG) { return; }
 	var T = CFG.i18n;
 	var MM = CFG.mobileMoney || { enabled: false };
+	var SCAN = !!CFG.scanner;
+	var DRAWER = CFG.drawer || { enabled: false };
 	var OFF = CFG.offline || {};
 	var OT = OFF.i18n || {};
 	var store = window.PosOffline;
@@ -157,6 +159,41 @@
 		return state.items.filter(function (item) { return item.id === id; })[0];
 	}
 
+	// Barcode scanner mode (Settings > Barcode scanner): the search box keeps the cursor and the till beeps.
+	var audio = null;
+	function beep(ok) {
+		if (!SCAN) { return; }
+		try {
+			audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+			var osc = audio.createOscillator();
+			var gain = audio.createGain();
+			osc.frequency.value = ok ? 1400 : 300;
+			gain.gain.value = 0.08;
+			osc.connect(gain);
+			gain.connect(audio.destination);
+			osc.start();
+			osc.stop(audio.currentTime + (ok ? 0.08 : 0.35));
+		} catch (error) { /* no sound available */ }
+	}
+
+	function refocusSearch() {
+		if (SCAN && !document.querySelector('.modal.show')) { $('#pos-search').focus(); }
+	}
+
+	// Cash drawer (Settings > Cash drawer): opens through the ESC/POS printer, from the till button or after a cash sale.
+	function openDrawer() {
+		if (!DRAWER.enabled || !window.EscPos) { return; }
+		window.EscPos.sendJob({ data: DRAWER.data, connection: DRAWER.connection, copies: 1 }).catch(function (error) {
+			var message = error && error.message === 'unsupported' ? T.drawer_unsupported : T.drawer_failed.replace(':message', error && error.message ? error.message : '');
+			alertMessage(message, 'warning');
+		});
+	}
+
+	function openDrawerForSale(payload) {
+		var cash = (payload.payments || []).some(function (p) { return p.method === 'cash' && Number(p.amount) > 0; });
+		if (cash) { openDrawer(); }
+	}
+
 	function addProduct(product, quantity) {
 		quantity = quantity || 1;
 		cache[product.id] = product;
@@ -178,7 +215,9 @@
 				allow_decimal: product.allow_decimal, unit: product.unit, category_id: product.category_id, qty: quantity
 			});
 		}
+		beep(true);
 		render();
+		refocusSearch();
 	}
 
 	function setQty(id, value) {
@@ -591,6 +630,7 @@
 				return;
 			}
 			modal('pos-pay').hide();
+			openDrawerForSale(payload);
 			showDone(result.data);
 			clearCart();
 			state.lastAttempt = null;
@@ -598,7 +638,7 @@
 		}).catch(function () {
 			// The connection dropped. If the server did get the sale, sending it again later with the same key returns it.
 			goOffline();
-			if (saveSaleOffline(payload)) { return; }
+			if (saveSaleOffline(payload)) { openDrawerForSale(payload); return; }
 			state.busy = false;
 			updatePaySummary();
 			var error = $('#pos-pay-error');
@@ -816,20 +856,38 @@
 		if (event.key === 'Enter') { event.preventDefault(); applyCoupon(); }
 	});
 
-	// Enter in the search box adds an exact barcode/SKU match (barcode scanners type the code and press Enter).
+	// Enter in the search box. In scanner mode it adds the exact barcode/SKU match (scanners type the code and press
+	// Enter), or sounds an error when there is none. Without scanner mode Enter just runs the search.
 	document.addEventListener('keydown', function (event) {
 		if (event.target.id === 'pos-search' && event.key === 'Enter') {
 			event.preventDefault();
 			window.clearTimeout(searchTimer);
 			var term = event.target.value.trim();
 			if (!term) { return; }
+			if (!SCAN) { loadProducts(); return; }
 			loadProducts(function (products) {
 				var exact = products.filter(function (p) { return p.barcode === term || (p.sku || '').toLowerCase() === term.toLowerCase(); });
 				var match = exact.length ? exact[0] : (products.length === 1 ? products[0] : null);
-				if (match) { addProduct(match, 1); event.target.value = ''; loadProducts(); }
+				if (match) {
+					addProduct(match, 1);
+					event.target.value = '';
+					loadProducts();
+				} else {
+					beep(false);
+					alertMessage(T.scan_not_found.replace(':code', term), 'warning');
+					event.target.select();
+				}
 			});
 		}
 	});
+
+	if (DRAWER.enabled) {
+		$('#pos-open-drawer').addEventListener('click', openDrawer);
+	}
+	if (SCAN) {
+		$('#pos-search').focus();
+		document.addEventListener('hidden.bs.modal', refocusSearch);
+	}
 
 	function applyDiscount() {
 		var type = $('#pos-discount-type').value;

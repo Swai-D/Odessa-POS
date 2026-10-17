@@ -62,6 +62,10 @@
 								<input class="form-check-input" type="checkbox" role="switch" id="feature-{{ $key }}" name="features[{{ $key }}]" value="1" @checked(old('features.'.$key, $enabled))>
 								<label class="form-check-label" for="feature-{{ $key }}">{{ __('settings.feature_names.'.$key) }}</label>
 							</div>
+							<small class="text-muted d-block">{{ __('settings.feature_hints.'.$key) }}</small>
+							@if ($key === 'cash_drawer' && ! $escposActive)
+								<small class="text-warning d-block">{{ __('settings.drawer_needs_printer') }}</small>
+							@endif
 						</div>
 					@endforeach
 				</div>

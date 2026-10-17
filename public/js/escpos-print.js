@@ -54,15 +54,22 @@
 		} finally { await device.releaseInterface(target.iface); }
 	}
 
-	async function print(url) {
-		var response = await fetch(url, { headers: { 'Accept': 'application/json' }, credentials: 'same-origin' });
-		if (!response.ok) { throw new Error('HTTP ' + response.status); }
-		var job = await response.json();
+	// job: { data: base64 bytes, connection: 'usb'|'serial', copies: n }
+	async function sendJob(job) {
 		var bytes = decode(job.data);
-		for (var copy = 0; copy < job.copies; copy++) {
+		for (var copy = 0; copy < (job.copies || 1); copy++) {
 			if (job.connection === 'usb') { await sendUsb(bytes); } else { await sendSerial(bytes); }
 		}
 	}
+
+	async function print(url) {
+		var response = await fetch(url, { headers: { 'Accept': 'application/json' }, credentials: 'same-origin' });
+		if (!response.ok) { throw new Error('HTTP ' + response.status); }
+		await sendJob(await response.json());
+	}
+
+	// The till uses this to open the cash drawer with the same printer connection.
+	window.EscPos = { sendJob: sendJob };
 
 	document.addEventListener('click', function (event) {
 		var button = event.target.closest('#print-thermal');

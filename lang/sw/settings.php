@@ -19,4 +19,12 @@ return [
         'batch_tracking' => 'Ufuatiliaji wa batch',
         'expiry_tracking' => 'Ufuatiliaji wa tarehe ya kuisha',
     ],
+    'feature_hints' => [
+        'barcode_scanner' => 'Till inabaki na kielekezi kwenye kisanduku cha kutafuta, inalia bidhaa ikiongezwa na kutoa sauti ya kosa msimbo usipopatikana. Bila hii, Enter hutafuta tu.',
+        'cash_drawer' => 'Kitufe cha Fungua droo kinaonekana kwenye till, na droo inafunguka mauzo yakiwa na taslimu. Inahitaji droo iliyounganishwa kwenye printa yako ya ESC/POS.',
+        'weighed_products' => 'Hukuruhusu kuweka bidhaa kuuzwa kwa uzito, ili till ikubali idadi za desimali kama kilo 1.25.',
+        'batch_tracking' => 'Hukuruhusu kufuatilia stoo kwa batch kwenye bidhaa; mauzo huchukua batch ya zamani kwanza.',
+        'expiry_tracking' => 'Hukuruhusu kuweka tarehe ya kuisha kwa batch ya bidhaa na kuona kinachoisha karibuni.',
+    ],
+    'drawer_needs_printer' => 'Bado haifanyi kazi: weka kwanza printa ya risiti ya ESC/POS kwenye Integrations.',
 ];

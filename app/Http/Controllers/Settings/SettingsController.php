@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Settings;
 
+use App\Domain\Integrations\Services\IntegrationManager;
 use App\Domain\Integrations\Services\IntegrationRegistry;
 use App\Domain\Settings\Actions\UpdateTenantSettingsAction;
 use App\Http\Controllers\Controller;
@@ -30,6 +31,7 @@ class SettingsController extends Controller
             'receiptFooter' => (string) $settings->get('receipt_footer', ''),
             'currencies' => config('pos.currencies'),
             'features' => $features,
+            'escposActive' => app(IntegrationManager::class)->isActive('printer', 'escpos'),
         ]);
     }
 
