@@ -47,7 +47,7 @@ return [
         'items' => [
             ['label' => 'app.menu.sales', 'icon' => 'ti ti-file-invoice', 'route' => 'sales.index', 'permission' => 'sales.view', 'match' => ['sales.*']],
             ['label' => 'app.menu.quotations', 'icon' => 'ti ti-file-description', 'route' => 'quotations.index', 'permission' => 'sales.view', 'match' => ['quotations.*']],
-            ['label' => 'app.menu.promotions', 'icon' => 'ti ti-discount-2', 'route' => 'promotions.index', 'permission' => 'sales.view', 'match' => ['promotions.*']],
+            ['label' => 'app.menu.promotions', 'icon' => 'ti ti-discount-2', 'route' => 'promotions.index', 'feature' => 'promotions', 'permission' => 'sales.view', 'match' => ['promotions.*']],
             ['label' => 'app.menu.till', 'icon' => 'ti ti-cash', 'route' => 'till-closings.index', 'permission' => ['till.close', 'till.view'], 'match' => ['till-closings.*']],
         ],
     ],
@@ -93,7 +93,7 @@ return [
             ['label' => 'app.menu.users', 'icon' => 'ti ti-users-group', 'route' => 'users.index', 'permission' => 'settings.manage', 'match' => ['users.*']],
             ['label' => 'app.menu.roles', 'icon' => 'ti ti-shield-lock', 'route' => 'roles.index', 'feature' => 'custom_roles', 'permission' => 'settings.manage', 'match' => ['roles.*']],
             ['label' => 'app.menu.audit', 'icon' => 'ti ti-history', 'route' => 'audit.index', 'feature' => 'audit_log', 'permission' => 'audit.view', 'match' => ['audit.*']],
-            ['label' => 'domain.menu', 'icon' => 'ti ti-world-www', 'route' => 'settings.domain', 'permission' => 'settings.manage', 'match' => ['settings.domain*']],
+            ['label' => 'domain.menu', 'icon' => 'ti ti-world-www', 'route' => 'settings.domain', 'feature' => 'custom_domain', 'permission' => 'settings.manage', 'match' => ['settings.domain*']],
             ['label' => 'app.menu.integrations', 'icon' => 'ti ti-plug-connected', 'route' => 'settings.integrations', 'feature' => ['printer', 'mobile_money', 'fiscal'], 'permission' => 'settings.manage', 'match' => ['settings.integrations*']],
         ],
     ],

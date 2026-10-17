@@ -23,5 +23,7 @@ return [
         'custom_roles' => 'Custom roles',
         'audit_log' => 'Audit log',
         'branch_reports' => 'Branch report',
+        'promotions' => 'Promotions and coupons',
+        'custom_domain' => 'Your own web address (custom domain)',
     ],
 ];

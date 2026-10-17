@@ -184,13 +184,13 @@ Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (
     Route::post('/sales/{sale}/review', [SaleController::class, 'markReviewed'])->name('sales.review');
     Route::post('/sales/{sale}/payments', [SaleController::class, 'storePayment'])->name('sales.payments.store');
     Route::post('/sales/{sale}/returns', [SaleReturnController::class, 'store'])->name('sales.returns.store')->middleware('plan:returns');
-    Route::get('/promotions', [PromotionController::class, 'index'])->name('promotions.index');
-    Route::get('/promotions/create', [PromotionController::class, 'create'])->name('promotions.create');
-    Route::post('/promotions', [PromotionController::class, 'store'])->name('promotions.store');
-    Route::get('/promotions/{promotion}/edit', [PromotionController::class, 'edit'])->name('promotions.edit');
-    Route::put('/promotions/{promotion}', [PromotionController::class, 'update'])->name('promotions.update');
-    Route::post('/promotions/{promotion}/toggle', [PromotionController::class, 'toggle'])->name('promotions.toggle');
-    Route::delete('/promotions/{promotion}', [PromotionController::class, 'destroy'])->name('promotions.destroy');
+    Route::get('/promotions', [PromotionController::class, 'index'])->name('promotions.index')->middleware('plan:promotions');
+    Route::get('/promotions/create', [PromotionController::class, 'create'])->name('promotions.create')->middleware('plan:promotions');
+    Route::post('/promotions', [PromotionController::class, 'store'])->name('promotions.store')->middleware('plan:promotions');
+    Route::get('/promotions/{promotion}/edit', [PromotionController::class, 'edit'])->name('promotions.edit')->middleware('plan:promotions');
+    Route::put('/promotions/{promotion}', [PromotionController::class, 'update'])->name('promotions.update')->middleware('plan:promotions');
+    Route::post('/promotions/{promotion}/toggle', [PromotionController::class, 'toggle'])->name('promotions.toggle')->middleware('plan:promotions');
+    Route::delete('/promotions/{promotion}', [PromotionController::class, 'destroy'])->name('promotions.destroy')->middleware('plan:promotions');
     Route::get('/quotations', [QuotationController::class, 'index'])->name('quotations.index');
     Route::get('/quotations/create', [QuotationController::class, 'create'])->name('quotations.create');
     Route::post('/quotations', [QuotationController::class, 'store'])->name('quotations.store');
@@ -235,10 +235,10 @@ Route::middleware(['auth', 'tenant.required', 'subscription'])->group(function (
     Route::middleware('plan:custom_roles')->group(function (): void {
         Route::resource('roles', RoleController::class)->only(['index', 'store', 'update', 'destroy']);
     });
-    Route::get('/settings/domain', [DomainController::class, 'show'])->name('settings.domain');
-    Route::post('/settings/domain', [DomainController::class, 'store'])->middleware('throttle:10,1')->name('settings.domain.store');
-    Route::post('/settings/domain/check', [DomainController::class, 'check'])->middleware('throttle:20,1')->name('settings.domain.check');
-    Route::delete('/settings/domain', [DomainController::class, 'destroy'])->name('settings.domain.destroy');
+    Route::get('/settings/domain', [DomainController::class, 'show'])->name('settings.domain')->middleware('plan:custom_domain');
+    Route::post('/settings/domain', [DomainController::class, 'store'])->middleware('throttle:10,1')->name('settings.domain.store')->middleware('plan:custom_domain');
+    Route::post('/settings/domain/check', [DomainController::class, 'check'])->middleware('throttle:20,1')->name('settings.domain.check')->middleware('plan:custom_domain');
+    Route::delete('/settings/domain', [DomainController::class, 'destroy'])->name('settings.domain.destroy')->middleware('plan:custom_domain');
     Route::get('/settings/integrations', [IntegrationController::class, 'index'])->name('settings.integrations')->middleware('plan:printer,mobile_money,fiscal');
     Route::put('/settings/integrations/{channel}', [IntegrationController::class, 'update'])->name('settings.integrations.update')->middleware('plan:printer,mobile_money,fiscal');
 });

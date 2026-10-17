@@ -266,7 +266,7 @@
 											</div>
 											<a href="javascript:void(0);" class="close-icon" data-pos-action="remove-discount"><i class="ti ti-trash"></i></a>
 										</div>
-										<div class="mt-3" id="pos-coupon-box">
+										<div class="mt-3" id="pos-coupon-box"@unless ($promotionsEnabled) style="display:none"@endunless>
 											<div class="input-group input-group-sm" id="pos-coupon-form">
 												<input type="text" class="form-control text-uppercase" id="pos-coupon-input" maxlength="40" placeholder="{{ __('promotions.till.coupon') }}" autocomplete="off">
 												<button type="button" class="btn btn-white" id="pos-coupon-apply">{{ __('promotions.till.apply') }}</button>

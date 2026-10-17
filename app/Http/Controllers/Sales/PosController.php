@@ -45,6 +45,7 @@ class PosController extends Controller
                 'enabled' => app(IntegrationManager::class)->isActive('payments', 'azampay'),
                 'providers' => PaymentRequest::PROVIDERS,
             ],
+            'promotionsEnabled' => app(PromotionService::class)->enabled(),
             'scanner' => (new TenantSettings)->feature('barcode_scanner'),
             'drawer' => $this->drawer(),
         ]);
