@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Sales;
 
 use App\Domain\Catalog\Models\Category;
 use App\Domain\Catalog\Models\Product;
+use App\Domain\Integrations\Services\EscPosReceipt;
 use App\Domain\Integrations\Services\IntegrationManager;
 use App\Domain\Inventory\Models\Warehouse;
 use App\Domain\People\Models\Customer;
@@ -44,7 +45,26 @@ class PosController extends Controller
                 'enabled' => app(IntegrationManager::class)->isActive('payments', 'azampay'),
                 'providers' => PaymentRequest::PROVIDERS,
             ],
+            'scanner' => (new TenantSettings)->feature('barcode_scanner'),
+            'drawer' => $this->drawer(),
         ]);
+    }
+
+    /**
+     * The cash drawer opens through the ESC/POS printer, so the switch only does something when that printer is set up.
+     *
+     * @return array{enabled: bool, connection: string, data: string}
+     */
+    private function drawer(): array
+    {
+        $printer = app(IntegrationManager::class)->active('printer');
+        $enabled = (new TenantSettings)->feature('cash_drawer') && $printer !== null && $printer['driver'] === 'escpos';
+
+        return [
+            'enabled' => $enabled,
+            'connection' => (string) ($printer['settings']['connection'] ?? 'serial'),
+            'data' => $enabled ? base64_encode(EscPosReceipt::DRAWER_PULSE) : '',
+        ];
     }
 
     /** Product search for the till: by name, SKU or barcode, with stock for the selected warehouse. */

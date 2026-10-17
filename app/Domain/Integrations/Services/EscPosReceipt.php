@@ -12,6 +12,9 @@ class EscPosReceipt
 
     private const GS = "\x1D";
 
+    /** ESC p 0 25 250: pulse pin 2 for 50 ms, then rest 500 ms. Opens a cash drawer wired to the printer's RJ11 socket. */
+    public const DRAWER_PULSE = "\x1B\x70\x00\x19\xFA";
+
     public function build(Sale $sale, string $business, string $footer, int $paperWidth = 80, bool $cut = true): string
     {
         $cols = $paperWidth === 58 ? 32 : 48;

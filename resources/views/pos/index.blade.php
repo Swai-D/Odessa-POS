@@ -42,6 +42,13 @@
 				</li>
 				<!-- /Search -->
 
+				@if ($drawer['enabled'])
+				<li class="nav-item">
+					<a href="javascript:void(0);" id="pos-open-drawer" class="btn btn-sm btn-white d-inline-flex align-items-center" title="{{ __('pos.screen.drawer_open') }}">
+						<i class="ti ti-cash me-1"></i>{{ __('pos.screen.drawer_open') }}
+					</a>
+				</li>
+				@endif
 				<li class="nav-item">
 					<a href="javascript:void(0);" id="pos-net" class="btn btn-sm btn-white d-inline-flex align-items-center" data-bs-toggle="modal" data-bs-target="#pos-offline">
 						<i class="ti ti-circle-filled me-1 text-success" id="pos-net-dot"></i><span id="pos-net-text">{{ __('offline.online') }}</span>
@@ -566,6 +573,8 @@
 			timezone: @json($timezone),
 			checkout: @json(route('pos.checkout'))
 		},
+		scanner: @json($scanner),
+		drawer: @json($drawer),
 		mobileMoney: {
 			enabled: @json($mobileMoney['enabled']),
 			providers: @json($mobileMoney['providers']),
@@ -586,6 +595,9 @@
 		}
 	};
 </script>
+@if ($drawer['enabled'])
+<script src="{{ asset('js/escpos-print.js') }}"></script>
+@endif
 <script src="{{ asset('js/pos-calc.js') }}"></script>
 <script src="{{ asset('js/pos-promo.js') }}"></script>
 <script src="{{ asset('js/pos-offline.js') }}"></script>
