@@ -10,7 +10,7 @@ Odessa POS has three plans. All of them include the till, products, stock, sales
 
 {{plans-table}}
 
-Prices are in the shop currency and are the ones your supplier has set. A shop on a free trial can use the Medium features until the trial ends. The receipt printer is in every plan; mobile money starts at Medium; **TRA fiscal receipts** are reserved for Enterprise, but that connection is not available yet. See [Integrations](help:settings/integrations).
+Prices are in the shop currency and are the ones your supplier has set. A shop on a free trial can use the Medium features until the trial ends. The receipt printer is in every plan; mobile money and **promotions and coupons** start at Medium; a **custom domain** is for Enterprise; **TRA fiscal receipts** are reserved for Enterprise, but that connection is not available yet. See [Integrations](help:settings/integrations).
 
 ## How you see what is locked
 

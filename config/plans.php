@@ -37,7 +37,7 @@ return [
 
     // Every feature a plan can switch on. Everything not listed here (POS, products, stock, sales,
     // customers, settings...) is part of every plan.
-    'features' => ['returns', 'credit_sales', 'brands', 'purchasing', 'printer', 'reports', 'expenses', 'mobile_money', 'fiscal', 'priority_support', 'custom_roles', 'audit_log', 'branch_reports'],
+    'features' => ['returns', 'credit_sales', 'brands', 'purchasing', 'printer', 'reports', 'expenses', 'mobile_money', 'fiscal', 'priority_support', 'custom_roles', 'audit_log', 'branch_reports', 'promotions', 'custom_domain'],
 
     'plans' => [
         'basic' => [
@@ -46,7 +46,7 @@ return [
         ],
         'medium' => [
             'inherits' => 'basic',
-            'features' => ['brands', 'purchasing', 'reports', 'expenses', 'mobile_money'],
+            'features' => ['brands', 'purchasing', 'reports', 'expenses', 'mobile_money', 'promotions'],
             'limits' => ['users' => 10, 'warehouses' => 3, 'storage_mb' => 500],
         ],
         'enterprise' => [

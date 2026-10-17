@@ -10,7 +10,7 @@ Odessa POS ina mipango mitatu. Yote ina till, bidhaa, stock, mauzo, wateja, mipa
 
 {{plans-table}}
 
-Bei ni za sarafu ya duka na ndizo alizoweka msambazaji wako. Duka lililo kwenye majaribio ya bure linaweza kutumia huduma za Medium hadi majaribio yaishe. Printa ya risiti ipo kwenye kila mpango; malipo ya simu yanaanza Medium; **Risiti za TRA** zimetengewa Enterprise, lakini muunganisho huo bado haupatikani. Soma [Miunganisho](help:settings/integrations).
+Bei ni za sarafu ya duka na ndizo alizoweka msambazaji wako. Duka lililo kwenye majaribio ya bure linaweza kutumia huduma za Medium hadi majaribio yaishe. Printa ya risiti ipo kwenye kila mpango; malipo ya simu na **promosheni na kuponi** zinaanza Medium; **domain yako mwenyewe** ni kwa Enterprise; **Risiti za TRA** zimetengewa Enterprise, lakini muunganisho huo bado haupatikani. Soma [Miunganisho](help:settings/integrations).
 
 ## Unaonaje kipi kimefungwa
 

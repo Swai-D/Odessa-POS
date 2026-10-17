@@ -23,5 +23,7 @@ return [
         'custom_roles' => 'Majukumu maalum',
         'audit_log' => 'Kumbukumbu za shughuli',
         'branch_reports' => 'Ripoti ya matawi',
+        'promotions' => 'Promosheni na kuponi',
+        'custom_domain' => 'Anwani yako ya wavuti (custom domain)',
     ],
 ];
