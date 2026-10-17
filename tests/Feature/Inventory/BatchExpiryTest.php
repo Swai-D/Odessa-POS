@@ -74,7 +74,7 @@ it('sells the batch that expires first, even when it arrived later', function ()
     receiveLot($tenant, $product, $warehouse, 5, ['number' => 'C', 'expiry' => null]);
     lotSell($tenant, $product, $warehouse, 7);
 
-    expect(remainingByLot($tenant, $product))->toBe(['A@2027-06-01' => 3.0, 'B@2027-02-01' => 0.0, 'none@-' => 5.0]);
+    expect(remainingByLot($tenant, $product))->toBe(['A@2027-06-01' => 3.0, 'B@2027-02-01' => 0.0, 'C@-' => 5.0]);
 });
 
 it('keeps selling the oldest delivery first for products that do not track expiry', function (): void {
