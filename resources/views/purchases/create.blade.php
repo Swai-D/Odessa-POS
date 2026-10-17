@@ -56,6 +56,8 @@
 								<th>{{ __('purchases.product') }}</th>
 								<th style="width: 130px;">{{ __('purchases.qty') }}</th>
 								<th style="width: 160px;">{{ __('purchases.unit_cost') }}</th>
+								@if ($lotColumns['batch'])<th style="width: 150px;">{{ __('purchases.batch_number') }}</th>@endif
+								@if ($lotColumns['expiry'])<th style="width: 170px;">{{ __('purchases.expiry_date') }}</th>@endif
 								<th class="text-end" style="width: 160px;">{{ __('purchases.line_total') }}</th>
 								<th style="width: 40px;"></th>
 							</tr>
@@ -63,7 +65,7 @@
 						<tbody></tbody>
 						<tfoot>
 							<tr>
-								<td colspan="3" class="text-end fw-bold">{{ __('purchases.total') }}</td>
+								<td colspan="{{ 3 + (int) $lotColumns['batch'] + (int) $lotColumns['expiry'] }}" class="text-end fw-bold">{{ __('purchases.total') }}</td>
 								<td class="text-end fw-bold" id="grand-total">0.00</td>
 								<td></td>
 							</tr>
@@ -124,6 +126,9 @@
 		var pickMessage = @json(__('catalog.pick_product'));
 		var placeholder = @json(__('catalog.search_product'));
 		var oldItems = @json(old('items', []));
+		var restoredFlags = @json($restoredFlags);
+		var lotColumns = @json($lotColumns);
+		var lotHint = @json(__('purchases.lot_not_tracked'));
 		var body = document.querySelector('#lines tbody');
 		var counter = 0;
 
@@ -141,6 +146,14 @@
 			document.getElementById('grand-total').textContent = format(total);
 		}
 
+		// Batch number and expiry date can only be typed for products that track them.
+		function applyFlags(row, batch, expiry) {
+			var b = row.querySelector('.line-batch');
+			var e = row.querySelector('.line-expiry');
+			if (b) { b.disabled = !batch; if (!batch) { b.value = ''; } }
+			if (e) { e.disabled = !expiry; if (!expiry) { e.value = ''; } }
+		}
+
 		function addLine(item) {
 			var i = counter++;
 			var row = document.createElement('tr');
@@ -151,6 +164,8 @@
 					'<input type="hidden" class="line-product" name="items[' + i + '][product_id]"></div></td>' +
 				'<td><input type="number" class="form-control line-qty" name="items[' + i + '][quantity]" min="0.001" step="any" required></td>' +
 				'<td><input type="number" class="form-control line-cost" name="items[' + i + '][unit_cost]" min="0" step="0.01" required></td>' +
+				(lotColumns.batch ? '<td><input type="text" class="form-control line-batch" name="items[' + i + '][batch_number]" maxlength="60" disabled title="' + lotHint + '"></td>' : '') +
+				(lotColumns.expiry ? '<td><input type="date" class="form-control line-expiry" name="items[' + i + '][expiry_date]" disabled title="' + lotHint + '"></td>' : '') +
 				'<td class="text-end line-total">0.00</td>' +
 				'<td><a href="javascript:void(0);" class="text-danger line-remove"><i class="ti ti-trash"></i></a></td>';
 			body.appendChild(row);
@@ -161,9 +176,14 @@
 				picker.querySelector('input[type="text"]').value = restoredProducts[item.product_id] || '';
 				row.querySelector('.line-qty').value = item.quantity || '';
 				row.querySelector('.line-cost').value = item.unit_cost || '';
+				var flags = restoredFlags[item.product_id] || {};
+				applyFlags(row, flags.batch, flags.expiry);
+				if (row.querySelector('.line-batch')) { row.querySelector('.line-batch').value = item.batch_number || ''; }
+				if (row.querySelector('.line-expiry')) { row.querySelector('.line-expiry').value = item.expiry_date || ''; }
 			}
 			ProductPicker.attach(picker, function (product) {
 				row.querySelector('.line-cost').value = product.cost;
+				applyFlags(row, product.track_batch, product.track_expiry);
 				recalc();
 			});
 			row.querySelectorAll('input').forEach(function (input) { input.addEventListener('input', recalc); });

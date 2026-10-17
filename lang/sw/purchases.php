@@ -60,4 +60,7 @@ return [
         'exceeds_balance' => 'Malipo ni zaidi ya salio.',
         'method_required' => 'Chagua njia ya malipo.',
     ],
+    'batch_number' => 'Namba ya batch',
+    'expiry_date' => 'Tarehe ya kuisha',
+    'lot_not_tracked' => 'Bidhaa hii haifuatilii batch wala tarehe ya kuisha',
 ];

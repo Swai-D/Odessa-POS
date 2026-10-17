@@ -38,7 +38,8 @@ class SaveProductAction
         $saved = DB::transaction(function () use ($data, $product, $user): Product {
             $openingQuantity = (float) ($data['opening_quantity'] ?? 0);
             $warehouseId = $data['warehouse_id'] ?? null;
-            unset($data['opening_quantity'], $data['warehouse_id']);
+            $openingLot = ['number' => $data['opening_batch_number'] ?? null, 'expiry' => $data['opening_expiry_date'] ?? null];
+            unset($data['opening_quantity'], $data['warehouse_id'], $data['opening_batch_number'], $data['opening_expiry_date']);
 
             $data['cost_price'] = Money::toMinor($data['cost_price']);
             $data['selling_price'] = Money::toMinor($data['selling_price']);
@@ -73,6 +74,7 @@ class SaveProductAction
                     __('inventory.opening_stock'),
                     $user,
                     unitCost: $product->cost_price,
+                    lot: $openingLot,
                 );
             }
 

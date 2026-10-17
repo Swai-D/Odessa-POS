@@ -28,7 +28,7 @@ class CreatePurchaseAction
     /**
      * Money values are integer minor units.
      *
-     * @param  array{idempotency_key: string, supplier_id: int|string, warehouse_id: int|string, reference?: string|null, note?: string|null, update_cost?: bool, items: list<array{product_id: int|string, quantity: float|int|string, unit_cost: int}>, payments?: list<array{method: string, amount: int, reference?: string|null}>}  $data
+     * @param  array{idempotency_key: string, supplier_id: int|string, warehouse_id: int|string, reference?: string|null, note?: string|null, update_cost?: bool, items: list<array{product_id: int|string, quantity: float|int|string, unit_cost: int, batch_number?: string|null, expiry_date?: string|null}>, payments?: list<array{method: string, amount: int, reference?: string|null}>}  $data
      * @return array{purchase: Purchase, created: bool}
      */
     public function handle(array $data, ?User $user): array
@@ -60,38 +60,45 @@ class CreatePurchaseAction
     {
         $warehouse = Warehouse::query()->where('is_active', true)->findOrFail($data['warehouse_id']);
 
-        // Merge repeated products so each gets one line and one stock movement.
-        $lines = [];
-        foreach ($data['items'] as $row) {
-            $id = (int) $row['product_id'];
-            $quantity = round((float) $row['quantity'], 3);
+        $products = Product::query()->with('unit')->where('is_active', true)
+            ->whereIn('id', array_unique(array_map(fn (array $row): int => (int) $row['product_id'], $data['items'])))
+            ->orderBy('id')->get()->keyBy('id');
 
-            if (isset($lines[$id])) {
-                if ($lines[$id]['unit_cost'] !== (int) $row['unit_cost']) {
-                    throw ValidationException::withMessages(['items' => __('purchases.errors.cost_mismatch')]);
-                }
-                $lines[$id]['quantity'] = round($lines[$id]['quantity'] + $quantity, 3);
-            } else {
-                $lines[$id] = ['quantity' => $quantity, 'unit_cost' => (int) $row['unit_cost']];
-            }
-        }
-
-        $products = Product::query()->with('unit')->where('is_active', true)->whereIn('id', array_keys($lines))->orderBy('id')->get();
-
-        if ($products->count() !== count($lines)) {
+        if ($products->count() !== count(array_unique(array_map(fn (array $row): int => (int) $row['product_id'], $data['items'])))) {
             throw ValidationException::withMessages(['items' => __('pos.errors.product_unavailable')]);
         }
 
+        // Merge repeated products so each gets one line and one stock movement. Stock with a different batch
+        // number or expiry date stays a line of its own, because it becomes its own batch on the shelf.
+        $lines = [];
+        foreach ($data['items'] as $row) {
+            $id = (int) $row['product_id'];
+            $product = $products[$id];
+            $quantity = round((float) $row['quantity'], 3);
+            $number = $product->track_batch ? (trim((string) ($row['batch_number'] ?? '')) ?: null) : null;
+            $expiry = $product->track_expiry ? ($row['expiry_date'] ?? null) : null;
+            $key = $id.'|'.$number.'|'.$expiry;
+
+            if (isset($lines[$key])) {
+                if ($lines[$key]['unit_cost'] !== (int) $row['unit_cost']) {
+                    throw ValidationException::withMessages(['items' => __('purchases.errors.cost_mismatch')]);
+                }
+                $lines[$key]['quantity'] = round($lines[$key]['quantity'] + $quantity, 3);
+            } else {
+                $lines[$key] = ['product_id' => $id, 'quantity' => $quantity, 'unit_cost' => (int) $row['unit_cost'], 'batch_number' => $number, 'expiry_date' => $expiry];
+            }
+        }
+
         $total = 0;
-        foreach ($products as $product) {
-            $line = $lines[$product->getKey()];
+        foreach ($lines as $key => $line) {
+            $product = $products[$line['product_id']];
 
             if (! ($product->is_weighed || $product->unit?->allow_decimal) && fmod($line['quantity'], 1.0) !== 0.0) {
                 throw ValidationException::withMessages(['items' => __('purchases.errors.whole_quantity', ['product' => $product->name])]);
             }
 
-            $lines[$product->getKey()]['total'] = (int) round($line['quantity'] * $line['unit_cost']);
-            $total += $lines[$product->getKey()]['total'];
+            $lines[$key]['total'] = (int) round($line['quantity'] * $line['unit_cost']);
+            $total += $lines[$key]['total'];
         }
 
         $payments = $data['payments'] ?? [];
@@ -123,8 +130,8 @@ class CreatePurchaseAction
             'purchased_at' => now(),
         ]);
 
-        foreach ($products as $product) {
-            $line = $lines[$product->getKey()];
+        foreach ($lines as $line) {
+            $product = $products[$line['product_id']];
 
             $purchase->items()->create([
                 'product_id' => $product->getKey(),
@@ -133,10 +140,15 @@ class CreatePurchaseAction
                 'quantity' => $line['quantity'],
                 'unit_cost' => $line['unit_cost'],
                 'total' => $line['total'],
+                'batch_number' => $line['batch_number'],
+                'expiry_date' => $line['expiry_date'],
             ]);
 
             if ($product->track_stock) {
-                $this->stock->move($product, $warehouse, $line['quantity'], StockMovement::PURCHASE, $purchase->number, $user, $purchase, unitCost: $line['unit_cost']);
+                $this->stock->move(
+                    $product, $warehouse, $line['quantity'], StockMovement::PURCHASE, $purchase->number, $user, $purchase,
+                    unitCost: $line['unit_cost'], lot: ['number' => $line['batch_number'], 'expiry' => $line['expiry_date']],
+                );
             }
 
             // Only the reference cost shown on the product; stock already on the shelf keeps the cost it was bought at.

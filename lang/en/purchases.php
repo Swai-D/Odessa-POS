@@ -60,4 +60,7 @@ return [
         'exceeds_balance' => 'The payment is more than the balance due.',
         'method_required' => 'Choose how the payment was made.',
     ],
+    'batch_number' => 'Batch no.',
+    'expiry_date' => 'Expiry date',
+    'lot_not_tracked' => 'This product does not track batches or expiry',
 ];

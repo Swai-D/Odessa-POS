@@ -109,6 +109,24 @@
 							<input type="number" step="0.001" min="0.001" name="quantity" class="form-control" value="{{ old('quantity') }}" required>
 						</div>
 					</div>
+					@php($lots = new \App\Support\TenantSettings)
+					@if ($lots->feature('batch_tracking') || $lots->feature('expiry_tracking'))
+						<div class="row">
+							@if ($lots->feature('batch_tracking'))
+								<div class="col-6 mb-3">
+									<label class="form-label">{{ __('purchases.batch_number') }}</label>
+									<input type="text" name="batch_number" class="form-control" maxlength="60" value="{{ old('batch_number') }}">
+								</div>
+							@endif
+							@if ($lots->feature('expiry_tracking'))
+								<div class="col-6 mb-3">
+									<label class="form-label">{{ __('purchases.expiry_date') }}</label>
+									<input type="date" name="expiry_date" class="form-control" value="{{ old('expiry_date') }}">
+								</div>
+							@endif
+							<div class="col-12 mb-3"><small class="text-muted">{{ __('inventory.lot_hint') }}</small></div>
+						</div>
+					@endif
 					<div class="mb-0">
 						<label class="form-label">{{ __('inventory.fields.reason') }}<span class="text-danger ms-1">*</span></label>
 						<input type="text" name="reason" class="form-control" value="{{ old('reason') }}" required>

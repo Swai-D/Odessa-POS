@@ -24,6 +24,7 @@ class StockService
      * @param  int|null  $unitCost  cost per unit (minor units) of incoming stock; becomes the cost of its batch
      * @param  StockMovement|null  $origin  the sale movement a return undoes, or the transfer-out a transfer-in completes
      * @param  bool  $allowNegative  only for a sale the till already made offline: the goods left the shop, so the ledger must show it
+     * @param  array{number?: string|null, expiry?: string|null}|null  $lot  batch number and expiry date of incoming stock; kept only for products that track them
      *
      * @throws InsufficientStockException when the result would be below zero (unless $allowNegative)
      */
@@ -38,10 +39,11 @@ class StockService
         ?int $unitCost = null,
         ?StockMovement $origin = null,
         bool $allowNegative = false,
+        ?array $lot = null,
     ): StockMovement {
         $delta = round((float) $delta, 3);
 
-        return DB::transaction(function () use ($product, $warehouse, $delta, $type, $reason, $user, $reference, $unitCost, $origin, $allowNegative): StockMovement {
+        return DB::transaction(function () use ($product, $warehouse, $delta, $type, $reason, $user, $reference, $unitCost, $origin, $allowNegative, $lot): StockMovement {
             $stock = ProductStock::query()
                 ->where('product_id', $product->getKey())
                 ->where('warehouse_id', $warehouse->getKey())
@@ -78,7 +80,7 @@ class StockService
                 'reference_id' => $reference?->getKey(),
             ]);
 
-            $this->batches->apply($movement, $product, $warehouse, $unitCost, $origin);
+            $this->batches->apply($movement, $product, $warehouse, $unitCost, $origin, $lot);
 
             return $movement;
         });

@@ -10,6 +10,8 @@ return [
         'short_name' => 'Short Name',
         'allow_decimal' => 'Allow Decimals',
         'sku' => 'SKU',
+        'opening_batch_number' => 'Opening batch number',
+        'opening_expiry_date' => 'Opening expiry date',
         'barcode' => 'Barcode',
         'category' => 'Category',
         'brand' => 'Brand',

@@ -23,8 +23,9 @@ class StockBatchService
     /**
      * @param  int|null  $unitCost  cost of the incoming units in minor units; falls back to the latest known cost
      * @param  StockMovement|null  $origin  the sale movement a return undoes, or the transfer-out a transfer-in completes
+     * @param  array{number?: string|null, expiry?: string|null}|null  $lot  batch number and expiry date of incoming stock
      */
-    public function apply(StockMovement $movement, Product $product, Warehouse $warehouse, ?int $unitCost, ?StockMovement $origin): void
+    public function apply(StockMovement $movement, Product $product, Warehouse $warehouse, ?int $unitCost, ?StockMovement $origin, ?array $lot = null): void
     {
         $quantity = round((float) $movement->quantity, 3);
 
@@ -34,7 +35,7 @@ class StockBatchService
             return;
         }
 
-        $this->applyIncoming($movement, $product, $warehouse, $unitCost, $origin, $quantity);
+        $this->applyIncoming($movement, $product, $warehouse, $unitCost, $origin, $quantity, $lot);
 
         // Only stock that arrives into a deficit (left by an offline sale) needs the batches trimmed.
         if (round((float) $movement->balance_after - $quantity, 3) < 0) {
@@ -42,7 +43,7 @@ class StockBatchService
         }
     }
 
-    private function applyIncoming(StockMovement $movement, Product $product, Warehouse $warehouse, ?int $unitCost, ?StockMovement $origin, float $quantity): void
+    private function applyIncoming(StockMovement $movement, Product $product, Warehouse $warehouse, ?int $unitCost, ?StockMovement $origin, float $quantity, ?array $lot): void
     {
         if ($quantity === 0.0) {
             return;
@@ -60,7 +61,7 @@ class StockBatchService
             return;
         }
 
-        $this->receive($product, $warehouse, $quantity, $unitCost ?? $this->defaultCost($product, $warehouse), $movement->type, $movement);
+        $this->receive($product, $warehouse, $quantity, $unitCost ?? $this->defaultCost($product, $warehouse), $movement->type, $movement, null, $this->lotFor($product, $lot));
     }
 
     /**
@@ -112,6 +113,7 @@ class StockBatchService
         string $source,
         ?StockMovement $movement = null,
         ?DateTimeInterface $receivedAt = null,
+        ?array $lot = null,
     ): StockBatch {
         return StockBatch::create([
             'product_id' => $product->getKey(),
@@ -123,7 +125,25 @@ class StockBatchService
             'source' => $source,
             'reference_type' => $movement?->reference_type,
             'reference_id' => $movement?->reference_id,
+            'batch_number' => $lot['number'] ?? null,
+            'expiry_date' => $lot['expiry'] ?? null,
         ]);
+    }
+
+    /**
+     * Only what the product tracks is kept: a batch number when it tracks batches, an expiry date when it tracks expiry.
+     *
+     * @param  array{number?: string|null, expiry?: string|null}|null  $lot
+     * @return array{number: string|null, expiry: string|null}
+     */
+    private function lotFor(Product $product, ?array $lot): array
+    {
+        $number = trim((string) ($lot['number'] ?? ''));
+
+        return [
+            'number' => $product->track_batch && $number !== '' ? $number : null,
+            'expiry' => $product->track_expiry && ! empty($lot['expiry']) ? (string) $lot['expiry'] : null,
+        ];
     }
 
     /** Take $quantity from the oldest batches first. Whatever the batches cannot cover is costed at the product's cost. */
@@ -135,6 +155,8 @@ class StockBatchService
             ->where('product_id', $product->getKey())
             ->where('warehouse_id', $warehouse->getKey())
             ->where('quantity_remaining', '>', 0)
+            // Products that expire sell the batch that goes off first (FEFO); batches without a date come last.
+            ->when($product->track_expiry, fn ($q) => $q->orderByRaw('CASE WHEN expiry_date IS NULL THEN 1 ELSE 0 END')->orderBy('expiry_date'))
             ->orderBy('received_at')
             ->orderBy('id')
             ->lockForUpdate()
@@ -246,6 +268,7 @@ class StockBatchService
                 StockBatch::SOURCE_TRANSFER,
                 $movement,
                 $allocation->batch?->received_at,
+                ['number' => $allocation->batch?->batch_number, 'expiry' => $allocation->batch?->expiry_date?->format('Y-m-d')],
             );
         }
     }

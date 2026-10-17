@@ -194,6 +194,13 @@
 		if (cash) { openDrawer(); }
 	}
 
+	// 'expired', 'soon' (within 30 days) or null, from the date the oldest stock goes off.
+	function expiryState(date) {
+		if (!date) { return null; }
+		var days = Math.floor((new Date(date + 'T23:59:59') - new Date()) / 86400000);
+		return days < 0 ? 'expired' : (days <= 30 ? 'soon' : null);
+	}
+
 	function addProduct(product, quantity) {
 		quantity = quantity || 1;
 		cache[product.id] = product;
@@ -205,6 +212,9 @@
 			return;
 		}
 		alertMessage(null);
+		if (expiryState(product.expiry) === 'expired') {
+			alertMessage(T.expired_warning.replace(':name', product.name).replace(':date', product.expiry), 'warning');
+		}
 
 		if (item) {
 			item.qty = next;
@@ -303,6 +313,10 @@
 			var stock = p.track_stock && p.stock !== null
 				? '<span class="badge ' + (out ? 'bg-danger' : 'bg-light text-gray-9 border') + ' fs-10">' + (out ? esc(T.out_of_stock) : qtyText(p.stock) + (p.unit ? ' ' + esc(p.unit) : '')) + '</span>'
 				: '';
+			var exp = expiryState(p.expiry);
+			if (exp) {
+				stock += ' <span class="badge ' + (exp === 'expired' ? 'bg-danger' : 'bg-warning') + ' fs-10">' + esc(exp === 'expired' ? T.expired : T.expires) + ' ' + esc(p.expiry) + '</span>';
+			}
 			return '<div class="col-sm-6 col-md-6 col-lg-6 col-xl-4 col-xxl-3">' +
 				'<div class="product-info card mb-0' + (findItem(p.id) ? ' active' : '') + '" data-id="' + p.id + '" style="' + (out ? 'opacity:.55;' : '') + '">' +
 				'<a href="javascript:void(0);" class="pro-img">' +

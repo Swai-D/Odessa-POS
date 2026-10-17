@@ -195,6 +195,22 @@
 									@endif
 								</div>
 							</div>
+							@if ($settings->feature('batch_tracking'))
+								<div class="col-sm-4 col-12">
+									<div class="mb-3">
+										<label class="form-label">{{ __('catalog.fields.opening_batch_number') }}</label>
+										<input type="text" name="opening_batch_number" class="form-control" maxlength="60" value="{{ old('opening_batch_number') }}">
+									</div>
+								</div>
+							@endif
+							@if ($settings->feature('expiry_tracking'))
+								<div class="col-sm-4 col-12">
+									<div class="mb-3">
+										<label class="form-label">{{ __('catalog.fields.opening_expiry_date') }}</label>
+										<input type="date" name="opening_expiry_date" class="form-control" value="{{ old('opening_expiry_date') }}">
+									</div>
+								</div>
+							@endif
 						@endunless
 					</div>
 				</div>

@@ -30,6 +30,8 @@ class StockAdjustmentRequest extends FormRequest
             'direction' => ['required', Rule::in(['in', 'out'])],
             'quantity' => ['required', 'numeric', 'gt:0', 'max:99999999'],
             'reason' => ['required', 'string', 'max:255'],
+            'batch_number' => ['nullable', 'string', 'max:60'],
+            'expiry_date' => ['nullable', 'date_format:Y-m-d'],
         ];
     }
 }

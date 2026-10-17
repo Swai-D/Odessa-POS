@@ -15,6 +15,7 @@ use App\Http\Requests\PurchaseRequest;
 use App\Support\Money;
 use App\Support\Search;
 use App\Support\Sort;
+use App\Support\TenantSettings;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -56,6 +57,12 @@ class PurchaseController extends Controller
                 ->get(['id', 'name', 'sku'])
                 ->mapWithKeys(fn (Product $p): array => [$p->getKey() => $p->name.' ('.$p->sku.')'])
                 ->all(),
+            'restoredFlags' => Product::query()
+                ->whereKey(collect(old('items', []))->pluck('product_id')->filter()->all())
+                ->get(['id', 'track_batch', 'track_expiry'])
+                ->mapWithKeys(fn (Product $p): array => [$p->getKey() => ['batch' => (bool) $p->track_batch, 'expiry' => (bool) $p->track_expiry]])
+                ->all(),
+            'lotColumns' => ['batch' => (new TenantSettings)->feature('batch_tracking'), 'expiry' => (new TenantSettings)->feature('expiry_tracking')],
             'methods' => Payment::methods(),
             'idempotencyKey' => (string) Str::uuid(),
         ]);
@@ -78,6 +85,8 @@ class PurchaseController extends Controller
                 'product_id' => $row['product_id'],
                 'quantity' => $row['quantity'],
                 'unit_cost' => Money::toMinor($row['unit_cost']),
+                'batch_number' => $row['batch_number'] ?? null,
+                'expiry_date' => $row['expiry_date'] ?? null,
             ], array_values($data['items'])),
             'payments' => [],
         ];

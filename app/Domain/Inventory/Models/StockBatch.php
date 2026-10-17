@@ -13,6 +13,7 @@ use Illuminate\Support\Carbon;
  * One receipt of stock with the unit cost it was bought at. quantity_remaining is what is still on the shelf.
  *
  * @property Carbon $received_at
+ * @property Carbon|null $expiry_date
  */
 class StockBatch extends Model
 {
@@ -26,7 +27,7 @@ class StockBatch extends Model
 
     protected $fillable = [
         'product_id', 'warehouse_id', 'unit_cost', 'quantity_received', 'quantity_remaining',
-        'received_at', 'source', 'reference_type', 'reference_id',
+        'received_at', 'source', 'reference_type', 'reference_id', 'batch_number', 'expiry_date',
     ];
 
     protected function casts(): array
@@ -36,6 +37,7 @@ class StockBatch extends Model
             'quantity_received' => 'decimal:3',
             'quantity_remaining' => 'decimal:3',
             'received_at' => 'datetime',
+            'expiry_date' => 'date',
         ];
     }
 
