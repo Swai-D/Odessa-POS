@@ -6,6 +6,7 @@ use App\Models\PaymentNotice;
 use App\Models\Tenant;
 use App\Models\TenantPayment;
 use App\Notifications\DomainVerifiedNotification;
+use App\Notifications\ExpiryNotification;
 use App\Notifications\LowStockNotification;
 use App\Notifications\PaymentNoticeReceivedNotification;
 use App\Notifications\PaymentReceivedNotification;
@@ -49,6 +50,12 @@ class ShopNotifier
     public function lowStock(Tenant $tenant, int $count, array $names): void
     {
         $this->toOwner($tenant, fn (): ShopNotification => new LowStockNotification($tenant->name, $count, implode(', ', $names)));
+    }
+
+    /** @param  array<int, string>  $names  The first few product names, for the message. */
+    public function expiry(Tenant $tenant, int $count, int $expired, array $names): void
+    {
+        $this->toOwner($tenant, fn (): ShopNotification => new ExpiryNotification($tenant->name, $count, $expired, implode(', ', $names)));
     }
 
     public function paymentNoticeReceived(Tenant $tenant, PaymentNotice $notice): void

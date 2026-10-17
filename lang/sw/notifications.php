@@ -30,6 +30,11 @@ return [
         'body' => ':shop ina bidhaa :count zilizofika au kushuka chini ya kiwango cha tahadhari, mfano: :names. Ongeza stoo mapema usije kuishiwa.',
         'sms' => ':shop: bidhaa :count zinaisha (:names). Ongeza stoo mapema.',
     ],
+    'expiry' => [
+        'subject' => 'Bidhaa :count zina stoo inayokaribia kuisha muda',
+        'body' => ':shop ina bidhaa :count zenye stoo inayoisha ndani ya siku 30 (:expired tayari zimeisha), mfano: :names. Ziuze au ziondoe kwa wakati.',
+        'sms' => ':shop: bidhaa :count zinaisha ndani ya siku 30 (:expired zimeisha): :names.',
+    ],
     'notice_received' => [
         'subject' => ':shop wamesema wamelipa',
         'body' => ':shop wametuma taarifa ya malipo ya :amount (muamala :reference). Tafadhali thibitisha na uongeze kifurushi.',
