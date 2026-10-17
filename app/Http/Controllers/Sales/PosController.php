@@ -82,6 +82,7 @@ class PosController extends Controller
         $products = Product::query()
             ->with(['category:id,name', 'unit:id,short_name,allow_decimal'])
             ->withSum(['stocks as stock_quantity' => fn ($q) => $q->where('warehouse_id', $warehouseId)], 'quantity')
+            ->withMin(['batches as next_expiry' => fn ($q) => $q->where('warehouse_id', $warehouseId)->where('quantity_remaining', '>', 0)->whereNotNull('expiry_date')], 'expiry_date')
             ->where('is_active', true)
             ->when($request->integer('category'), fn ($q, $id) => $q->where('category_id', $id))
             ->when($term !== '', function ($q) use ($like, $normalizedTerm, $prefix): void {
@@ -119,6 +120,8 @@ class PosController extends Controller
             'stock' => $product->track_stock ? (float) ($product->stock_quantity ?? 0) : null,
             'allow_decimal' => (bool) ($product->is_weighed || $product->unit?->allow_decimal),
             'unit' => $product->unit?->short_name,
+            // Date the oldest stock on the shelf goes off (products that track expiry only).
+            'expiry' => $product->track_expiry && $product->next_expiry ? substr((string) $product->next_expiry, 0, 10) : null,
             'initials' => Str::upper(Str::substr($product->name, 0, 2)),
         ];
     }
@@ -133,6 +136,7 @@ class PosController extends Controller
         $products = Product::query()
             ->with(['category:id,name', 'unit:id,short_name,allow_decimal'])
             ->withSum(['stocks as stock_quantity' => fn ($q) => $q->where('warehouse_id', $warehouseId)], 'quantity')
+            ->withMin(['batches as next_expiry' => fn ($q) => $q->where('warehouse_id', $warehouseId)->where('quantity_remaining', '>', 0)->whereNotNull('expiry_date')], 'expiry_date')
             ->where('is_active', true)
             ->orderBy('name')
             ->limit((int) config('pos.offline_max_products'))

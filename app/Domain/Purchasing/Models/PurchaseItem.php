@@ -10,7 +10,7 @@ class PurchaseItem extends Model
 {
     use BelongsToTenant;
 
-    protected $fillable = ['purchase_id', 'product_id', 'product_name', 'sku', 'quantity', 'unit_cost', 'total', 'returned_quantity', 'returned_amount'];
+    protected $fillable = ['purchase_id', 'product_id', 'product_name', 'sku', 'quantity', 'unit_cost', 'total', 'returned_quantity', 'returned_amount', 'batch_number', 'expiry_date'];
 
     protected function casts(): array
     {
@@ -20,6 +20,7 @@ class PurchaseItem extends Model
             'total' => 'integer',
             'returned_quantity' => 'decimal:3',
             'returned_amount' => 'integer',
+            'expiry_date' => 'date',
         ];
     }
 

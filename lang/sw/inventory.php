@@ -35,7 +35,11 @@ return [
     'stock_levels_hint' => 'Idadi ya sasa kwa kila bidhaa na ghala',
     'batches' => 'Makundi ya gharama',
     'batches_hint' => 'Stoo iliyobaki, imepangwa kulingana na bei iliyonunuliwa. Kundi la zamani huuzwa kwanza.',
+    'expiry_filter' => ['all' => 'Zote', 'soon' => 'Zinazoisha ndani ya siku 30', 'expired' => 'Zilizoisha muda'],
+    'lot_hint' => 'Namba ya batch na tarehe ya kuisha zinahusu stoo inayoongezwa, kwa bidhaa zinazozifuatilia.',
     'batch_fields' => [
+        'batch_number' => 'Namba ya batch',
+        'expiry' => 'Kuisha',
         'received' => 'Imepokelewa',
         'unit_cost' => 'Gharama kwa kimoja',
         'received_qty' => 'Idadi iliyopokelewa',

@@ -35,7 +35,11 @@ return [
     'stock_levels_hint' => 'Current quantity per product and warehouse',
     'batches' => 'Cost batches',
     'batches_hint' => 'Stock still on the shelf, grouped by the price it was bought at. The oldest batch is sold first.',
+    'expiry_filter' => ['all' => 'All', 'soon' => 'Expiring in 30 days', 'expired' => 'Expired'],
+    'lot_hint' => 'Batch number and expiry date apply to stock added, for products that track them.',
     'batch_fields' => [
+        'batch_number' => 'Batch no.',
+        'expiry' => 'Expiry',
         'received' => 'Received',
         'unit_cost' => 'Unit cost',
         'received_qty' => 'Received qty',

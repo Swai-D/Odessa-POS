@@ -10,6 +10,8 @@ return [
         'short_name' => 'Jina Fupi',
         'allow_decimal' => 'Ruhusu Desimali',
         'sku' => 'SKU',
+        'opening_batch_number' => 'Namba ya batch ya mwanzo',
+        'opening_expiry_date' => 'Tarehe ya kuisha ya mwanzo',
         'barcode' => 'Barcode',
         'category' => 'Kategoria',
         'brand' => 'Chapa',

@@ -3,6 +3,7 @@
 namespace App\Domain\Catalog\Models;
 
 use App\Domain\Inventory\Models\ProductStock;
+use App\Domain\Inventory\Models\StockBatch;
 use App\Domain\Settings\Services\TenantStorage;
 use App\Models\Concerns\Auditable;
 use App\Models\Concerns\BelongsToTenant;
@@ -78,6 +79,11 @@ class Product extends Model
     public function stocks(): HasMany
     {
         return $this->hasMany(ProductStock::class);
+    }
+
+    public function batches(): HasMany
+    {
+        return $this->hasMany(StockBatch::class);
     }
 
     /** Total quantity across warehouses (needs the `stocks_sum_quantity` aggregate when listing). */

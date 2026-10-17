@@ -57,9 +57,10 @@ class ProductController extends Controller
 
         return response()->json([
             'data' => Search::apply($query, $request->query('q'), ['name', 'sku', 'barcode'])
-                ->orderBy('name')->limit(20)->get(['id', 'name', 'sku', 'barcode', 'track_stock', 'cost_price', 'selling_price'])
+                ->orderBy('name')->limit(20)->get(['id', 'name', 'sku', 'barcode', 'track_stock', 'track_batch', 'track_expiry', 'cost_price', 'selling_price'])
                 ->map(fn (Product $p): array => $this->labelItem($p) + [
                     'label' => $p->name.' ('.$p->sku.')', 'cost' => Money::toMajor($p->cost_price), 'price' => Money::toMajor($p->selling_price),
+                    'track_batch' => (bool) $p->track_batch, 'track_expiry' => (bool) $p->track_expiry,
                 ])->all(),
         ]);
     }

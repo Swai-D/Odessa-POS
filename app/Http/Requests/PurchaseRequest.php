@@ -36,6 +36,8 @@ class PurchaseRequest extends FormRequest
             ],
             'items.*.quantity' => ['required', 'numeric', 'gt:0', 'max:1000000'],
             'items.*.unit_cost' => ['required', 'numeric', 'min:0', 'max:9999999999'],
+            'items.*.batch_number' => ['nullable', 'string', 'max:60'],
+            'items.*.expiry_date' => ['nullable', 'date_format:Y-m-d'],
             'payment_method' => ['nullable', Rule::in(Payment::methods())],
             'payment_amount' => ['nullable', 'numeric', 'min:0', 'max:9999999999'],
             'payment_reference' => ['nullable', 'string', 'max:100'],

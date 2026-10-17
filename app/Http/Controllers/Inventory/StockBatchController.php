@@ -23,13 +23,17 @@ class StockBatchController extends Controller
                 ->with(['product.unit', 'warehouse'])
                 ->where('quantity_remaining', '>', 0)
                 ->whereHas('product', fn ($q) => $q->where('track_stock', true))
+                ->when($request->query('expiry') === 'expired', fn ($q) => $q->whereDate('expiry_date', '<', now()->toDateString()))
+                ->when($request->query('expiry') === 'soon', fn ($q) => $q->whereDate('expiry_date', '>=', now()->toDateString())->whereDate('expiry_date', '<=', now()->addDays(30)->toDateString()))
                 ->tap(fn ($q) => Search::apply($q, $request->query('q'), ['product.name', 'product.sku']))
                 ->orderBy(Product::query()->select('name')->whereColumn('products.id', 'stock_batches.product_id'))
+                ->when(in_array($request->query('expiry'), ['expired', 'soon'], true), fn ($q) => $q->orderBy('expiry_date'))
                 ->orderBy('warehouse_id')
                 ->orderBy('received_at')
                 ->orderBy('id')
                 ->paginate(25)
                 ->withQueryString(),
+            'expiry' => in_array($request->query('expiry'), ['expired', 'soon'], true) ? $request->query('expiry') : null,
         ]);
     }
 }

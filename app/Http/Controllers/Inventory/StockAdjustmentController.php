@@ -49,6 +49,7 @@ class StockAdjustmentController extends Controller
                 $data['direction'] === 'out' ? StockMovement::ADJUSTMENT_OUT : StockMovement::ADJUSTMENT_IN,
                 $data['reason'],
                 $request->user(),
+                lot: $data['direction'] === 'in' ? ['number' => $data['batch_number'] ?? null, 'expiry' => $data['expiry_date'] ?? null] : null,
             );
         } catch (InsufficientStockException $e) {
             return back()->withInput()->withErrors(['quantity' => $e->getMessage()]);
